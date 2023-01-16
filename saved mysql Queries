@@ -1,0 +1,228 @@
+
+
+/*==============
+
+    Will need to change all Bank Account categories to "cash" — so "savings" can be used for savings/reserve categories
+
+*/
+
+SELECT * FROM categories WHERE category_type IN ('checking', 'savings');
+
+UPDATE categories SET category_type='cash' WHERE category_type IN ('checking', 'savings');
+
+
+
+
+
+/*==============
+
+    This updates all the uncategoriszed expenses — for altering the old database
+
+*/
+
+SELECT * 
+FROM categories AS cat
+
+WHERE NOT EXISTS(SELECT NULL FROM categories WHERE parentId = cat.id) 
+AND parentId IS NULL
+AND NOT category_type='income'
+AND NOT category_type='cash'
+AND NOT category_type ='checking'
+AND NOT category_type='savings'
+AND NOT category_type='split'
+AND NOT category_type='closed'
+AND NOT category_type='opening-balance'
+AND NOT id=65
+AND accountId=1;
+
+
+UPDATE categories
+SET parentId = 65
+WHERE
+id=109
+OR id=124
+OR id=138
+OR id=142
+OR id=143
+OR id=145
+OR id=146
+OR id=147
+OR id=149
+OR id=150
+OR id=151
+OR id=152
+OR id=282
+OR id=347
+OR id=348
+OR id=354
+OR id=355
+OR id=357
+OR id=358
+OR id=359
+OR id=360
+OR id=361
+OR id=362
+OR id=363
+OR id=365
+OR id=366
+OR id=397
+OR id=402
+OR id=404
+OR id=430
+OR id=431;
+
+
+
+
+
+
+/*==============
+
+    This updates all the uncategorized income — for altering the old database
+
+*/
+
+SELECT * FROM categories WHERE category_type='income' AND accountId=1 AND id <> 16;
+
+
+UPDATE categories SET parentId=16 WHERE category_type='income' AND accountId=1 AND id <> 16;
+
+
+
+
+
+
+
+
+
+
+//original getAll maps child->parent
+
+SELECT 
+c.id, 
+c.accountId, 
+c.category_title, 
+c.category_type, 
+c.parentId, 
+ChildCategory.id as child_id, 
+ChildCategory.accountId as child_accountId, 
+ChildCategory.category_title as child_category_title, 
+ChildCategory.category_type as child_category_type, 
+ChildCategory.parentId as child_parentId
+FROM categories AS c 
+LEFT OUTER JOIN categories AS ChildCategory 
+ON c.id = ChildCategory.parentId 
+WHERE c.accountId = 1 AND c.parentId IS NULL 
+ORDER BY c.category_title ASC;
+
+
+//original getAllWithTotalByDate
+
+SELECT 
+categories.id, 
+categories.accountId, 
+categories.category_title, 
+categories.category_type, 
+categories.parentId, 
+IFNULL( SUM(transactions.debit - transactions.credit), 0) as totalReportAmount
+FROM categories 
+INNER JOIN transactions 
+ON categories.id = transactions.categoryId 
+WHERE transactions.transaction_date BETWEEN '2022-12-01' AND '2022-12-31' AND categories.accountId=1 
+GROUP BY  categories.id, transactions.categoryId 
+ORDER BY categories.category_title;
+
+
+//
+
+NEW getAllWithTotalByDate  
+
+
+
+SELECT 
+categories.id, 
+categories.accountId, 
+categories.category_title, 
+categories.category_type, 
+categories.parentId, 
+ChildCategory.id as `ChildCategory.id`, 
+ChildCategory.accountId as `ChildCategory.accountId`, 
+ChildCategory.category_title as `ChildCategory.category_title`, 
+ChildCategory.category_type as `ChildCategory.category_type`, 
+ChildCategory.parentId as `ChildCategory.parentId`,
+totalReportAmountDebit,
+totalReportAmountCredit
+FROM categories AS categories 
+LEFT OUTER JOIN categories AS ChildCategory 
+ON categories.id = ChildCategory.parentId 
+LEFT OUTER JOIN (
+    SELECT
+    transactions.categoryId,
+    SUM(transactions.credit) as totalReportAmountCredit,
+    SUM(transactions.debit) as totalReportAmountDebit
+    FROM transactions 
+    WHERE transactions.transaction_date BETWEEN '2022-12-01' AND '2022-12-31' AND transactions.accountId=1
+    GROUP BY transactions.categoryId
+) AS t
+ON ChildCategory.id = t.categoryId
+WHERE categories.accountId = 1 AND categories.parentId IS NULL 
+ORDER BY categories.category_title, ChildCategory.category_title ASC;
+
+
+SELECT
+    transactions.categoryId,
+    SUM(transactions.credit) as totalReportAmountCredit,
+    SUM(transactions.debit) as totalReportAmountDebit
+    FROM transactions 
+    WHERE transactions.transaction_date BETWEEN '2022-12-01' AND '2022-12-31' AND transactions.accountId=1
+    GROUP BY transactions.categoryId;
+
+
+
+
+
+//
+
+Adding Plan amounts from plans
+
+
+SELECT 
+categories.id, 
+categories.accountId, 
+categories.category_title, 
+categories.category_type, 
+categories.parentId, 
+ChildCategory.id as `ChildCategory.id`, 
+ChildCategory.accountId as `ChildCategory.accountId`, 
+ChildCategory.category_title as `ChildCategory.category_title`, 
+ChildCategory.category_type as `ChildCategory.category_type`, 
+ChildCategory.parentId as `ChildCategory.parentId`,
+totalReportAmountDebit,
+totalReportAmountCredit,
+p.id as `CategoryPlan.id`,
+planAmount as `CategoryPlan.planAmount`
+FROM categories AS categories 
+LEFT OUTER JOIN categories AS ChildCategory 
+ON categories.id = ChildCategory.parentId 
+LEFT OUTER JOIN (
+    SELECT
+    transactions.categoryId,
+    SUM(transactions.credit) as totalReportAmountCredit,
+    SUM(transactions.debit) as totalReportAmountDebit
+    FROM transactions 
+    WHERE transactions.transaction_date BETWEEN '2022-12-01' AND '2022-12-31' AND transactions.accountId=1
+    GROUP BY transactions.categoryId
+) AS t
+ON ChildCategory.id = t.categoryId
+LEFT OUTER JOIN (
+    SELECT 
+    plans.id,
+    plans.planAmount,
+    plans.categoryId 
+    FROM plans
+) AS p
+ON ChildCategory.id = p.categoryId
+WHERE categories.accountId = 1 AND categories.parentId IS NULL 
+ORDER BY categories.category_type, categories.category_title, ChildCategory.category_title ASC;
+
+

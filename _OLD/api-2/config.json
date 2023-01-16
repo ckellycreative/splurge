@@ -1,0 +1,19 @@
+﻿{
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "mar12tha08*",
+        "database": "splurge_3.0"
+    },
+    "secret": "THIS IS USED TO SIGN AND VERIFY JWT TOKENS, REPLACE IT WITH YOUR OWN SECRET, IT CAN BE ANY STRING",
+    "emailFrom": "ck@hideandshine.com",
+    "smtpOptions": {
+        "host": "mail.dreamhost.com",
+        "port": 465,
+        "auth": {
+            "user": "ck@hideandshine.com",
+            "pass": "Lo98&hd629Jkdjh^h"
+        }
+    }
+}

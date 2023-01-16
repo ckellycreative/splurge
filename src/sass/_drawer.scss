@@ -1,0 +1,27 @@
+.drawer-overlay {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.drawer {
+  height: 100%;
+  background-color: #ffffff;
+  padding:60px 30px;
+  @media (min-width: 768px) {
+        width: 600px !important;
+  }
+}
+
+
+.drawer-fill {
+  flex: 1;
+  width: 100%;
+  background: transparent;
+}
