@@ -12,7 +12,6 @@ function PlanIncomeList(props) {
       requireDecimal: true,
       includeThousandsSeparator: false,
     })
-    console.log('props.categoryArray', props.categoryArray);
     
     let parentTitle = '' //For iterating the income/expense row subheadings
 
