@@ -90,8 +90,7 @@ function AccountsForm(props) {
                     <Field name="category_type" component="select" className={'form-control'}>
                         <option value='0' disabled>--Select Account Type--</option>
                         <option value='cash'>Cash</option>
-                        <option value='checking'>Checking</option>
-                        <option value='savings'>Savings</option>
+                        <option value='tracking'>Tracking</option>
                     </Field>
                     <ErrorMessage name="category_type" component="div" className="text-danger" />
 
@@ -100,7 +99,7 @@ function AccountsForm(props) {
                         Save it!
                     </button> 
                     &nbsp;
-                    <button type="reset" onClick={() => setShowAddAccountForm(false)} className="btn btn-outline-secondary">Cancel</button>
+                    <button type="reset" onClick={() => props.setShowAddAccountForm(false)} className="btn btn-outline-secondary">Cancel</button>
 
                 </Form>
             )}

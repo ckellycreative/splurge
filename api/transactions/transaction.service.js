@@ -15,6 +15,7 @@ module.exports = {
 
 
 async function getAll(bankId, catId, limit, userId) {
+            console.log('bankId, catId, limit, userId', bankId, catId, limit, userId)
 
     var parentWhereClause = () => {
         if(bankId == 0 && catId == 0 || bankId == 0 && catId != 0) {

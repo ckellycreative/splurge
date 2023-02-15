@@ -2,7 +2,7 @@ import React  from 'react';
 
 function CategorySelectOptions(props) {
     let bankAccounts = props.categories.map(category => {
-                        if (category.category_type == 'checking' || category.category_type == 'savings' || category.category_type == 'cash') {
+                        if (category.category_type == 'tracking' || category.category_type == 'cash') {
                             return (    
                                 <option key={category.id} value={category.id}>{category.category_title}</option>
                             )

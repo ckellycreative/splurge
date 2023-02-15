@@ -5,8 +5,7 @@ import { categoryService, transactionService, planService, alertService } from '
 import { CategoryForm } from '../_components/CategoryForm'
 import { CategorySelectOptions } from '../_components/CategorySelectOptions'
 import { PlanSavingsList } from '../_components/PlanSavingsList'
-import  { PlanIncomeList }  from '../_components/PlanIncomeList'
-import  { PlanExpenseList }  from '../_components/PlanExpenseList'
+import  { PlanIncomeExpenseList }  from '../_components/PlanIncomeExpenseList'
 import { Modal } from '../_components/Modal'
 
 
@@ -14,8 +13,7 @@ import { Modal } from '../_components/Modal'
 
 function Plan() {
 
-    const [thisMonth, setThisMonth] = useState(moment().format('MM'));
-    const [thisYear, setThisYear] = useState(moment().format('YYYY'));
+    const [activeMonthYear, setActiveMonthYear] = useState(moment().format('YYYY-MM'));
     const [incomeArr, setIncomeArr] = useState([])
     const [expenseArr, setExpenseArr] = useState([])
     const [savingsArr, setSavingsArr] = useState([])
@@ -26,9 +24,9 @@ function Plan() {
     const [actualExpenseTotal, setActualExpenseTotal] = useState(0)
     const [categories, setCategories] = useState([])
     const [categoriesAreLoaded, setCategoriesAreLoaded] = useState(false)
-    const [bankAccountCategoriesWithTotals, setBankAccountCategoriesWithTotals] = useState([])
-    const [bankAccountCategoriesWithTotalsAreLoaded, setBankAccountCategoriesWithTotalsAreLoaded] = useState(false)
-    const [bankAccountsTotal, setBankAccountsTotal] = useState(0)
+    const [cashTrackingAccountsWithTotals, setCashTrackingAccountsWithTotals] = useState([])
+    const [cashTrackingAccountsWithTotalsAreLoaded, setCashTrackingAccountsWithTotalsAreLoaded] = useState(false)
+    const [cashAccountsTotal, setCashAccountsTotal] = useState(0)
     const [showModalDelete, setShowModalDelete] = useState(false);
     const [deleteCategory, setDeleteCategory] = useState('');
     const [deleteCategoryHasTransactions, setDeleteCategoryHasTransactions] = useState(false);
@@ -43,15 +41,10 @@ function Plan() {
     const dataIsLoading = 
     (
         !categoriesAreLoaded ||
-        !bankAccountCategoriesWithTotalsAreLoaded ||
+        !cashTrackingAccountsWithTotalsAreLoaded ||
         !expenseArr ||
         !incomeArr ||
-        !savingsArr ||
-        !bankAccountsTotal ||
-        !planIncomeTotal ||
-        !planExpenseTotal ||
-        !actualIncomeTotal ||
-        !actualExpenseTotal
+        !savingsArr 
     ) ? true : false
 
 
@@ -63,9 +56,9 @@ function Plan() {
 ****************** */
 
     const getAllWithTotalByDate = () => {
-        let startDate = `${thisYear}-${thisMonth}-01` 
-        let lastDayOfEndMonth = moment(`${thisYear}-${thisMonth}`, "YYYY-MM").daysInMonth()
-        let endDate = `${thisYear}-${thisMonth}-${lastDayOfEndMonth}`
+        let startDate = `${activeMonthYear}-01` 
+        let lastDayOfEndMonth = moment(`${activeMonthYear}`, "YYYY-MM").daysInMonth()
+        let endDate = `${activeMonthYear}-${lastDayOfEndMonth}`
         categoryService.getAllWithTotalByDate(startDate, endDate)
             .then((data) => {
 
@@ -82,51 +75,49 @@ function Plan() {
                 let tmpSavingsArr =[]
                 
                 data.map( (cat, index, array) => {
-                    // These could probably be consolidated (redundancy)--maybe benefit in separating
-                    if (cat.category_type == 'expense' || cat.category_type == 'income' || cat.category_type == 'savings') {
+                    if (cat.category_type == 'expense' || cat.category_type == 'income' ) {
+                        let isIncome = (cat.category_type == 'income') ? true : false
                         let nextIsNewCategoryGroup = (array[index+1].category_title != cat.category_title) ? true : false    
-                        if (cat.category_type == 'expense') {
-                            tmpExpenseArr.push(cat)
-                            groupTotalPlan += cat.CategoryPlan.planAmount
-                            groupTotalActual += cat.totalReportAmountDebit - cat.totalReportAmountCredit
-                            calcPlanExpenseTotal += cat.CategoryPlan.planAmount
-                            calcActualExpenseTotal += cat.totalReportAmountCredit - cat.totalReportAmountDebit  
-                            if (nextIsNewCategoryGroup) {
-                                let groupTotalObj = {grpid:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
-                                tmpExpenseArr.push(groupTotalObj)
-                                groupTotalPlan = 0
-                                groupTotalActual = 0
-                            }
+                        isIncome ? tmpIncomeArr.push(cat) : tmpExpenseArr.push(cat)
+                        groupTotalPlan += +cat.CategoryPlan.planAmount
+                        groupTotalActual += cat.totalReportAmountDebit - cat.totalReportAmountCredit
+                        if (isIncome) {
+                            calcPlanIncomeTotal += +cat.CategoryPlan.planAmount 
+                            calcActualIncomeTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
+                        }else {
+                            calcPlanExpenseTotal += +cat.CategoryPlan.planAmount 
+                            calcActualExpenseTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
                         }
-                        if (cat.category_type == 'income') {
-                            tmpIncomeArr.push(cat)
-                            groupTotalPlan += cat.CategoryPlan.planAmount
-                            groupTotalActual += cat.totalReportAmountDebit - cat.totalReportAmountCredit
-                            calcPlanIncomeTotal += cat.CategoryPlan.planAmount
-                            calcActualIncomeTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit
-                            if (nextIsNewCategoryGroup) {
-                                let groupTotalObj = {grpid:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
+                        if (nextIsNewCategoryGroup) {
+                            //Is there a better way to get this grpId? This gets used for a key
+                            let groupTotalObj = {grpid:cat.id + cat.ChildCategory.id + cat.category_title , groupCategoryTitle: cat.category_title, groupCategoryType: cat.category_type, groupTotalPlan, groupTotalActual }
+                            if (isIncome) {
                                 tmpIncomeArr.push(groupTotalObj)
-                                groupTotalPlan = 0
-                                groupTotalActual = 0
+                            }else {
+                                tmpExpenseArr.push(groupTotalObj)
                             }
+                            groupTotalPlan = 0
+                            groupTotalActual = 0
                         }
-                        if (cat.category_type == 'savings') {
-                            tmpSavingsArr.push(cat)
-                            groupTotalPlan += cat.CategoryPlan.planAmount
-                            groupTotalActual = 0  //Not using the actual totals yet (not sure if/how)
-                            calcPlanSavingsTotal += cat.CategoryPlan.planAmount
-                            calcActualSavingsTotal = 0 //Not using the actual totals yet (not sure if/how)
-                            if (nextIsNewCategoryGroup) {
-                                let groupTotalObj = {grpid:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
-                                tmpSavingsArr.push(groupTotalObj)
-                                groupTotalPlan = 0
-                                groupTotalActual = 0
-                            }
-                        }
+                    }
 
-                   }
+                    if (cat.category_type == 'savings') {
+                        let nextIsNewCategoryGroup = (array[index+1].category_title != cat.category_title) ? true : false    
+                        tmpSavingsArr.push(cat)
+                        groupTotalPlan += +cat.CategoryPlan.planAmount
+                        groupTotalActual = 0  //Not using the actual totals yet (not sure if/how)
+                        calcPlanSavingsTotal += +cat.CategoryPlan.planAmount
+                        calcActualSavingsTotal = 0 //Not using the actual totals yet (not sure if/how)
+                        if (nextIsNewCategoryGroup) {
+                            let groupTotalObj = {grpid:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
+                            tmpSavingsArr.push(groupTotalObj)
+                            groupTotalPlan = 0
+                            groupTotalActual = 0
+                        }
+                    }
+
                 })
+
                 setExpenseArr(tmpExpenseArr)
                 setIncomeArr(tmpIncomeArr)
                 setSavingsArr(tmpSavingsArr)
@@ -144,7 +135,7 @@ function Plan() {
     };
     useEffect(() => {
         getAllWithTotalByDate()
-    }, [thisMonth, thisYear])  
+    }, [activeMonthYear])  
 
 
 
@@ -168,16 +159,20 @@ const getCategories = () => {
 
 
 
-    const getBankAccountCategoriesWithTotals = () => {
-        categoryService.getBankAccountCategoriesWithTotals()
+    const getCashTrackingAccountsWithTotals = () => {
+        let lastDayOfLastMonth = moment(activeMonthYear).subtract(1,'months').endOf('month').format('YYYY-MM-DD');
+        categoryService.getCashTrackingAccountsWithTotals(lastDayOfLastMonth) //Here the date is the last day of the previous month
             .then((data) => {
-                setBankAccountCategoriesWithTotals(data)
-                setBankAccountCategoriesWithTotalsAreLoaded(true);
+                setCashTrackingAccountsWithTotals(data)
+                setCashTrackingAccountsWithTotalsAreLoaded(true);
                 let total = 0
                 data.map( cat => {
-                    total += cat.bankBalance
+                     //We dont include tracking accounts in the available cash
+                    if (cat.category_type == 'cash'){
+                        total += +cat.bankBalance
+                    }
                 })
-                setBankAccountsTotal(total)
+                setCashAccountsTotal(total)
             })
             .catch(error => {
                 //alertService.error(error)
@@ -185,8 +180,8 @@ const getCategories = () => {
             });
     };
     useEffect(() => {
-        getBankAccountCategoriesWithTotals()
-    }, [])  
+        getCashTrackingAccountsWithTotals()
+    }, [activeMonthYear])  
 
 
 
@@ -240,7 +235,12 @@ const getCategories = () => {
     }
 
 
-    const handleUpdateCategory = () => {
+    const handleUpdateCategory = (e) => {
+        
+        if (e.key && e.key !== 'Enter') {
+            return
+        }
+
         let newCat = {
             id: editCategory,
             category_title: newCategoryTitle
@@ -329,11 +329,17 @@ const getCategories = () => {
         setNewPlanAmount(e.target.value)
     }
 
-    const handleUpdatePlan = () => {
+    const handleUpdatePlan = (e) => {
+
+        if (e.key && e.key !== 'Enter') {
+            return
+        }
+
         let newPlan = {
             id: editPlan,
             planAmount: newPlanAmount
         }
+
         planService.update(newPlan)
             .then((data) => {
                 getAllWithTotalByDate()
@@ -349,176 +355,240 @@ const getCategories = () => {
 
 
 
+/*****************
+    
+    Handlers
+    
+****************** */
+
+    const handleClickPlanMonth = (direction) => {
+        let newMonth = ''
+        if (direction == 'back') {
+            newMonth = moment(activeMonthYear).subtract(1,'months').format('YYYY-MM')            
+        }else if (direction == 'forward') {
+            newMonth = moment(activeMonthYear).add(1,'months').format('YYYY-MM')
+        }else if (direction == 'today') {
+            newMonth = moment().format('YYYY-MM')
+        }
+    setActiveMonthYear(newMonth)
+
+    }
+
+
+
+
 
 
 
     return (
-        <div className="container-fluid">
-            {
-                dataIsLoading && 'Loader' ||
-                <div className="row">
-                    <div className="col-md-9">
-                        <h1>Plan</h1>
-                            <p>Total Cash: <NumericFormat value={bankAccountsTotal.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></p>
-                            <p>Unallocated: <NumericFormat value={(bankAccountsTotal - (planExpenseTotal + planSavingsTotal)).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></p>
+        <React.Fragment>
+            { dataIsLoading && 'Loader' ||
+                <div className="row Plan">
+                    <div className="col-md-8 main">
+                        <h1>
+                            <button onClick={() => handleClickPlanMonth('back')} type="button" className="btn btn-link btn-outline-secondary"><i className="bi-arrow-left-circle-fill"></i></button>
+                            {moment(activeMonthYear).format('MMMM YYYY')}
+                            <button onClick={() => handleClickPlanMonth('forward')} type="button" className="btn btn-link btn-outline-secondary"><i className="bi-arrow-right-circle-fill"></i></button>
+                        </h1>
+                        <div className="btn-group dropdown">
+                          <button type="button" className="btn btn-link btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i className="bi-plus"></i> Add Category Group
+                          </button>
+                            <div className="dropdown-menu px-2" style={ {minWidth: '500px'} }>
+                                <CategoryForm parentId={null} category_type='expense' isGroupForm={true} getAllWithTotalByDate={getAllWithTotalByDate} />
+                            </div>
+                        </div>
+                        <div className="row tabular-data tabular-head">
+                            <div className="col-sm-2 offset-sm-6 text-end">Plan</div>
+                            <div className="col-sm-2 text-end">Actual</div>
+                            <div className="col-sm-2 text-end">Difference</div>
+                        </div>
+                        <PlanIncomeExpenseList 
+                            categoryArray={incomeArr}
+                            handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                            handleClickEditCategory = {handleClickEditCategory}
+                            handleClickEditPlan = {handleClickEditPlan}
+                            handleShowModalDelete = {handleShowModalDelete}
+                            handleUpdateCategory={handleUpdateCategory}
+                            newCategoryTitle = {newCategoryTitle}
+                            getAllWithTotalByDate = {getAllWithTotalByDate}
+                            editCategory = {editCategory}
+                            editPlan={editPlan}
+                            handleChangePlanAmount={handleChangePlanAmount}
+                            newPlanAmount={newPlanAmount}
+                            handleUpdatePlan={handleUpdatePlan}
+                        />
+                        <PlanIncomeExpenseList 
+                            categoryArray={expenseArr}
+                            handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                            handleClickEditCategory = {handleClickEditCategory}
+                            handleClickEditPlan = {handleClickEditPlan}
+                            handleShowModalDelete = {handleShowModalDelete}
+                            handleUpdateCategory={handleUpdateCategory}
+                            newCategoryTitle = {newCategoryTitle}
+                            getAllWithTotalByDate = {getAllWithTotalByDate}
+                            editCategory = {editCategory}
+                            editPlan={editPlan}
+                            handleChangePlanAmount={handleChangePlanAmount}
+                            newPlanAmount={newPlanAmount}
+                            handleUpdatePlan={handleUpdatePlan}
+                        />
 
-                                <div>
+                        <div className="row tabular-data">
+                            <div className="col-sm-6 fw-bold">Total Expenses</div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                        </div>           
 
-                                    <div className="btn-group dropdown">
-                                      <button type="button" className="btn btn-link btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i className="bi-plus"></i> Add Category Group
-                                      </button>
-                                        <div className="dropdown-menu px-2" style={ {minWidth: '500px'} }>
-                                            <CategoryForm parentId={null} category_type='expense' isGroupForm={true} getAllWithTotalByDate={getAllWithTotalByDate} />
-                                        </div>
-                                    </div>
+                        <div className="row tabular-data">
+                            <div className="col-sm-6 fw-bold">Income Less Expenses</div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={planIncomeTotal - planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={actualIncomeTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal) - (actualIncomeTotal + actualExpenseTotal)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                        </div>           
 
+                        <div className="row tabular-data">
+                            <div className="col-sm-6 fw-bold">Unallocated</div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={cashAccountsTotal + planIncomeTotal - planExpenseTotal - planSavingsTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={cashAccountsTotal + actualIncomeTotal - actualExpenseTotal - planSavingsTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-2 text-end"><NumericFormat value={(cashAccountsTotal + planIncomeTotal - planExpenseTotal - planSavingsTotal) - (cashAccountsTotal + actualIncomeTotal - actualExpenseTotal - planSavingsTotal)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                        </div>           
 
-                                    <table className='table table-sm'>
-                                        <tbody>
-                                            <tr>
-                                                <th></th>
-                                                <th className='text-end'>Plan</th>
-                                                <th className='text-end'>Actual</th>
-                                                <th className='text-end'>Difference</th>
-
-
-                                            </tr>
-                         
-                                            <PlanExpenseList 
-                                                categoryArray={expenseArr}
-                                                handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                                handleClickEditCategory = {handleClickEditCategory}
-                                                handleClickEditPlan = {handleClickEditPlan}
-                                                handleShowModalDelete = {handleShowModalDelete}
-                                                handleUpdateCategory={handleUpdateCategory}
-                                                newCategoryTitle = {newCategoryTitle}
-                                                getAllWithTotalByDate = {getAllWithTotalByDate}
-                                                editCategory = {editCategory}
-                                                editPlan={editPlan}
-                                                handleChangePlanAmount={handleChangePlanAmount}
-                                                newPlanAmount={newPlanAmount}
-                                                handleUpdatePlan={handleUpdatePlan}
-                                            />
-
-                                            <tr className="table-info">
-                                                <td className='fw-bold'>Total Expenses</td>
-                                                <td className='text-end'><NumericFormat value={planExpenseTotal.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
-                                                <td className='text-end'><NumericFormat value={actualExpenseTotal.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
-                                                <td className='text-end'><NumericFormat value={(actualExpenseTotal - planExpenseTotal).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
-
-                                            </tr>           
-
-
-                                        </tbody>
-                                    </table>
-
-                                    { showModalDelete  &&
-                                        <Modal showModal={showModalDelete} setShowModal={setShowModalDelete} title='Alert!'>
-
-
-                                             { deleteCategoryHasTransactions   &&
-                                                <div>
-                                                    <p>This category has {deleteCategory.CategoryTransactions.length} transactions associated with it. </p>
-                                                        
-                                                    <div className="form-check">
-                                                      <input onChange={(e) => handleChangeInput(e)} className="form-check-input" type="radio"name="radio_option" value="transfer" id="radio-transfer-it" />
-                                                      <label className="form-check-label" htmlFor="radio-transfer-it">
-                                                        Transfer transactions to another category.
-                                                      </label>
-                                                    </div>
-                                                </div>
-                                            }
-
-                                            { !deleteCategoryHasTransactions   &&
-                                                <div>
-                                                    <p>Yippee! This category has no transactions associated with it. </p>
-                                                    <div className="form-check">
-                                                      <input onChange={(e) => handleChangeInput(e)} className="form-check-input" type="radio" name="radio_option" value="delete" id="radio-delete-it" />
-                                                      <label className="form-check-label" htmlFor="radio-delete-it">
-                                                        Go ahead and delete it.
-                                                      </label>
-                                                    </div>
-                                                </div>
-                                            }
-                                             
-                                            <div className="form-check">
-                                              <input onChange={(e) => handleChangeInput(e)} className="form-check-input" type="radio" name="radio_option" value="hide" id="radio-hide-it" />
-                                              <label className="form-check-label" htmlFor="radio-delete-it">
-                                                Hide it and save it for later.
-                                              </label>
-                                            </div>
-
-
-                                            { radioValue=='transfer' &&
-                                                <div>
-                                                    <select onChange={handleChangeSelectCategory} name="bank_account_id" component="select" className={'form-control CategorySelect'}>
-                                                        <CategorySelectOptions categories={categories} categoryType={(deleteCategory.category_type == 'income' ? 'incomeOnly' : 'expenseOnly')} defaultOption="Select an Account" />
-                                                    </select>
-                                                    <button onClick={handleTransferTransactions} type="button" className="btn btn-primary">Transfer Transactions</button>
-                                                </div>
-                                            }
-
-                                            { radioValue=='hide' &&
-                                                <button onClick={handleHideCategory} type="button" className="btn btn-primary">Hide it</button>
-                                            }
-
-                                            { radioValue=='delete' &&
-                                                <button onClick={handleClickDeleteCategory} type="button" className="btn btn-danger">Delete it!</button>
-                                            }
-                                        </Modal>
-                                    }
-
-
-                                </div>
-                
                     </div>
-                    <div className="col-md-3">
-                        <div> 
 
-                            <table className='table table-sm'>
-                                <tbody>
-                                    <PlanIncomeList 
-                                        categoryArray={incomeArr}
-                                        handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                        handleClickEditCategory = {handleClickEditCategory}
-                                        handleShowModalDelete = {handleShowModalDelete}
-                                        handleUpdateCategory= {handleUpdateCategory}
-                                        newCategoryTitle = {newCategoryTitle}
-                                        getAllWithTotalByDate = {getAllWithTotalByDate}
-                                        editCategory = {editCategory}
-                                    />
-                                </tbody>
-                            </table>
 
-                            <table className='table table-sm'>
-                                <tbody>
-                                    <PlanSavingsList 
-                                        categoryArray={savingsArr}
-                                        handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                        handleClickEditCategory = {handleClickEditCategory}
-                                        handleClickEditPlan = {handleClickEditPlan}
-                                        handleShowModalDelete = {handleShowModalDelete}
-                                        handleUpdateCategory={handleUpdateCategory}
-                                        newCategoryTitle = {newCategoryTitle}
-                                        getAllWithTotalByDate = {getAllWithTotalByDate}
-                                        editCategory = {editCategory}
-                                        editPlan={editPlan}
-                                        handleChangePlanAmount={handleChangePlanAmount}
-                                        newPlanAmount={newPlanAmount}
-                                        handleUpdatePlan={handleUpdatePlan}
-                                    />
-                                </tbody>
-                            </table>
 
+                    <div className="col-md-4 sidebar">
+                        <h2>Overview</h2>
+                            <div className="row tabular-data">
+                                <div className="col-sm-6 fw-bold">
+                                    Total Cash At Start of Month
+                                </div>
+                                <div className="col-sm-3 text-end">
+                                    <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
+                                </div>           
+                            </div>
+                            <div className="row tabular-data tabular-head">
+                                <div className="col-sm-3 offset-sm-3 text-end">Plan</div>
+                                <div className="col-sm-3 text-end">Actual</div>
+                                <div className="col-sm-3 text-end">Difference</div>
+                            </div>
+
+                            <div className="tabular-data row">
+                                <div className="col-sm-3 fw-bold">
+                                    Income
+                                </div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-3 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-3 text-end"><NumericFormat value={(actualIncomeTotal - planIncomeTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            </div>
+                            <div className="tabular-data row">
+                                <div className="col-sm-3 fw-bold">Expense</div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-3 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-3 text-end"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            </div>
+                            <div className="tabular-data row">
+                                <div className="col-sm-3 fw-bold">Net</div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={planIncomeTotal - planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={actualIncomeTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal) - (planIncomeTotal - planExpenseTotal)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            </div>
+
+                            <div className="tabular-data row">
+                                <div className="col-sm-3 fw-bold">
+                                    Reserves
+                                </div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-3 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            </div>
+
+                            <div className="tabular-data row">
+                                <div className="col-sm-3 fw-bold">Unallocated</div>
+                                <div className="col-sm-3 text-end"><NumericFormat value={(cashAccountsTotal - (planExpenseTotal + planSavingsTotal)).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-3 text-end"><NumericFormat value={cashAccountsTotal + actualIncomeTotal - actualExpenseTotal - planSavingsTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            </div>
+                            <div className="mt-4">
+                                <PlanSavingsList 
+                                    categoryArray={savingsArr}
+                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                                    handleClickEditCategory = {handleClickEditCategory}
+                                    handleClickEditPlan = {handleClickEditPlan}
+                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleUpdateCategory={handleUpdateCategory}
+                                    newCategoryTitle = {newCategoryTitle}
+                                    getAllWithTotalByDate = {getAllWithTotalByDate}
+                                    editCategory = {editCategory}
+                                    editPlan={editPlan}
+                                    handleChangePlanAmount={handleChangePlanAmount}
+                                    newPlanAmount={newPlanAmount}
+                                    handleUpdatePlan={handleUpdatePlan}
+                                />
+                            </div>
 
                         </div>
                     </div>
-                </div> 
+            }
+
+            { showModalDelete  &&
+                <Modal showModal={showModalDelete} setShowModal={setShowModalDelete} title='Alert!'>
+
+
+                     { deleteCategoryHasTransactions   &&
+                        <div>
+                            <p>This category has {deleteCategory.CategoryTransactions.length} transactions associated with it. </p>
+                                
+                            <div className="form-check">
+                              <input onChange={(e) => handleChangeInput(e)} className="form-check-input" type="radio"name="radio_option" value="transfer" id="radio-transfer-it" />
+                              <label className="form-check-label" htmlFor="radio-transfer-it">
+                                Transfer transactions to another category.
+                              </label>
+                            </div>
+                        </div>
+                    }
+
+                    { !deleteCategoryHasTransactions   &&
+                        <div>
+                            <p>Yippee! This category has no transactions associated with it. </p>
+                            <div className="form-check">
+                              <input onChange={(e) => handleChangeInput(e)} className="form-check-input" type="radio" name="radio_option" value="delete" id="radio-delete-it" />
+                              <label className="form-check-label" htmlFor="radio-delete-it">
+                                Go ahead and delete it.
+                              </label>
+                            </div>
+                        </div>
+                    }
+                     
+                    <div className="form-check">
+                      <input onChange={(e) => handleChangeInput(e)} className="form-check-input" type="radio" name="radio_option" value="hide" id="radio-hide-it" />
+                      <label className="form-check-label" htmlFor="radio-delete-it">
+                        Hide it and save it for later.
+                      </label>
+                    </div>
+
+
+                    { radioValue=='transfer' &&
+                        <div>
+                            <select onChange={handleChangeSelectCategory} name="bank_account_id" component="select" className={'form-control CategorySelect'}>
+                                <CategorySelectOptions categories={categories} categoryType={(deleteCategory.category_type == 'income' ? 'incomeOnly' : 'expenseOnly')} defaultOption="Select an Account" />
+                            </select>
+                            <button onClick={handleTransferTransactions} type="button" className="btn btn-primary">Transfer Transactions</button>
+                        </div>
+                    }
+
+                    { radioValue=='hide' &&
+                        <button onClick={handleHideCategory} type="button" className="btn btn-primary">Hide it</button>
+                    }
+
+                    { radioValue=='delete' &&
+                        <button onClick={handleClickDeleteCategory} type="button" className="btn btn-danger">Delete it!</button>
+                    }
+                </Modal>
             }
 
 
-        </div>
+        </React.Fragment>
 
     );
 }

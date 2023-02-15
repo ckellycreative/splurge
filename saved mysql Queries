@@ -1,24 +1,25 @@
+1. /*==============
 
-
-/*==============
-
-    Will need to change all Bank Account categories to "cash" — so "savings" can be used for savings/reserve categories
-
-*/
-
-SELECT * FROM categories WHERE category_type IN ('checking', 'savings');
-
-UPDATE categories SET category_type='cash' WHERE category_type IN ('checking', 'savings');
+CATEGORIES
 
 
 
+Change accounts table to "categories"
+Change 'user_id' to 'accountId'
+Change user 14 to 1 in 
+Delete all cats from other users
+Match structure/schema of 3.0 database
+Change all "checking" and "savings" to "cash"
+"Fidelity" changes from 'savings' to 'tracking'
+Add new parent "Savings" cat
+Add "Opening Balance" cat
+Change parentId=0 to NULL
 
 
-/*==============
-
+======
     This updates all the uncategoriszed expenses — for altering the old database
-
-*/
+    - Must locate the ID of the "Uncategorized Expense" parent
+    - Do it for each user
 
 SELECT * 
 FROM categories AS cat
@@ -27,10 +28,6 @@ WHERE NOT EXISTS(SELECT NULL FROM categories WHERE parentId = cat.id)
 AND parentId IS NULL
 AND NOT category_type='income'
 AND NOT category_type='cash'
-AND NOT category_type ='checking'
-AND NOT category_type='savings'
-AND NOT category_type='split'
-AND NOT category_type='closed'
 AND NOT category_type='opening-balance'
 AND NOT id=65
 AND accountId=1;
@@ -40,57 +37,142 @@ UPDATE categories
 SET parentId = 65
 WHERE
 id=109
-OR id=124
-OR id=138
-OR id=142
-OR id=143
-OR id=145
-OR id=146
-OR id=147
-OR id=149
 OR id=150
-OR id=151
+OR id=149
+OR id=138
 OR id=152
-OR id=282
-OR id=347
-OR id=348
-OR id=354
-OR id=355
-OR id=357
-OR id=358
-OR id=359
-OR id=360
-OR id=361
-OR id=362
-OR id=363
-OR id=365
-OR id=366
-OR id=397
-OR id=402
 OR id=404
+OR id=143
+OR id=402
+OR id=151
+OR id=358
+OR id=147
+OR id=431
+OR id=124
+OR id=366
+OR id=360
+OR id=354
+OR id=361
+OR id=363
+OR id=362
+OR id=397
+OR id=348
+OR id=347
+OR id=357
+OR id=142
 OR id=430
-OR id=431;
+OR id=109
+OR id=359
+OR id=355
+OR id=146
+OR id=145
+OR id=365
+OR id=282;
 
 
 
-
-
-
-/*==============
+=============
 
     This updates all the uncategorized income — for altering the old database
-
-*/
-
-SELECT * FROM categories WHERE category_type='income' AND accountId=1 AND id <> 16;
+    - Must find "Uncategorized Income" parent ID
 
 
+SELECT * FROM categories WHERE category_type='income' AND accountId=1 AND id <> XXXXX;
 UPDATE categories SET parentId=16 WHERE category_type='income' AND accountId=1 AND id <> 16;
 
 
 
 
 
+
+2./* TRANSACTIONS==============
+
+
+THE DELETED ONES !!!!!!!
+
+DELETE FROM transactions WHERE id IN (292,296,297,298,304,306,311,330,340,347,359,360,361,362,363,364,365,366,372,373,377,382,420,427,428,429,430,431,449,454,455,456,457,458,549,779,840,900,976,1227,1228,1229,1231,1233,1238,1253,1263,1280,1282,1286,1287,1291,1294,1347,1352,1354,1424,1614,1661,1707,1773,2038,2039,2042,2043,2615,2616,2876,2877,2896,2897,2898,2899,2900,2901,2958,2959,3246,3247,3263,3264,3276,3277,3296,3297,3383,3384,3445,3446,3467,3468,4025,4026,4072,4073,4142,4143,4169,4170,4225,4226,4438,4439,4512,4513,4514,4888,4889,4890,4919,4920,4954,4955,5319,5320,5347,5348,5358,5359,5372,5373,5402,5403,5407,5408,5409,5473,5474,5498,5499,5504,5505,5506,5507,5526,5527,5566,5567,5586,5587,5592,5593,5660,5661,5716,5717,5987,5988,6007,6008,6018,6019,6026,6027,6036,6037,6049,6050,6051,6052,6053,6054,6065,6066,6204,6205,6224,6225,6285,6286,6371,6372,6487,6488,6489,6585,6586,6740,6741,6742,6743,6982,6983,7117,7118,7119,7192,7193,7271,7272,7347,7348,7455,7456,7612,7613,7614,7615,7616,7617,7702,7703,7769,7770,7775,7776,7777,7778,7779,7780,7793,7794,7977,7978,8091,8092,8125,8126,8127,8133,8134,8312,8313,8354,8355,8358,8359,8389,8390,8391,8392,8723,8726,8727,8759,8845,8846,9104,9105,9106,9107,9396,9397,9461,9462,9465,9466,9523,9524,9646,9647,9850,9851,9866,9867,9989,9990,9991,9992,10003,10004,10219,10220,10291,10292,10373,10374,10379,10380,10754,10755,10798,10799,10878,10879,10948,10949,11152,11153,11262,11263,11264,11348,11361,11362,11491,11492,11493,11494,11602,11603,11610,11611,11676,11677,11724,11725,11726,11727,11797,11798,11877,11878,11994,11995,11996,11997,12048,12049,12145,12146,12202,12203,12295,12296,12427,12428,12489,12490,12491,12592,12593,12594,12595,12596,12597,12630,12631,12715,12716,12822,12823,12870,12871,12906,12907,12997,12998,13003,13004,13007,13008,13011,13012,13061,13062,13071,13072,13104,13105,13154,13155,13156,13159,13160,13281,13282,13284,13287,13288,13289,13358,13359,13428,13429,13430,13431,13432,13433,13435,13436,13497,13498,13501,13502,13503,13504,13505,13506,13517,13518,13535,13536,13571,13572,13677,13678,13709,13710,13729,13730,13756,13757,13823,13824,13860,13861,13862,13863,13914,13915,13916,13917,13998,13999,14134,14135,14136,14137,14288,14289,14332,14333,14334,14395,14396,14397,14398,14455,14456,14614,14615,14735,14736,14801,14802,14809,14810,14865,14866,14867,14911,14912,15043,15044,15451,15452,15539,15540,15545,15546,15758,15759,15762,15763,15846,15847,15855,15856,16086,16087,16092,16093,16134,16135,16236,16237,16340,16341,16376,16377,16390,16391,16410,16411,16468,16469,16528,16529,16712,16713,16752,16753,16784,16785,17093,17094,17135,17136,17211,17212,17229,17230,17233,17234,17341,17342,17389,17390,17470,17471,17974,17975,18048,18049,18096,18097,18146,18147,18549,18550,19025,19026,19027,19028,19071,19072,19297,19298,19337,19338,19375,19376,19377,19378,19379,19380);
+
+
+
+
+
+
+
+- "user_id to "accountId
+
+
+---Get rid of orphans
+SELECT parents.id, parents.transaction_description, children.parentId as childsParentId
+FROM 
+    transactions parents
+    LEFT JOIN transactions children
+    ON parents.id = children.parentId
+WHERE 
+    children.parentId IS NULL
+
+
+--- These don;t have categoryId, kill em
+DELETE FROM transactions WHERE
+id=291
+OR id=293
+OR id=296
+OR id=297
+OR id=298
+OR id=363
+OR id=365
+OR id=366
+OR id=420
+OR id=431
+OR id=19598
+OR id=19602
+
+
+
+///Find parents without children
+
+SELECT *
+FROM transactions t1
+WHERE
+    t1.parentId IS NULL AND
+    NOT EXISTS (SELECT 1 FROM transactions t2 WHERE t2.parentId = t1.id);
+
+
+
+
+
+
+///Select parents and children
+
+SELECT
+    t.id as parent_id,
+    t.transaction_date as parent_transDate,
+    t.transaction_description as parent_descr,
+    t.debit as parent_deb,
+    t.credit as parent_cred,
+    t.categoryId as parent_catId,
+    c.debit as c_deb,
+    c.credit as c_cred,
+    c.id as child_id,
+    c.parentId as child_parentid,
+    c.categoryId as c_catId,
+    c.transaction_description as child_name
+FROM 
+    transactions t
+LEFT JOIN transactions c
+    ON c.parentId = t.id
+WHERE
+    t.parentId=0 AND t.categoryId=405
+
+
+
+
+============================================================================================================
+
+
+
+//getCashTrackingAccountsWithTotals(userId, date)
+
+SELECT categories.id, categories.category_title, categories.category_type, SUM(transactions.credit - transactions.debit) as bankBalance FROM categories INNER JOIN transactions ON categories.id = transactions.categoryId WHERE categories.accountId=1 AND (categories.category_type='cash' OR categories.category_type='tracking') AND transactions.transaction_date <= '2023-02-11' GROUP BY  categories.id, transactions.categoryId ORDER BY categories.category_title;
 
 
 

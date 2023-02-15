@@ -12,7 +12,7 @@ const planService = require('../plans/plan.service');
 // routes
 router.get('/', authorize(), getAll);
 router.get('/reports/', authorize(), getAllWithTotalByDate);
-router.get('/bankAccountCategories', authorize(), getBankAccountCategoriesWithTotals);
+router.get('/cashTrackingAccounts', authorize(), getCashTrackingAccountsWithTotals);
 router.get('/:id', authorize(), getById);
 router.post('/', authorize(), create);
 router.post('/createBankAccountCategory', authorize(), createBankAccountCategory);
@@ -38,8 +38,8 @@ function getAllWithTotalByDate(req, res, next) {
 
 
 
-function getBankAccountCategoriesWithTotals(req, res, next) {    
-    categoryService.getBankAccountCategoriesWithTotals(req.user.id)
+function getCashTrackingAccountsWithTotals(req, res, next) {    
+    categoryService.getCashTrackingAccountsWithTotals(req.user.id, req.query.date)
         .then(categories => res.json(categories))
         .catch(next);
 }
@@ -58,6 +58,9 @@ function getById(req, res, next) {
         .catch(next);
 }
 
+
+
+
 //Messy messy messy
 function create(req, res, next) {
     // add userId to the new category
@@ -70,6 +73,9 @@ function create(req, res, next) {
         })
         .catch(next);
 }
+
+
+
 
 
 function createBankAccountCategory(req, res, next) {

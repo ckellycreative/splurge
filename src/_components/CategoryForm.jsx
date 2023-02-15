@@ -22,8 +22,8 @@ function CategoryForm(props) {
         alertService.clear();
         let newCat = {
             category_title, 
-            category_type: props.category_type, 
-            parentId: props.cat.it
+            category_type: props.isGroupForm ? 'expense' : props.category_type, //Only Expense Cats have groups
+            parentId: props.parentId
         }
 
         categoryService.create(newCat)

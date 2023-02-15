@@ -11,13 +11,14 @@ import { AccountsForm } from '../_components/AccountsForm'
 
 
 function Accounts() {
-    // "Accounts" in this context means Bank Accounts. In database they are Categories (income, expense, cash, checking, savings)
-    //Categories, BankAccounts
+    // "Accounts" in this context means cash and tracking accounts. In database they are Categories 
+
+    //Categories, CashTrackingAccounts
     const [categories, setCategories] = useState([])
     const [categoriesAreLoaded, setCategoriesAreLoaded] = useState(false)
-    const [bankAccountCategoriesWithTotals, setBankAccountCategoriesWithTotals] = useState([])
-    const [bankAccountCategoriesWithTotalsAreLoaded, setBankAccountCategoriesWithTotalsAreLoaded] = useState(false)
-    const [activeBankAccount, setActiveBankAccount] = useState('')
+    const [cashTrackingAccountsWithTotals, setCashTrackingAccountsWithTotals] = useState([])
+    const [cashTrackingAccountsWithTotalsAreLoaded, setCashTrackingAccountsWithTotalsAreLoaded] = useState(false)
+    const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState('')
     const [activeCategory, setActiveCategory] = useState('')
     //Transactions
     const [transactions, setTransactions] = useState([])
@@ -61,12 +62,11 @@ function Accounts() {
 
 
 
-
-    const getBankAccountCategoriesWithTotals = () => {
-        categoryService.getBankAccountCategoriesWithTotals()
+    const getCashTrackingAccountsWithTotals = () => {
+        categoryService.getCashTrackingAccountsWithTotals(moment().format('YYYY-MM-DD'))
             .then((data) => {
-                setBankAccountCategoriesWithTotals(data)
-                setBankAccountCategoriesWithTotalsAreLoaded(true);
+                setCashTrackingAccountsWithTotals(data)
+                setCashTrackingAccountsWithTotalsAreLoaded(true);
             })
             .catch(error => {
                 //alertService.error(error)
@@ -74,7 +74,7 @@ function Accounts() {
             });
     };
     useEffect(() => {
-        getBankAccountCategoriesWithTotals()
+        getCashTrackingAccountsWithTotals()
     }, [transactions])  
 
 
@@ -82,9 +82,9 @@ function Accounts() {
 
 
     const getTransactions = () => {
-            const activeBankAccountId = (!activeBankAccount) ? 0 : activeBankAccount.id  //  0 activeBankAccount will return all categories from the API
-            const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeBankAccount will return all categories from the API
-            transactionService.getAll(activeBankAccountId, activeCategoryId, transactionsLimit) 
+            const activeCashTrackingAccountId = (!activeCashTrackingAccount) ? 0 : activeCashTrackingAccount.id  //  0 activeCashTrackingAccount will return all categories from the API
+            const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCashTrackingAccount will return all categories from the API
+            transactionService.getAll(activeCashTrackingAccountId, activeCategoryId, transactionsLimit) 
             .then((data) => {
                 setTransactionsAreLoaded(true);
                 setTransactions(data.transactions);
@@ -98,7 +98,7 @@ function Accounts() {
 
     useEffect(() => {
         getTransactions()
-    }, [activeBankAccount, activeCategory, transactionsLimit])  
+    }, [activeCashTrackingAccount, activeCategory, transactionsLimit])  
     
 
 
@@ -114,7 +114,7 @@ function Accounts() {
      }
 
      const handleClickAccountsNavItem = (cat) => {
-        setActiveBankAccount(cat)
+        setActiveCashTrackingAccount(cat)
         setTransactionsLimit(defaultTransactionsLimit)
         setShowReconcileDialog(false)
      }
@@ -198,12 +198,12 @@ function Accounts() {
     const handleDeleteAccount = () => {
         if (confirm("Deleting an account will delete all of its transactions. Are you sure?") == true) {
             alertService.clear();
-            categoryService.delete(activeBankAccount.id)
+            categoryService.delete(activeCashTrackingAccount.id)
                 .then((res) => {
                     alertService.success('Deleted');
                     getTransactions(); //this will also fetch bank accounts due to getTransactions useEffect dependencies
                     setActiveCategory('')
-                    setActiveBankAccount('')
+                    setActiveCashTrackingAccount('')
                 })
                 .catch(error => {
                     alertService.error(error);
@@ -216,27 +216,25 @@ function Accounts() {
 
 
     return (
-        <div>
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-3">
-                        
-                        {bankAccountCategoriesWithTotals &&
-                            <AccountsNav bankAccountCategoriesWithTotals={bankAccountCategoriesWithTotals} activeBankAccount={activeBankAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
-                        }
 
-                        <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
+        <div className="row Accounts">
+            <div className="col-md-3 sidebar">
+                
+                <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
+                {
+                    showAddAccountForm &&
+                    <AccountsForm getTransactions={getTransactions} setShowAddAccountForm={setShowAddAccountForm}/>
+                }
 
-                        {
-                            showAddAccountForm &&
+                {cashTrackingAccountsWithTotals &&
+                    <AccountsNav cashTrackingAccountsWithTotals={cashTrackingAccountsWithTotals} activeCashTrackingAccount={activeCashTrackingAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
+                }
 
-                            <AccountsForm getTransactions={getTransactions} setShowAddAccountForm={setShowAddAccountForm}/>
-
-
-
-                        }
-                    </div>
-                    <div className="col-md-9">
+            </div>
+            <div className="col-md-9 main">
+               
+               <div className="row mb-4">
+                   <div className="col">
                        <TransactionForm 
                             getTransactions={() => getTransactions()} 
                             categories={categories}
@@ -245,13 +243,11 @@ function Accounts() {
                             setEditingTransaction={(arr) => setEditingTransaction(arr)}
                             setShowDrawer={() => setShowDrawer()}
                         />
+                    </div>
 
-
-
-                        { activeBankAccount != 0 &&
+                   <div className="col">
+                        { activeCashTrackingAccount != 0 &&
                             <div>
-
-
                                 <div className="dropdown">
                                   <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Actions
@@ -269,7 +265,7 @@ function Accounts() {
                                                 Does your bank balance match?: 
                                                 {
                                                     
-                                                    (activeBankAccount.bankBalance - unclearedTransactionsTotal).toFixed(2)
+                                                    (activeCashTrackingAccount.bankBalance - unclearedTransactionsTotal).toFixed(2)
                                                 }
                                             </span>
                                             <button onClick={() => handleClickCompleteReconcileAccount()} type="button" className="btn btn-success btn-sm">Yes</button>
@@ -278,28 +274,27 @@ function Accounts() {
                                     }
                             </div>
                         }
-
-                        <h3 className="card-header">Transactions</h3>
-                        <TransactionList 
-                            transactions={transactions}
-                            transactionsAreLoaded={transactionsAreLoaded}
-                            transactionsCount={transactionsCount}
-                            transactionsLimit={transactionsLimit}
-                            getTransactions={getTransactions} 
-                            categories={categories}
-                            activeBankAccount={activeBankAccount}
-                            activeCategory={activeCategory}
-                            handleClickEditTransaction={handleClickEditTransaction} 
-                            handleClickDeleteTransaction={handleClickDeleteTransaction} 
-                            handleClickReconcileTransaction={handleClickReconcileTransaction} 
-                            handlClickShowMore={handlClickShowMore}
-                            handleChangeCategoryFilter={handleChangeCategoryFilter}
-                        />
                     </div>
                 </div>
-            </div>
 
+                <TransactionList 
+                    transactions={transactions}
+                    transactionsAreLoaded={transactionsAreLoaded}
+                    transactionsCount={transactionsCount}
+                    transactionsLimit={transactionsLimit}
+                    getTransactions={getTransactions} 
+                    categories={categories}
+                    activeCashTrackingAccount={activeCashTrackingAccount}
+                    activeCategory={activeCategory}
+                    handleClickEditTransaction={handleClickEditTransaction} 
+                    handleClickDeleteTransaction={handleClickDeleteTransaction} 
+                    handleClickReconcileTransaction={handleClickReconcileTransaction} 
+                    handlClickShowMore={handlClickShowMore}
+                    handleChangeCategoryFilter={handleChangeCategoryFilter}
+                />
+            </div>
         </div>
+
     );
 }
 

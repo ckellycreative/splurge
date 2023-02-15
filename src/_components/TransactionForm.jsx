@@ -10,7 +10,6 @@ import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import { CategorySelectOptions } from './CategorySelectOptions'
 
 function TransactionForm(props) {
-
     const [splitIsVisible, setSplitIsVisible] = useState(false)
     const [splitTotal, setSplitTotal] = useState('')
     const [showDrawer, setShowDrawer] = useState();
@@ -100,19 +99,19 @@ function TransactionForm(props) {
 
 
     const handleEditingTransaction = () => {
+
         (props.editingTransaction == null) ? setShowDrawer() : setShowDrawer((prevState) => !prevState)
     }
-
 
     const editingTransactionValues = {
         id: props.editingTransaction && props.editingTransaction.id,
         childId: props.editingTransaction && props.editingTransaction.ChildTransactions.length == 1 ? props.editingTransaction.ChildTransactions[0].id : null,
         transaction_date: (props.editingTransaction ? moment.utc(props.editingTransaction.transaction_date).format('YYYY-MM-DD') : ''),
         transaction_description: (props.editingTransaction ? props.editingTransaction.transaction_description : ''),
-        amount: (props.editingTransaction && props.editingTransaction.debit != 0) ? props.editingTransaction.debit.toFixed(2) : (props.editingTransaction && props.editingTransaction.credit) ? props.editingTransaction.credit.toFixed(2) : '0',
+        amount: (props.editingTransaction && props.editingTransaction.debit != 0) ? props.editingTransaction.debit : (props.editingTransaction && props.editingTransaction.credit) ? props.editingTransaction.credit : '0',
         bank_account_id: props.editingTransaction ? props.editingTransaction.categoryId : '',
         categoryId: props.editingTransaction && props.editingTransaction.ChildTransactions.length == 1 ? props.editingTransaction.ChildTransactions[0].categoryId : '',
-        isCredit: (props.editingTransaction && props.editingTransaction.credit) ? true : false,
+        isCredit: (props.editingTransaction && props.editingTransaction.credit > 0) ? true : false,
         isSplit: props.editingTransaction && props.editingTransaction.ChildTransactions.length > 1,
         splits: getSplitsFromEditingTransaction()
     };

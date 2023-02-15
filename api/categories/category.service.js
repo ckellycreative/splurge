@@ -6,7 +6,7 @@ module.exports = {
     getAll,
     getAllWithTotalByDate,
     getOpeningBalanceCategory,
-    getBankAccountCategoriesWithTotals,
+    getCashTrackingAccountsWithTotals,
     getById,
     create,
     update,
@@ -49,12 +49,13 @@ async function getAllWithTotalByDate(startDate, endDate, userId) {
     return categories.map(x => basicDetails(x));
 }
 
-async function getBankAccountCategoriesWithTotals(userId) {
+//"Account" in this context means cash/tracking Categories—not to be confused with the Account model for users
+async function getCashTrackingAccountsWithTotals(userId, date) {
     const categories = await db.sequelize.query(
-        "SELECT categories.id, categories.category_title, categories.category_type, SUM(transactions.credit - transactions.debit) as bankBalance FROM categories INNER JOIN transactions ON categories.id = transactions.categoryId WHERE categories.accountId=? AND categories.category_type='cash' GROUP BY  categories.id, transactions.categoryId ORDER BY categories.category_title;",
+        "SELECT categories.id, categories.category_title, categories.category_type, SUM(transactions.credit - transactions.debit) as bankBalance FROM categories INNER JOIN transactions ON categories.id = transactions.categoryId WHERE categories.accountId=? AND (categories.category_type='cash' OR categories.category_type='tracking') AND transactions.transaction_date <= ? GROUP BY  categories.id, transactions.categoryId ORDER BY categories.category_title;",
          
          { 
-            replacements: [userId],
+            replacements: [userId, date],
             type: QueryTypes.SELECT,
             required: false
         }
@@ -93,7 +94,6 @@ async function update(id, params) {
     Object.assign(category, params);
     category.updated = Date.now();
     await category.save();
-    return console.log('basicDetails category' , basicDetails(category))
     return basicDetails(category);
 }
 

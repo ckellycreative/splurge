@@ -1,0 +1,18 @@
+.tabular-data {
+        @extend .fs-8;
+        border-bottom: 1px solid $gray-300;
+        padding: .1rem 0;
+
+        &.tabular-head {
+            @extend .fw-bold;
+        }
+
+        .dropup, .dropdown, .dropend {
+            .dropdown-toggle {
+                &:after {
+                    border: none;
+                }
+            }
+        }
+
+}

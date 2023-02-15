@@ -145,10 +145,6 @@ function update(req, res, next) {
 }
 
 function _delete(req, res, next) {
-    // users can only delete their own transactions 
-    if (Number(req.params.id) !== req.user.id ) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
 
     transactionService.getById(req.params.id)
          .then(
@@ -156,6 +152,11 @@ function _delete(req, res, next) {
                 if (!transaction) {
                     return res.sendStatus(404)
                 }
+               // users can only delete their own transactions 
+                if (req.user.id !== transaction.accountId && req.user.role !== Role.Admin){
+                    return res.status(401).json({ message: 'Unauthorized' });
+                }
+
                 return sequelize.transaction(t => {
 
                     // chain all your queries here. make sure you return them.

@@ -13,7 +13,7 @@ export const categoryService = {
     getAll,
     getById,
     getAllWithTotalByDate,
-    getBankAccountCategoriesWithTotals,
+    getCashTrackingAccountsWithTotals,
     delete: _delete,
     user: userSubject.asObservable(),
     get userValue () { return userSubject.value }
@@ -34,8 +34,8 @@ function update(params) {
 return fetchWrapper.put(`${baseUrl}/${params.id}`, params);}
 
 
-function getBankAccountCategoriesWithTotals() {
-       return fetchWrapper.get(`${baseUrl}/bankAccountCategories`);    
+function getCashTrackingAccountsWithTotals(date) {
+       return fetchWrapper.get(`${baseUrl}/cashTrackingAccounts/?date=${date}`);    
 }
 
 function getAll() {

@@ -8,7 +8,7 @@ function Profile({ match }) {
     const { path } = match;
     
     return (
-            <div className="container">
+            <div className="Profile">
                 <Switch>
                     <Route exact path={path} component={Details} />
                     <Route path={`${path}/update`} component={Update} />

@@ -1,3 +1,9 @@
-body {
-	
+.main {
+	@extend .px-4;
+}
+
+
+.sidebar {
+	@extend .px-4;
+
 }

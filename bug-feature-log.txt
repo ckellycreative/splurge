@@ -1,0 +1,41 @@
+==================
+BUGS
+
+###- Need to create plan for each new cat
+###- When all categories are deleted from a group, the total row is visible/editable 
+###- New category groups don't show up under Plan when there are no categories (first load for new users)
+###- Transfer transactions are reading as "income" when being edited in the Transactions Form.
+- Transfers don;t show up under Cash Account transactions (the receiving account)
+- "All Account" transaction list is not showing all transactions :( ?? )
+- Plan Overview calculation is wrong
+
+
+
+
+
+==================
+IMPROVE
+
+-Slim down selectors on getAll queries (not *)
+-Filter categories should include transfers
+- Check why there's a delay upon first load
+	-Add loader to app.js when fetching/resetting token. We're getting a whiote screen upon first load.
+- Ability to delete/edit/order Category Groups
+- Ability to move (bulk) move categories into other groups
+
+
+
+
+
+
+
+
+
+==================
+FEATURES
+
+-Have Plans rollover to next month
+	- programatically create a new plan record at the 1st of the month
+	- plans have a new column — "plan_type"— options are 'monthly', 'rollover'
+	- "rollover" plans will add the previous month's "remaining" cash to the new month plan
+- Bulk edit transactions

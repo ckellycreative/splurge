@@ -1,4 +1,5 @@
 ﻿require('rootpath')();
+const path = require('path');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -14,16 +15,33 @@ app.use(cookieParser());
 app.use(cors({ origin: (origin, callback) => callback(null, true), credentials: true }));
 
 // api routes
-app.use('/accounts', require('./accounts/accounts.controller'));
-app.use('/transactions', require('./transactions/transactions.controller'));
-app.use('/categories', require('./categories/categories.controller'));
-app.use('/plans', require('./plans/plans.controller'));
+app.use('/api/accounts', require('./accounts/accounts.controller'));
+app.use('/api/transactions', require('./transactions/transactions.controller'));
+app.use('/api/categories', require('./categories/categories.controller'));
+app.use('/api/plans', require('./plans/plans.controller'));
+
 
 // swagger docs route
 app.use('/api-docs', require('_helpers/swagger'));
 
 // global error handler
 app.use(errorHandler);
+
+if (process.env.NODE_ENV === 'production'){
+	app.get('/*', function(req, res) {
+	  res.sendFile(path.join(__dirname, 'public/index.html'), function(err) {
+	    if (err) {
+	      res.status(500).send(err)
+	    }
+	  })
+	});
+	app.get('*.js', function (req, res, next) {
+	  req.url = req.url + '.gz';
+	  res.set('Content-Encoding', 'gzip');
+	  next();
+	});		
+}
+
 
 // start server
 const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;

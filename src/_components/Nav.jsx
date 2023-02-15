@@ -41,7 +41,7 @@ function Nav() {
                         <NavLink to="/profile" className="nav-link">Profile</NavLink>
                     </li>
                     <li className="nav-item">
-                        <a href="" onClick={accountService.logout} className="nav-link">Logout</a>
+                        <a onClick={accountService.logout} className="nav-link">Logout</a>
                     </li>
                 </ul>
             </div>
