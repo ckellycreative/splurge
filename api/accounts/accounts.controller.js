@@ -99,7 +99,8 @@ function register(req, res, next) {
             var defaultCategories = [
                 {id: null, accountId: account.dataValues.id, parentId: null, category_title: 'Opening Balance', category_type: 'opening-balance' },
                 {id: null, accountId: account.dataValues.id, parentId: null, category_title: 'Income', category_type: 'income' },
-                {id: null, accountId: account.dataValues.id, parentId: null, category_title: 'Savings', category_type: 'savings' },
+                {id: null, accountId: account.dataValues.id, parentId: null, category_title: 'Cash Reserves', category_type: 'savings' },
+                {id: null, accountId: account.dataValues.id, parentId: null, category_title: 'Investments', category_type: 'investment' },
                 {id: null, accountId: account.dataValues.id, parentId: null, category_title: 'Uncategorized Expenses', category_type: 'expense' }
             ]   
              
