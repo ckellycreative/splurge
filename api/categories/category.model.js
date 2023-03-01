@@ -10,6 +10,7 @@ function model(sequelize) {
         parentId: { type: DataTypes.INTEGER, allowNull: true, defaultValue: null },
         created: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
         updated: { type: DataTypes.DATE },
+        hidden: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 }
     };
 
     const options = {

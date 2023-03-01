@@ -61,18 +61,43 @@ function getById(req, res, next) {
 
 
 
-//Messy messy messy
+
 function create(req, res, next) {
-    // add userId to the new category
+
+    // add userId to the new transaction
     req.body.accountId = req.user.id;
-    categoryService.create(req.body)
-        .then(category => {
-            planService.create({accountId:req.body.accountId, categoryId: category.id, planAmount:0 })
-            .then(() => res.json({ message: 'Plan create successfully' }))
-            .catch(next);        
-        })
-        .catch(next);
+
+    return sequelize.transaction(t => {
+
+      // chain all your queries here. make sure you return them.
+      return Promise.all([
+            categoryService.create(req.body, {category: t})
+            .then(category => {                
+                planService.create({accountId:req.body.accountId, categoryId: category.id, planAmount:0 })
+         }),
+       ])
+
+    }).then(category => {
+                res.json(category);
+      
+      // Transaction has been committed
+      // result is whatever the result of the promise chain returned to the transaction callback
+    }).catch(err => {
+          console.log('catch err', err)
+        // Transaction has been rolled back
+      // err is whatever rejected the promise chain returned to the transaction callback
+    });
+
 }
+
+
+
+
+
+
+
+
+
 
 
 
