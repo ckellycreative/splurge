@@ -15,33 +15,43 @@ module.exports = {
 
 
 async function getAll(bankId, catId, limit, userId) {
-            console.log('bankId, catId, limit, userId', bankId, catId, limit, userId)
 
-    var parentWhereClause = () => {
+ 
+    var mainWhereClause = () => {
         if(bankId == 0 && catId == 0 || bankId == 0 && catId != 0) {
             return { accountId: userId, parentId: null }
         }else if(bankId != 0 && catId == 0 || bankId != 0 && catId != 0) {
-           return  { accountId: userId, categoryId: bankId }
+           return  { accountId: userId, [Op.or] : [ {categoryId:bankId}, {categoryId:catId}] }
         }
-
-
     }
 
-   // var parentWhereClause = (bankId == 0 && catId == 0) ? { parentId: null } : { categoryId: bankId };
-    var childWhereClause = (catId != 0) ? { categoryId: catId } : { };
+    var childWhereClause = () => {
+        if (catId != 0) {
+            return {[Op.or] : [ {categoryId:bankId}, {categoryId:catId}]} 
+        }
+    }
+
+
     const transactions = await db.Transaction.findAndCountAll({ 
-        where: parentWhereClause(), 
+        where: mainWhereClause(), 
         limit: parseInt(limit),
         offset: 0,
         order: [[ 'transaction_date', 'DESC']] ,  
         include: [
-            db.Account, 
             db.Category, 
+            {   
+                model: db.Transaction, 
+                as: 'ParentTransaction', 
+                include: [{model: db.Transaction, as: 'ChildTransactions'}, db.Category]
+            },
             { 
                 model: db.Transaction, 
                 as: 'ChildTransactions', 
-                where: childWhereClause,
-                include: {model: db.Category, as: 'category'} }
+                where: childWhereClause(),
+                include: {model: db.Category, as: 'category'}
+            },
+            
+
         ] 
     });
     return {count: transactions.count, transactions: transactions.rows.map(x => basicDetails(x))};
@@ -99,6 +109,6 @@ async function getTransaction(id) {
 
 
 function basicDetails(transaction) {
-    const { account, ChildTransactions, parentId, category, id, transaction_date, transaction_description, debit, credit, accountId, categoryId, reconcile } = transaction;
-    return { account, ChildTransactions, parentId, category, id, transaction_date, transaction_description, debit, credit, accountId, categoryId, reconcile };
+    const { account, ChildTransactions, ParentTransaction, parentId, category, id, transaction_date, transaction_description, debit, credit, accountId, categoryId, reconcile } = transaction;
+    return { account, ChildTransactions, ParentTransaction, parentId, category, id, transaction_date, transaction_description, debit, credit, accountId, categoryId, reconcile };
 }

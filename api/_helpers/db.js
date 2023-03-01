@@ -28,6 +28,7 @@ async function initialize() {
     db.Transaction.belongsTo(db.Account, {foreignKey: 'accountId'});
     db.Transaction.belongsTo(db.Category, {foreignKey: 'categoryId'});
     db.Transaction.hasMany(db.Transaction, {as: 'ChildTransactions', foreignKey: 'parentId', onDelete: 'CASCADE'});
+    db.Transaction.belongsTo(db.Transaction, {as: 'ParentTransaction', foreignKey: 'parentId', onDelete: 'CASCADE'});
     db.Category.belongsTo(db.Account);
     db.Category.hasMany(db.Category, {as: 'ChildCategory', foreignKey: 'parentId'});
     db.Category.hasMany(db.Transaction, {as: 'CategoryTransactions', foreignKey: 'categoryId', onDelete: 'CASCADE'});

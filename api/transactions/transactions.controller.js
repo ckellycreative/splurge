@@ -57,7 +57,7 @@ function create(req, res, next) {
       // chain all your queries here. make sure you return them.
       return Promise.all([
             transactionService.create(req.body, {transaction: t})
-            .then(transaction => {
+            .then(transaction => {                
                 let parentId = transaction.id;
                 childTransactions.map((child, transaction) => {
                     child.accountId = req.user.id;
@@ -80,6 +80,8 @@ function create(req, res, next) {
 
 }
 
+
+//Used for updating parent/child transactions
 function bulkCreate(req, res, next) {
 
     return sequelize.transaction(t => {
