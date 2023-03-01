@@ -41,7 +41,7 @@ function PlanSavingsList(props) {
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
                         <div className="row tabular-data">
-                            <div className="col-sm-6">
+                            <div className="col-sm-4">
                                 {
                                     props.editCategory == cat.ChildCategory.id &&
                                     <input onKeyPress={props.handleUpdateCategory} onBlur={props.handleUpdateCategory} onChange={props.handleChangeNewCategoryTitle} value={props.newCategoryTitle} autoFocus name="category_title" type="text" placeholder='Category Title' className={'form-control'} />
@@ -62,7 +62,7 @@ function PlanSavingsList(props) {
                                 }
 
                             </div>
-                            <div className="col-sm-6 text-end">
+                            <div className="col-sm-4 text-end">
                                 {
                                     props.editPlan == cat.CategoryPlan.id &&
 
@@ -81,21 +81,13 @@ function PlanSavingsList(props) {
 
                                     <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
                                 }
+
+                            </div>
+                            <div className="col-sm-4 text-end text-muted">
+                                <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
                             </div>
                         </div>
                         }
-                        {
-
-                            isGroupTotal && 
-                            <div className="row tabular-data">
-                                <div className="col-sm-6 fw-bold">Total {cat.groupCategoryTitle}</div>
-                                <div className="col-sm-6 text-end"><NumericFormat value={cat.groupTotalPlan.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-
-                            </div>            
-
-
-                        }
-
 
 
 

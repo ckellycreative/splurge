@@ -31,7 +31,9 @@ function Accounts() {
     //Reconcile
     const [showReconcileDialog, setShowReconcileDialog] = useState(false)
     const [showAddAccountForm, setShowAddAccountForm] = useState(false)
-    const [unclearedTransactionsTotal, setUnClearedTransactionsTotal] = useState(0)
+    const [unclearedTransactionsTotal, setUnclearedTransactionsTotal] = useState(0)
+    const [clearedTransactionsTotal, setClearedTransactionsTotal] = useState(0)
+    const [beginningBalance, setBeginningBalance] = useState(0)
 
 
 
@@ -157,9 +159,9 @@ function Accounts() {
         alertService.clear();
         let updatedTransactions = [] 
         transactions.map((t) => {
-            if (t.reconcile == 1) {
-                t.reconcile = 2
-                updatedTransactions.push(t)
+            if (t.reconcile == 1 ) {
+                    t.reconcile = 2
+                    updatedTransactions.push(t)
             }
         })
         transactionService.bulkCreate(updatedTransactions)
@@ -174,17 +176,25 @@ function Accounts() {
 
     }
 
-    const handleUnClearedTransactionsTotal = (amt) => {
+    const handleClearedTransactionsTotal = () => {
         let uct = 0
+        let ct = 0
         transactions.map(transaction => {
-            if ( transaction.reconcile == 0) { 
+            if (transaction.reconcile == 0) { 
                 uct += (transaction.credit - transaction.debit) 
             }
-            setUnClearedTransactionsTotal(uct)
+            if (transaction.reconcile == 1) { 
+                ct += (transaction.credit - transaction.debit) 
+            }
+
+            setUnclearedTransactionsTotal(uct)
+            setClearedTransactionsTotal(ct)
+            setBeginningBalance( +activeCashTrackingAccount.bankBalance - uct - ct)
+
         })
     }
     useEffect(() => {
-        handleUnClearedTransactionsTotal()
+        handleClearedTransactionsTotal()
     }, [transactions])  
 
 
@@ -265,7 +275,7 @@ function Accounts() {
                                                 Does your bank balance match?: 
                                                 {
                                                     
-                                                    (activeCashTrackingAccount.bankBalance - unclearedTransactionsTotal).toFixed(2)
+                                                    (beginningBalance + clearedTransactionsTotal  ).toFixed(2)
                                                 }
                                             </span>
                                             <button onClick={() => handleClickCompleteReconcileAccount()} type="button" className="btn btn-success btn-sm">Yes</button>

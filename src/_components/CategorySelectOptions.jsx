@@ -41,6 +41,21 @@ function CategorySelectOptions(props) {
                     })
 
 
+    let investmentCats = props.categories.map(category => {
+                        if (category.category_type == 'investment' ) {
+                            if (category.ChildCategory.length > 0) {
+                                return ([    
+                                    <optgroup key={category.id} label={category.category_title} ></optgroup>,
+
+                                    category.ChildCategory.map((child) => {
+                                       return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                    })
+                                ])
+                            }
+                        }
+                    })
+
+
 	return(
         <React.Fragment>
             <option value='0'>{props.defaultOption}</option>
@@ -49,6 +64,7 @@ function CategorySelectOptions(props) {
 
              { props.categoryType == 'all' && <optgroup label='Transfer to Account'></optgroup> }
              { props.categoryType == 'all' && bankAccounts }
+             { props.categoryType == 'all' && investmentCats }
 
              { (props.categoryType == 'incomeExpense' || props.categoryType == 'all') && incomeCats }
              { (props.categoryType == 'incomeExpense' || props.categoryType == 'all') && expenseCats }

@@ -17,11 +17,14 @@ function Plan() {
     const [incomeArr, setIncomeArr] = useState([])
     const [expenseArr, setExpenseArr] = useState([])
     const [savingsArr, setSavingsArr] = useState([])
+    const [investmentsArr, setInvestmentsArr] = useState([])
     const [planIncomeTotal, setPlanIncomeTotal] = useState(0)
     const [planExpenseTotal, setPlanExpenseTotal] = useState(0)
     const [planSavingsTotal, setPlanSavingsTotal] = useState(0)
+    const [planInvestmentsTotal, setPlanInvestmentsTotal] = useState(0)
     const [actualIncomeTotal, setActualIncomeTotal] = useState(0)
     const [actualExpenseTotal, setActualExpenseTotal] = useState(0)
+    const [actualInvestmentsTotal, setActualInvestmentsTotal] = useState(0)
     const [categories, setCategories] = useState([])
     const [categoriesAreLoaded, setCategoriesAreLoaded] = useState(false)
     const [cashTrackingAccountsWithTotals, setCashTrackingAccountsWithTotals] = useState([])
@@ -44,7 +47,8 @@ function Plan() {
         !cashTrackingAccountsWithTotalsAreLoaded ||
         !expenseArr ||
         !incomeArr ||
-        !savingsArr 
+        !savingsArr ||
+        !investmentsArr
     ) ? true : false
 
 
@@ -70,20 +74,36 @@ function Plan() {
                 let calcActualIncomeTotal = 0
                 let calcPlanSavingsTotal = 0
                 let calcActualSavingsTotal = 0
+                let calcPlanInvestmentsTotal = 0
+                let calcActualInvestmentsTotal = 0
                 let tmpExpenseArr = []
                 let tmpIncomeArr =[]
                 let tmpSavingsArr =[]
+                let tmpInvestmentsArr =[]
                 
                 data.map( (cat, index, array) => {
-                    if (cat.category_type == 'expense' || cat.category_type == 'income' ) {
+                    if (cat.category_type == 'expense' || cat.category_type == 'income' || cat.category_type == 'investment' ) {
                         let isIncome = (cat.category_type == 'income') ? true : false
-                        let nextIsNewCategoryGroup = (array[index+1].category_title != cat.category_title) ? true : false    
-                        isIncome ? tmpIncomeArr.push(cat) : tmpExpenseArr.push(cat)
+                        let isInvestment = (cat.category_type == 'investment') ? true : false
+                        let nextIsNewCategoryGroup = (array[index+1] && array[index+1].category_title != cat.category_title) ? true : false    
+
+                        if (isIncome) {
+                            tmpIncomeArr.push(cat)
+                        }else if (isInvestment) {
+                            tmpInvestmentsArr.push(cat)
+                        } else {
+                            tmpExpenseArr.push(cat)
+                        }
+
                         groupTotalPlan += +cat.CategoryPlan.planAmount
                         groupTotalActual += cat.totalReportAmountDebit - cat.totalReportAmountCredit
+
                         if (isIncome) {
                             calcPlanIncomeTotal += +cat.CategoryPlan.planAmount 
                             calcActualIncomeTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
+                        }else if (isInvestment) {
+                            calcPlanInvestmentsTotal += +cat.CategoryPlan.planAmount 
+                            calcActualInvestmentsTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
                         }else {
                             calcPlanExpenseTotal += +cat.CategoryPlan.planAmount 
                             calcActualExpenseTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
@@ -93,6 +113,8 @@ function Plan() {
                             let groupTotalObj = {grpid:cat.id + cat.ChildCategory.id + cat.category_title , groupCategoryTitle: cat.category_title, groupCategoryType: cat.category_type, groupTotalPlan, groupTotalActual }
                             if (isIncome) {
                                 tmpIncomeArr.push(groupTotalObj)
+                            }else if (isInvestment) {
+                                tmpInvestmentsArr.push(groupTotalObj)
                             }else {
                                 tmpExpenseArr.push(groupTotalObj)
                             }
@@ -102,7 +124,7 @@ function Plan() {
                     }
 
                     if (cat.category_type == 'savings') {
-                        let nextIsNewCategoryGroup = (array[index+1].category_title != cat.category_title) ? true : false    
+                        let nextIsNewCategoryGroup = (array[index+1] && array[index+1].category_title != cat.category_title) ? true : false    
                         tmpSavingsArr.push(cat)
                         groupTotalPlan += +cat.CategoryPlan.planAmount
                         groupTotalActual = 0  //Not using the actual totals yet (not sure if/how)
@@ -121,11 +143,14 @@ function Plan() {
                 setExpenseArr(tmpExpenseArr)
                 setIncomeArr(tmpIncomeArr)
                 setSavingsArr(tmpSavingsArr)
+                setInvestmentsArr(tmpInvestmentsArr)
                 setPlanIncomeTotal(calcPlanIncomeTotal)
                 setPlanExpenseTotal(calcPlanExpenseTotal)
                 setPlanSavingsTotal(calcPlanSavingsTotal)
+                setPlanInvestmentsTotal(calcPlanInvestmentsTotal)
                 setActualIncomeTotal(calcActualIncomeTotal)
                 setActualExpenseTotal(calcActualExpenseTotal)        
+                setActualInvestmentsTotal(calcActualInvestmentsTotal)        
 
             })
             .catch(error => {
@@ -219,7 +244,7 @@ const getCategories = () => {
 
 /*****************
     
-    Edit Category Title
+    Update Category Title
     
 ****************** */
 
@@ -256,6 +281,37 @@ const getCategories = () => {
                 console.log(error)
         });
     }
+
+
+
+/*****************
+    
+    Handle Hide Category
+    
+****************** */
+
+    const handleClickHideCategory = (id, hasAmts) => {
+        alertService.clear();
+        categoryService.update({id, hidden:1})
+            .then((data) => {
+                getAllWithTotalByDate()
+                if (hasAmts) {
+                    alertService.error('This category has actual amounts this month. It will be hidden in future months. Go to "hidden categories" to unhide categories.')
+                }else {
+                    alertService.success('The category has been hidden. Go to "hidden categories" to unhide categories.')
+                }
+            })
+            .catch(error => {
+                //alertService.error(error)
+                console.log(error)
+        });
+
+    }
+
+
+
+
+
 
 
 /*****************
@@ -357,7 +413,7 @@ const getCategories = () => {
 
 /*****************
     
-    Handlers
+    Month Handler
     
 ****************** */
 
@@ -409,6 +465,7 @@ const getCategories = () => {
                             handleClickEditCategory = {handleClickEditCategory}
                             handleClickEditPlan = {handleClickEditPlan}
                             handleShowModalDelete = {handleShowModalDelete}
+                            handleClickHideCategory={handleClickHideCategory}
                             handleUpdateCategory={handleUpdateCategory}
                             newCategoryTitle = {newCategoryTitle}
                             getAllWithTotalByDate = {getAllWithTotalByDate}
@@ -424,6 +481,7 @@ const getCategories = () => {
                             handleClickEditCategory = {handleClickEditCategory}
                             handleClickEditPlan = {handleClickEditPlan}
                             handleShowModalDelete = {handleShowModalDelete}
+                            handleClickHideCategory={handleClickHideCategory}
                             handleUpdateCategory={handleUpdateCategory}
                             newCategoryTitle = {newCategoryTitle}
                             getAllWithTotalByDate = {getAllWithTotalByDate}
@@ -441,19 +499,25 @@ const getCategories = () => {
                             <div className="col-sm-2 text-end"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
                         </div>           
 
-                        <div className="row tabular-data">
-                            <div className="col-sm-6 fw-bold">Income Less Expenses</div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={planIncomeTotal - planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={actualIncomeTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal) - (actualIncomeTotal + actualExpenseTotal)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                        </div>           
 
-                        <div className="row tabular-data">
-                            <div className="col-sm-6 fw-bold">Unallocated</div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={cashAccountsTotal + planIncomeTotal - planExpenseTotal - planSavingsTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={cashAccountsTotal + actualIncomeTotal - actualExpenseTotal - planSavingsTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={(cashAccountsTotal + planIncomeTotal - planExpenseTotal - planSavingsTotal) - (cashAccountsTotal + actualIncomeTotal - actualExpenseTotal - planSavingsTotal)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                        </div>           
+                        <PlanIncomeExpenseList 
+                            categoryArray={investmentsArr}
+                            handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                            handleClickEditCategory = {handleClickEditCategory}
+                            handleClickEditPlan = {handleClickEditPlan}
+                            handleShowModalDelete = {handleShowModalDelete}
+                            handleClickHideCategory={handleClickHideCategory}
+                            handleUpdateCategory={handleUpdateCategory}
+                            newCategoryTitle = {newCategoryTitle}
+                            getAllWithTotalByDate = {getAllWithTotalByDate}
+                            editCategory = {editCategory}
+                            editPlan={editPlan}
+                            handleChangePlanAmount={handleChangePlanAmount}
+                            newPlanAmount={newPlanAmount}
+                            handleUpdatePlan={handleUpdatePlan}
+                        />
+
+
 
                     </div>
 
@@ -465,50 +529,38 @@ const getCategories = () => {
                                 <div className="col-sm-6 fw-bold">
                                     Total Cash At Start of Month
                                 </div>
-                                <div className="col-sm-3 text-end">
+                                <div className="col-sm-6 text-end">
                                     <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
                                 </div>           
                             </div>
                             <div className="row tabular-data tabular-head">
-                                <div className="col-sm-3 offset-sm-3 text-end">Plan</div>
-                                <div className="col-sm-3 text-end">Actual</div>
-                                <div className="col-sm-3 text-end">Difference</div>
+                                <div className="col-sm-4 offset-sm-4 text-end">Plan</div>
+                                <div className="col-sm-4 text-end">Actual</div>
                             </div>
 
                             <div className="tabular-data row">
-                                <div className="col-sm-3 fw-bold">
+                                <div className="col-sm-4 fw-bold">
                                     Income
                                 </div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-3 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-3 text-end"><NumericFormat value={(actualIncomeTotal - planIncomeTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-4 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-4 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             </div>
                             <div className="tabular-data row">
-                                <div className="col-sm-3 fw-bold">Expense</div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-3 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-3 text-end"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                                <div className="col-sm-4 fw-bold">Expense</div>
+                                <div className="col-sm-4 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-4 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             </div>
                             <div className="tabular-data row">
-                                <div className="col-sm-3 fw-bold">Net</div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={planIncomeTotal - planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={actualIncomeTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal) - (planIncomeTotal - planExpenseTotal)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                                <div className="col-sm-4 fw-bold">Net</div>
+                                <div className="col-sm-4 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                                <div className="col-sm-4 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            </div>
+                            <div className="tabular-data row">
+                                <div className="col-sm-4 fw-bold">Investments</div>
+                                <div className="col-sm-4 text-end"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-4 text-end"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             </div>
 
-                            <div className="tabular-data row">
-                                <div className="col-sm-3 fw-bold">
-                                    Reserves
-                                </div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-3 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
-
-                            <div className="tabular-data row">
-                                <div className="col-sm-3 fw-bold">Unallocated</div>
-                                <div className="col-sm-3 text-end"><NumericFormat value={(cashAccountsTotal - (planExpenseTotal + planSavingsTotal)).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-3 text-end"><NumericFormat value={cashAccountsTotal + actualIncomeTotal - actualExpenseTotal - planSavingsTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
                             <div className="mt-4">
                                 <PlanSavingsList 
                                     categoryArray={savingsArr}
@@ -526,6 +578,23 @@ const getCategories = () => {
                                     handleUpdatePlan={handleUpdatePlan}
                                 />
                             </div>
+
+
+
+                            <div className="tabular-data row">
+                                <div className="col-sm-4 fw-bold">
+                                    Total Reserves
+                                </div>
+                                <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            </div>
+
+                            <div className="tabular-data row mt-4">
+                                <div className="col-sm-4 fw-bold">Unallocated</div>
+                                <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (planIncomeTotal - planExpenseTotal) - planInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                                <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (actualIncomeTotal + actualExpenseTotal) + actualInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            </div>
+
 
                         </div>
                     </div>

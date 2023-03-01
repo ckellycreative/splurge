@@ -16,13 +16,11 @@ function AccountsForm(props) {
     const initialValues = {
         id: null,
         category_title: '',
-        category_type: 0,
         openingBalance: ''
     };
 
    const validationSchema = Yup.object().shape({
         category_title: Yup.string().required('Title is required'),
-        category_type: Yup.string().ensure().required('Type is required'),
         openingBalance: Yup.number().test(
             'is-decimal',
             'Must be a decimal number',
@@ -40,11 +38,11 @@ function AccountsForm(props) {
 
 
 
-    function onSubmit({ id, category_title, category_type, openingBalance}, { setSubmitting, resetForm }) {
+    function onSubmit({ id, category_title, openingBalance}, { setSubmitting, resetForm }) {
         const newCat = {
             id: null,
             category_title,
-            category_type,
+            category_type: 'cash',
             openingBalance
         }
 
@@ -87,12 +85,6 @@ function AccountsForm(props) {
                     </div>
                     <ErrorMessage name="openingBalance" component="div" className="text-danger" />
                 
-                    <Field name="category_type" component="select" className={'form-control'}>
-                        <option value='0' disabled>--Select Account Type--</option>
-                        <option value='cash'>Cash</option>
-                        <option value='tracking'>Tracking</option>
-                    </Field>
-                    <ErrorMessage name="category_type" component="div" className="text-danger" />
 
                     <button type="submit" disabled={isSubmitting} className="btn btn-primary">
                     {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}

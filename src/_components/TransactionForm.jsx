@@ -41,6 +41,7 @@ function TransactionForm(props) {
         //transaction_date: Yup.date().required('Date is required'),
         transaction_description: Yup.string().required('Description is required'),
         bank_account_id: Yup.string().ensure().required('Account is required'),
+        categoryId: Yup.string().when('isSplit', { is: false, then: Yup.string().ensure().required('Category is required') } ),
         amount: Yup.string().required('Amount is required'),
         amount: Yup.number().test(
             'is-decimal',
@@ -124,7 +125,7 @@ function TransactionForm(props) {
                 let split = {
                     id: child.id,
                     catId: child.categoryId,
-                    splitAmount: (child.debit + child.credit).toFixed(2)
+                    splitAmount: +child.debit + +child.credit
                 }
                 editingSplits.push(split)
              })
@@ -146,11 +147,7 @@ function TransactionForm(props) {
           splitSum += parseFloat(amt)
         })
          setSplitTotal(parseFloat(splitSum))
-
-
     }
-
-
 
 
     /* ----------
@@ -317,11 +314,11 @@ function TransactionForm(props) {
                                             name="splits"
                                             render={({ insert, remove, push }) => (
                                                 <div>
+
                                                     {values.splits.length > 0 &&
                                                     values.splits.map((split, index) => (
                                                         <div className="row" key={index}>
                                                             <div className="col-sm-6">
-                                                                
                                                                 <Field name={`splits.${index}.catId`} component="select" className={'form-control CategorySelect'}>
                                                                     <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Select a Category" />
                                                                 </Field>
@@ -338,7 +335,7 @@ function TransactionForm(props) {
                                                                                     mask={currencyMask}
                                                                                     id={`split${index}`}
                                                                                     type="text"
-                                                                                    onChange={handleChange}
+                                                                                    //onChange={handleChange}
                                                                                     onBlur={handleBlur}
                                                                                     onKeyUp={(splits)=> handleChangeSplitAmount(values.splits)}
                                                                                     className={
@@ -364,7 +361,7 @@ function TransactionForm(props) {
                                                     </div>
 
                                                     <div className={`alert alert-${(values.amount - splitTotal) == 0 ? 'success' : 'warning'}`}>
-                                                        Remaining: {(values.amount - splitTotal).toFixed(2).replace('-0.00', '0.00')}
+                                                        Remaining: {(values.amount - values.splits.reduce((s, a) => s + +a.splitAmount, 0)).toFixed(2).replace('-0.00', '0.00')}
                                                     </div>
 
                                                 </div>
