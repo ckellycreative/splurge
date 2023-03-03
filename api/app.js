@@ -7,6 +7,12 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const errorHandler = require('_middleware/error-handler');
 
+app.set('etag', false)
+
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store')
+  next()
+})
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());

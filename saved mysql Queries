@@ -308,3 +308,32 @@ WHERE categories.accountId = 1 AND categories.parentId IS NULL
 ORDER BY categories.category_type, categories.category_title, ChildCategory.category_title ASC;
 
 
+
+
+
+
+//Transactions getAll (all, by id, limit)
+
+SELECT 
+    `transaction`.*, `category`.`id` AS `category.id`, `category`.`accountId` AS `category.accountId`, `category`.`category_title` AS `category.category_title`, `category`.`category_type` AS `category.category_type`, `category`.`parentId` AS `category.parentId`, `category`.`created` AS `category.created`, `category`.`updated` AS `category.updated`, `category`.`hidden` AS `category.hidden`, `ChildTransactions`.`id` AS `ChildTransactions.id`, `ChildTransactions`.`accountId` AS `ChildTransactions.accountId`, `ChildTransactions`.`transaction_date` AS `ChildTransactions.transaction_date`, `ChildTransactions`.`transaction_description` AS `ChildTransactions.transaction_description`, `ChildTransactions`.`debit` AS `ChildTransactions.debit`, `ChildTransactions`.`credit` AS `ChildTransactions.credit`, `ChildTransactions`.`categoryId` AS `ChildTransactions.categoryId`, `ChildTransactions`.`parentId` AS `ChildTransactions.parentId`, `ChildTransactions`.`created` AS `ChildTransactions.created`, `ChildTransactions`.`updated` AS `ChildTransactions.updated`, `ChildTransactions`.`reconcile` AS `ChildTransactions.reconcile`, `ChildTransactions->category`.`id` AS `ChildTransactions.category.id`, `ChildTransactions->category`.`accountId` AS `ChildTransactions.category.accountId`, `ChildTransactions->category`.`category_title` AS `ChildTransactions.category.category_title`, `ChildTransactions->category`.`category_type` AS `ChildTransactions.category.category_type`, `ChildTransactions->category`.`parentId` AS `ChildTransactions.category.parentId`, `ChildTransactions->category`.`created` AS `ChildTransactions.category.created`, `ChildTransactions->category`.`updated` AS `ChildTransactions.category.updated`, `ChildTransactions->category`.`hidden` AS `ChildTransactions.category.hidden` 
+FROM 
+    (SELECT `transaction`.`id`, `transaction`.`accountId`, `transaction`.`transaction_date`, `transaction`.`transaction_description`, `transaction`.`debit`, `transaction`.`credit`, `transaction`.`categoryId`, `transaction`.`parentId`, `transaction`.`created`, `transaction`.`updated`, `transaction`.`reconcile` 
+    FROM `transactions` AS `transaction` 
+    WHERE `transaction`.`accountId` = 1 
+    AND `transaction`.`categoryId` = '125' 
+    AND 
+        ( SELECT `parentId` FROM `transactions` AS `ChildTransactions` 
+        WHERE (`ChildTransactions`.`parentId` = `transaction`.`id`) 
+        LIMIT 1 ) IS NOT NULL 
+    ORDER BY `transaction`.`transaction_date` DESC LIMIT 0, 100) AS `transaction` 
+LEFT OUTER JOIN `categories` AS `category` 
+ON `transaction`.`categoryId` = `category`.`id` 
+INNER JOIN `transactions` AS `ChildTransactions` 
+ON `transaction`.`id` = `ChildTransactions`.`parentId` 
+LEFT OUTER JOIN `categories` AS `ChildTransactions->category`   
+ON `ChildTransactions`.`categoryId` = `ChildTransactions->category`.`id` 
+ORDER BY `transaction`.`transaction_date` DESC;
+
+
+
+
