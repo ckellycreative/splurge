@@ -13,13 +13,13 @@ function PlanSavingsList(props) {
       includeThousandsSeparator: false,
     })
 
-
-    let parentTitle = '' //For iterating the expense row subheadings
+    
+    let parentTitle = '' //For iterating the cash reserves row subheadings
     const categories =  props.categoryArray.map((cat, index, array) => {
                 let isNewCategoryGroup = (parentTitle != cat.category_title) ? true : false
                 let isGroupTotal = (cat.groupTotalPlan != null) ? true : false
                 let totalReportAmount = (!isGroupTotal) ? cat.totalReportAmountDebit - cat.totalReportAmountCredit : 0
-                let planAmount = (!isGroupTotal) ? cat.CategoryPlan.planAmount  : 0
+                let planAmount = (!isGroupTotal && cat.CategoryPlan.planAmount) ? cat.CategoryPlan.planAmount  : 0
                 parentTitle = cat.category_title
                     return (    
                         <React.Fragment key={isGroupTotal ? cat.grpid : cat.ChildCategory.id}>

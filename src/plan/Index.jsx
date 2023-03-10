@@ -376,9 +376,26 @@ const getCategories = () => {
 ****************** */
 
 
-    const handleClickEditPlan = (id, amt) => {
-        setNewPlanAmount(amt)
-        setEditPlan(id)
+    const handleClickEditPlan = (planId, amt, childCatId) => {
+        if (planId == null) {
+            let newPlan = {
+                categoryId: childCatId,
+                created: activeMonthYear + "-01"
+            }
+            
+            planService.create(newPlan)
+                .then((data) => {
+                    getAllWithTotalByDate()
+                    setEditPlan(data.id)
+                })
+                .catch(error => {
+                    //alertService.error(error)
+                    console.log(error)
+            });
+        }else {
+            setNewPlanAmount(amt)
+            setEditPlan(planId)
+        }
     }
 
     const handleChangePlanAmount = (e) => {
@@ -418,6 +435,7 @@ const getCategories = () => {
 ****************** */
 
     const handleClickPlanMonth = (direction) => {
+        setEditPlan('')
         let newMonth = ''
         if (direction == 'back') {
             newMonth = moment(activeMonthYear).subtract(1,'months').format('YYYY-MM')            

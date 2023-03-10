@@ -4,6 +4,7 @@ import { CategoryForm } from '../_components/CategoryForm'
 import { PlanCategoryActions } from '../_components/PlanCategoryActions'
 import MaskedInput from 'react-text-mask'
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
+import moment from 'moment'
 
 
 function PlanIncomeExpenseList(props) {
@@ -83,7 +84,7 @@ function PlanIncomeExpenseList(props) {
                                         <i className="bi-pencil dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                         <PlanCategoryActions 
                                             cat={cat}
-                                            actions={{editTitle: true,  editPlan: true, delete: true, hide:true}}
+                                            actions={{editTitle: true,  editPlan: (props.activeMonthYear >= moment().format('YYYY-MM')) ? true : false, delete: true, hide:true}}
                                             hasAmts={hasReportAmounts}
                                             handleClickHideCategory={props.handleClickHideCategory} 
                                             handleClickEditPlan={props.handleClickEditPlan} 
