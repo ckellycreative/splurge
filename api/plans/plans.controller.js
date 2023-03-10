@@ -12,6 +12,7 @@ const transactionService = require('../transactions/transaction.service');
 router.get('/', authorize(), getAll);
 router.get('/:id', authorize(), getById);
 router.post('/', authorize(), create);
+router.post('/copy', authorize(), copyPlanAmounts);
 router.put('/:id', authorize(), update);
 router.delete('/:id', authorize(), _delete);
 
@@ -46,6 +47,58 @@ function create(req, res, next) {
         .then(plan => res.json(plan))
         .catch(next);
 }
+
+
+
+
+
+function copyPlanAmounts(req, res, next) {
+    
+    planService.getLastMonthsPlans(req.user.id, req.body.activeMonthYear)
+    .then(plans => {
+
+            return sequelize.transaction(t => {
+
+              // chain all your queries here. make sure you return them.
+              return Promise.all([
+                    plans.map((plan) => {
+                            plan.id = null
+                            plan.accountId = req.user.id
+                            plan.categoryId
+                            plan.planAmount
+                            plan.created = req.body.activeMonthYear
+                            //return console.log('map the plans', plan)
+                            return planService.create(plan, {transaction: t} );  
+                        })
+               ])
+
+            }).then(transaction => {
+                        res.json(transaction);
+              
+              // Transaction has been committed
+              // result is whatever the result of the promise chain returned to the transaction callback
+            }).catch(err => {
+                  console.log('catch err', err)
+                // Transaction has been rolled back
+              // err is whatever rejected the promise chain returned to the transaction callback
+            });
+
+
+
+
+
+    })
+    .catch(next)
+
+}
+
+
+
+
+
+
+
+
 
 
 function update(req, res, next) {

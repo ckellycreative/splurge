@@ -28,6 +28,9 @@ IMPROVE
 	- ON load check if plan_rollover_date is in previous month
 		- if yes, dupe all plan items and update plan_rollover_date
 	- Make previous months' plan items uneditable
+	- Make future months editable — create new ones
+
+- Hover/click to edit plan details
 
 - Function for reconcilliation balance adjustment (transactions created when the "Your actual bank balance" does not match, that renconcile immediately )
 - Unhide categories

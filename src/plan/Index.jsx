@@ -452,6 +452,31 @@ const getCategories = () => {
 
 
 
+/*****************
+    
+    Copy Plans from Last Month
+    
+****************** */
+
+
+
+    const handleCopyPlans = () => {
+        let confirmText = 'This will NOT overwrite existing plan amounts.'
+        if (confirm(confirmText) == true) {
+
+            planService.copyPlanAmounts({activeMonthYear:activeMonthYear})
+                .then(() => {
+                    getAllWithTotalByDate()
+                })
+                .catch(error => {
+                    //alertService.error(error)
+                    console.log(error)
+            })
+        }
+
+
+    }
+
 
 
     return (
@@ -471,6 +496,9 @@ const getCategories = () => {
                             <div className="dropdown-menu px-2" style={ {minWidth: '500px'} }>
                                 <CategoryForm parentId={null} category_type='expense' isGroupForm={true} getAllWithTotalByDate={getAllWithTotalByDate} />
                             </div>
+                            <button onClick={handleCopyPlans} type="button" className="btn btn-link btn-sm">
+                                <i className="bi-arrow-repeat"></i> Copy over all plan amounts from last month 
+                          </button>                            
                         </div>
                         <div className="row tabular-data tabular-head">
                             <div className="col-sm-2 offset-sm-6 text-end">Plan</div>
@@ -489,6 +517,7 @@ const getCategories = () => {
                             getAllWithTotalByDate = {getAllWithTotalByDate}
                             editCategory = {editCategory}
                             editPlan={editPlan}
+                            activeMonthYear={activeMonthYear}
                             handleChangePlanAmount={handleChangePlanAmount}
                             newPlanAmount={newPlanAmount}
                             handleUpdatePlan={handleUpdatePlan}
@@ -505,6 +534,7 @@ const getCategories = () => {
                             getAllWithTotalByDate = {getAllWithTotalByDate}
                             editCategory = {editCategory}
                             editPlan={editPlan}
+                            activeMonthYear={activeMonthYear}
                             handleChangePlanAmount={handleChangePlanAmount}
                             newPlanAmount={newPlanAmount}
                             handleUpdatePlan={handleUpdatePlan}
@@ -530,6 +560,7 @@ const getCategories = () => {
                             getAllWithTotalByDate = {getAllWithTotalByDate}
                             editCategory = {editCategory}
                             editPlan={editPlan}
+                            activeMonthYear={activeMonthYear}
                             handleChangePlanAmount={handleChangePlanAmount}
                             newPlanAmount={newPlanAmount}
                             handleUpdatePlan={handleUpdatePlan}

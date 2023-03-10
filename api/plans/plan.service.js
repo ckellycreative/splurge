@@ -5,6 +5,7 @@ const db = require('_helpers/db');
 module.exports = {
     getAll,
     getById,
+    getLastMonthsPlans,
     create,
     update,
     delete: _delete
@@ -14,6 +15,22 @@ module.exports = {
 
 async function getAll() {
     const plans = await db.Plan.findAll();
+    return plans.map(x => basicDetails(x));
+}
+
+async function getLastMonthsPlans(userId, activeMonthYear) {
+ 
+    const activeDate = activeMonthYear + '-01'
+
+    const plans = await db.sequelize.query(
+        "SELECT p1.id, p1.categoryId, p1.planAmount, p1.created FROM plans AS p1 WHERE `created` BETWEEN DATE_FORMAT(? - INTERVAL 1 MONTH, '%Y-%m-01 00:00:00') AND DATE_FORMAT(LAST_DAY(? - INTERVAL 1 MONTH), '%Y-%m-%d 23:59:59') AND NOT EXISTS (SELECT 1 FROM plans AS p2 WHERE p2.created = ? AND p1.categoryId = p2.categoryId);",
+         { 
+            replacements: [activeDate, activeDate, activeDate],
+            type: QueryTypes.SELECT,
+            required: false
+        }
+    );
+
     return plans.map(x => basicDetails(x));
 }
 

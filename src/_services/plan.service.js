@@ -8,6 +8,7 @@ const baseUrl = `${config.apiUrl}/plans`;
 
 export const  planService = {
     create,
+    copyPlanAmounts,
     update,
     getAll,
     delete: _delete,
@@ -18,6 +19,10 @@ export const  planService = {
 
 function create(params) {   
     return fetchWrapper.post(baseUrl, params);
+}
+
+function copyPlanAmounts(params) {   
+    return fetchWrapper.post(`${baseUrl}/copy/`, params);
 }
 
 function update(params) {   
