@@ -65,7 +65,7 @@ function Accounts() {
 
 
     const getCashTrackingAccountsWithTotals = () => {
-        categoryService.getCashTrackingAccountsWithTotals(moment().format('YYYY-MM-DD'))
+        categoryService.getCashTrackingAccountsWithTotals('3000-01-01') // Use this future date to get all past and future transactions 
             .then((data) => {
                 setCashTrackingAccountsWithTotals(data)
                 setCashTrackingAccountsWithTotalsAreLoaded(true);
