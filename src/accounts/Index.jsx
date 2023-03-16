@@ -37,6 +37,12 @@ function Accounts() {
     const [clearedTransactionsTotal, setClearedTransactionsTotal] = useState(0)
     const [beginningBalance, setBeginningBalance] = useState(0)
 
+    const dataIsLoading = 
+    (
+        !categoriesAreLoaded ||
+        !transactionsAreLoaded ||
+        !cashTrackingAccountsWithTotalsAreLoaded 
+    ) ? true : false
 
 
 
@@ -88,7 +94,7 @@ function Accounts() {
 
 
     const getTransactions = () => {
-            setTransactionsAreLoaded(false);
+            setTransactionsAreLoaded(false)
             const activeCashTrackingAccountId = (!activeCashTrackingAccount) ? 0 : activeCashTrackingAccount.id  //  0 activeCashTrackingAccount will return all categories from the API
             const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCashTrackingAccount will return all categories from the API
             transactionService.getAll(activeCashTrackingAccountId, activeCategoryId, transactionsLimit) 
@@ -235,7 +241,18 @@ function Accounts() {
 
     return (
 
+
         <div className="row Accounts">
+
+            { dataIsLoading &&
+                <React.Fragment>
+                        <div  className="spinner-border spinner-page text-primary" role="status">
+                            <span className="visually-hidden">Loading...</span>
+                        </div>
+                        <div  className="spinner-overlay" role="status"></div>
+                </React.Fragment>
+            }
+
             <div className="col-md-3 sidebar">
                 
                 <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
@@ -296,7 +313,7 @@ function Accounts() {
                 </div>
 
 
-               <TransactionList 
+                <TransactionList 
                     transactions={transactions}
                     transactionsAreLoaded={transactionsAreLoaded}
                     transactionsCount={transactionsCount}
@@ -314,7 +331,9 @@ function Accounts() {
                     handleChangeCategoryFilter={handleChangeCategoryFilter}
                 />
 
-             </div>
+            </div>
+
+
         </div>
 
     );

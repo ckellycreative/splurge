@@ -14,6 +14,7 @@ import { Modal } from '../_components/Modal'
 function Plan() {
 
     const [activeMonthYear, setActiveMonthYear] = useState(moment().format('YYYY-MM'));
+    const [allWIthTotalsByDateAreLoaded, setAllWIthTotalsByDateAreLoaded] = useState(false)
     const [incomeArr, setIncomeArr] = useState([])
     const [expenseArr, setExpenseArr] = useState([])
     const [savingsArr, setSavingsArr] = useState([])
@@ -43,6 +44,7 @@ function Plan() {
 
     const dataIsLoading = 
     (
+        !allWIthTotalsByDateAreLoaded ||
         !categoriesAreLoaded ||
         !cashTrackingAccountsWithTotalsAreLoaded ||
         !expenseArr ||
@@ -60,6 +62,7 @@ function Plan() {
 ****************** */
 
     const getAllWithTotalByDate = () => {
+        setAllWIthTotalsByDateAreLoaded(false)
         let startDate = `${activeMonthYear}-01` 
         let lastDayOfEndMonth = moment(`${activeMonthYear}`, "YYYY-MM").daysInMonth()
         let endDate = `${activeMonthYear}-${lastDayOfEndMonth}`
@@ -139,7 +142,7 @@ function Plan() {
                     }
 
                 })
-
+                setAllWIthTotalsByDateAreLoaded(true)
                 setExpenseArr(tmpExpenseArr)
                 setIncomeArr(tmpIncomeArr)
                 setSavingsArr(tmpSavingsArr)
@@ -166,6 +169,7 @@ function Plan() {
 
 
 const getCategories = () => {
+        setCategoriesAreLoaded(false);
         categoryService.getAll()
             .then((data) => {
                 setCategoriesAreLoaded(true);
@@ -185,6 +189,7 @@ const getCategories = () => {
 
 
     const getCashTrackingAccountsWithTotals = () => {
+        setCashTrackingAccountsWithTotalsAreLoaded(false);
         let lastDayOfLastMonth = moment(activeMonthYear).subtract(1,'months').endOf('month').format('YYYY-MM-DD');
         categoryService.getCashTrackingAccountsWithTotals(lastDayOfLastMonth) //Here the date is the last day of the previous month
             .then((data) => {
@@ -481,8 +486,18 @@ const getCategories = () => {
 
     return (
         <React.Fragment>
-            { dataIsLoading && 'Loader' ||
                 <div className="row Plan">
+
+
+                { dataIsLoading && 
+                    <React.Fragment>
+                            <div  className="spinner-border spinner-page text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                            <div  className="spinner-overlay" role="status"></div>
+                    </React.Fragment>
+                }
+
                     <div className="col-md-8 main">
                         <h1>
                             <button onClick={() => handleClickPlanMonth('back')} type="button" className="btn btn-link btn-outline-secondary"><i className="bi-arrow-left-circle-fill"></i></button>
@@ -566,88 +581,85 @@ const getCategories = () => {
                             handleUpdatePlan={handleUpdatePlan}
                         />
 
-
-
                     </div>
 
 
 
                     <div className="col-md-4 sidebar">
                         <h2>Overview</h2>
-                            <div className="row tabular-data">
-                                <div className="col-sm-6 fw-bold">
-                                    Total Cash At Start of Month
-                                </div>
-                                <div className="col-sm-6 text-end">
-                                    <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
-                                </div>           
+                        <div className="row tabular-data">
+                            <div className="col-sm-6 fw-bold">
+                                Total Cash At Start of Month
                             </div>
-                            <div className="row tabular-data tabular-head">
-                                <div className="col-sm-4 offset-sm-4 text-end">Plan</div>
-                                <div className="col-sm-4 text-end">Actual</div>
-                            </div>
-
-                            <div className="tabular-data row">
-                                <div className="col-sm-4 fw-bold">
-                                    Income
-                                </div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-4 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
-                            <div className="tabular-data row">
-                                <div className="col-sm-4 fw-bold">Expense</div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-4 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
-                            <div className="tabular-data row">
-                                <div className="col-sm-4 fw-bold">Net</div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            </div>
-                            <div className="tabular-data row">
-                                <div className="col-sm-4 fw-bold">Investments</div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-4 text-end"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
-
-                            <div className="mt-4">
-                                <PlanSavingsList 
-                                    categoryArray={savingsArr}
-                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                    handleClickEditCategory = {handleClickEditCategory}
-                                    handleClickEditPlan = {handleClickEditPlan}
-                                    handleShowModalDelete = {handleShowModalDelete}
-                                    handleUpdateCategory={handleUpdateCategory}
-                                    newCategoryTitle = {newCategoryTitle}
-                                    getAllWithTotalByDate = {getAllWithTotalByDate}
-                                    editCategory = {editCategory}
-                                    editPlan={editPlan}
-                                    handleChangePlanAmount={handleChangePlanAmount}
-                                    newPlanAmount={newPlanAmount}
-                                    handleUpdatePlan={handleUpdatePlan}
-                                />
-                            </div>
-
-
-
-                            <div className="tabular-data row">
-                                <div className="col-sm-4 fw-bold">
-                                    Total Reserves
-                                </div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
-
-                            <div className="tabular-data row mt-4">
-                                <div className="col-sm-4 fw-bold">Unallocated</div>
-                                <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (planIncomeTotal - planExpenseTotal) - planInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                                <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (actualIncomeTotal + actualExpenseTotal) + actualInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            </div>
-
-
+                            <div className="col-sm-6 text-end">
+                                <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
+                            </div>           
                         </div>
+                        <div className="row tabular-data tabular-head">
+                            <div className="col-sm-4 offset-sm-4 text-end">Plan</div>
+                            <div className="col-sm-4 text-end">Actual</div>
+                        </div>
+
+                        <div className="tabular-data row">
+                            <div className="col-sm-4 fw-bold">
+                                Income
+                            </div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            <div className="col-sm-4 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                        </div>
+                        <div className="tabular-data row">
+                            <div className="col-sm-4 fw-bold">Expense</div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            <div className="col-sm-4 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                        </div>
+                        <div className="tabular-data row">
+                            <div className="col-sm-4 fw-bold">Net</div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                        </div>
+                        <div className="tabular-data row">
+                            <div className="col-sm-4 fw-bold">Investments</div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            <div className="col-sm-4 text-end"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                        </div>
+
+                        <div className="mt-4">
+                            <PlanSavingsList 
+                                categoryArray={savingsArr}
+                                handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                                handleClickEditCategory = {handleClickEditCategory}
+                                handleClickEditPlan = {handleClickEditPlan}
+                                handleShowModalDelete = {handleShowModalDelete}
+                                handleUpdateCategory={handleUpdateCategory}
+                                newCategoryTitle = {newCategoryTitle}
+                                getAllWithTotalByDate = {getAllWithTotalByDate}
+                                editCategory = {editCategory}
+                                editPlan={editPlan}
+                                handleChangePlanAmount={handleChangePlanAmount}
+                                newPlanAmount={newPlanAmount}
+                                handleUpdatePlan={handleUpdatePlan}
+                            />
+                        </div>
+
+
+
+                        <div className="tabular-data row">
+                            <div className="col-sm-4 fw-bold">
+                                Total Reserves
+                            </div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                        </div>
+
+                        <div className="tabular-data row mt-4">
+                            <div className="col-sm-4 fw-bold">Unallocated</div>
+                            <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (planIncomeTotal - planExpenseTotal) - planInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (actualIncomeTotal + actualExpenseTotal) + actualInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                        </div>
+
+
                     </div>
-            }
+                </div>
 
             { showModalDelete  &&
                 <Modal showModal={showModalDelete} setShowModal={setShowModalDelete} title='Alert!'>

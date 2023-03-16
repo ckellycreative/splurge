@@ -81,6 +81,7 @@ function Reports() {
 
 
     const getAllWithTotalByDate = () => {
+        setCategoriesTransactionsByDateAreLoaded(false);
         let startDate = `${startYear}-${startMonth}-01` 
         let lastDayOfEndMonth = moment(`${endYear}-${endMonth}`, "YYYY-MM").daysInMonth()
         let endDate = `${endYear}-${endMonth}-${lastDayOfEndMonth}`
@@ -183,37 +184,40 @@ function Reports() {
     return (
 
             <div className="row Reports">
-                <div className="col-md-9">
 
+
+               { !categoriesTransactionsByDateAreLoaded && 
+                    <React.Fragment>
+                            <div  className="spinner-border spinner-page text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                            <div  className="spinner-overlay" role="status"></div>
+                    </React.Fragment>
+                }
+
+                <div className="col-md-9">
                     <h1>Reports</h1>
                     <div className="row mb-5">
                         <div className=" col input-group">
                             <span className="input-group-text">From</span>
-                            
                             {monthSelect('startMonth', startMonth)} 
                             {yearSelect('startYear', startYear)}
-
                         </div>
-
                         <div className=" col input-group">
                             <span className="input-group-text">To</span>
 
                             {monthSelect('endMonth', endMonth)}
                             {yearSelect('endYear', endYear)}
-
                        </div>
                    </div>
-
                     <h2>Income</h2>
-                            {
-                                incomeCategories
-                            }
-                            <div className="row tabular-data">
-                                <div className="col-sm-9">Total Income</div>
-                                <div className='col-sm-3 text-end'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            </div>
-                   
-
+                        {
+                            incomeCategories
+                        }
+                        <div className="row tabular-data">
+                            <div className="col-sm-9">Total Income</div>
+                            <div className='col-sm-3 text-end'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
+                        </div>
                     <h2>Expenses</h2>
                             {
                                 expenseCategories                       
@@ -222,9 +226,6 @@ function Reports() {
                                 <div className="col-sm-9">Total Expense</div>
                                 <div className='col-sm-3 text-end'><NumericFormat value={totalExpense.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${totalExpense > 0 ? '+' : '-'}`} /></div>
                             </div>
-
-
-
                 </div>
 
                 <div className="col-md-3">
@@ -241,8 +242,7 @@ function Reports() {
                         <div className='col-sm-3 text-end'><NumericFormat value={(totalIncome + totalExpense).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${(totalIncome - totalExpense) > 0 ? '' : '-'}`} /></div>
                     </div>
                 </div>
-
-        </div>
+            </div>
 
 
      );
