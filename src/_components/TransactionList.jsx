@@ -56,15 +56,21 @@ function TransactionList(props) {
                                                     />
                                                 </div>
 
-                                                { props.activeCashTrackingAccount != 0 &&
                                                     <div className="col-sm-1">
-                                                        <i 
-                                                            className={`bi-${(transaction.reconcile == 1) ? 'check-square' : ''}${(transaction.reconcile == 0)  ? 'dash-square' : ''} `}
-                                                            onClick={(t) => props.handleClickReconcileTransaction(transaction)}
-                                                        >
-                                                        </i>
+                                                        { props.activeCashTrackingAccount != 0 && props.reconcilingTransaction != transaction.id &&
+                                                            <i 
+                                                                className={`bi-${(transaction.reconcile == 1) ? 'check-square' : ''}${(transaction.reconcile == 0)  ? 'dash-square' : ''} `}
+                                                                onClick={(t) => props.handleClickReconcileTransaction(transaction)}
+                                                            >
+                                                            </i>
+                                                        }
+
+                                                        { props.reconcilingTransaction == transaction.id && props.reconcilingTransactionIsLoading &&
+                                                            <div  className="spinner-grow spinner-grow-sm text-primary" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        }
                                                     </div>
-                                                }
 
 
                                                 {props.activeCashTrackingAccount == 0 &&

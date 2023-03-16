@@ -20,6 +20,7 @@ function Accounts() {
     const [cashTrackingAccountsWithTotalsAreLoaded, setCashTrackingAccountsWithTotalsAreLoaded] = useState(false)
     const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState('')
     const [activeCategory, setActiveCategory] = useState('')
+    const [showAddAccountForm, setShowAddAccountForm] = useState(false)
     //Transactions
     const [transactions, setTransactions] = useState([])
     const [transactionsAreLoaded, setTransactionsAreLoaded] = useState(false)
@@ -30,7 +31,8 @@ function Accounts() {
     const [editingTransaction, setEditingTransaction] = useState(null)
     //Reconcile
     const [showReconcileDialog, setShowReconcileDialog] = useState(false)
-    const [showAddAccountForm, setShowAddAccountForm] = useState(false)
+    const [reconcilingTransaction, setReconcilingTransaction] = useState('')
+    const [reconcilingTransactionIsLoading, setReconcilingTransactionIsLoading] = useState(false)
     const [unclearedTransactionsTotal, setUnclearedTransactionsTotal] = useState(0)
     const [clearedTransactionsTotal, setClearedTransactionsTotal] = useState(0)
     const [beginningBalance, setBeginningBalance] = useState(0)
@@ -47,6 +49,7 @@ function Accounts() {
 
 
     const getCategories = () => {
+        setCategoriesAreLoaded(false);
         categoryService.getAll()
             .then((data) => {
                 setCategoriesAreLoaded(true);
@@ -65,6 +68,7 @@ function Accounts() {
 
 
     const getCashTrackingAccountsWithTotals = () => {
+        setCashTrackingAccountsWithTotalsAreLoaded(false);
         categoryService.getCashTrackingAccountsWithTotals('3000-01-01') // Use this future date to get all past and future transactions 
             .then((data) => {
                 setCashTrackingAccountsWithTotals(data)
@@ -84,6 +88,7 @@ function Accounts() {
 
 
     const getTransactions = () => {
+            setTransactionsAreLoaded(false);
             const activeCashTrackingAccountId = (!activeCashTrackingAccount) ? 0 : activeCashTrackingAccount.id  //  0 activeCashTrackingAccount will return all categories from the API
             const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCashTrackingAccount will return all categories from the API
             transactionService.getAll(activeCashTrackingAccountId, activeCategoryId, transactionsLimit) 
@@ -139,7 +144,8 @@ function Accounts() {
 
 
     const handleClickReconcileTransaction = (t) => {
-        alertService.clear();
+        setReconcilingTransaction(t.id)
+        setReconcilingTransactionIsLoading(true)
         let params = {
             id: t.id,
             ChildTransactions: t.ChildTransactions,
@@ -148,6 +154,8 @@ function Accounts() {
         transactionService.update(params)
             .then((res) => {
                 getTransactions();
+                setReconcilingTransaction('')
+                setReconcilingTransactionIsLoading(false)
             })
             .catch(error => {
                 alertService.error(error);
@@ -287,7 +295,8 @@ function Accounts() {
                     </div>
                 </div>
 
-                <TransactionList 
+
+               <TransactionList 
                     transactions={transactions}
                     transactionsAreLoaded={transactionsAreLoaded}
                     transactionsCount={transactionsCount}
@@ -299,10 +308,13 @@ function Accounts() {
                     handleClickEditTransaction={handleClickEditTransaction} 
                     handleClickDeleteTransaction={handleClickDeleteTransaction} 
                     handleClickReconcileTransaction={handleClickReconcileTransaction} 
+                    reconcilingTransaction={reconcilingTransaction}
+                    reconcilingTransactionIsLoading={reconcilingTransactionIsLoading}
                     handlClickShowMore={handlClickShowMore}
                     handleChangeCategoryFilter={handleChangeCategoryFilter}
                 />
-            </div>
+
+             </div>
         </div>
 
     );
