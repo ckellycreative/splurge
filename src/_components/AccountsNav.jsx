@@ -7,7 +7,7 @@ function AccountsNav(props) {
         <div>
             <ul className="nav nav-pills flex-column accounts-nav">
                 <li className="nav-item">
-                    <a onClick={(catId) => props.handleClickAccountsNavItem('')} className={`nav-link ${props.activeCashTrackingAccount == 0 && 'active'}`}>
+                    <a onClick={(catId) => props.handleClickAccountsNavItem(0)} className={`nav-link ${props.activeCashTrackingAccount == 0 && 'active'}`}>
                         All Accounts
                     </a>
                 </li>
@@ -15,7 +15,7 @@ function AccountsNav(props) {
                     if (category.category_type == 'cash') {
                         return (    
                             <li key={category.id} className="nav-item">
-                                <a onClick={(cat) => props.handleClickAccountsNavItem(category)} className={`nav-link ${props.activeCashTrackingAccount.id == category.id && 'active'}`}>
+                                <a onClick={(catId) => props.handleClickAccountsNavItem(category.id)} className={`nav-link ${props.activeCashTrackingAccount == category.id && 'active'}`}>
                                     <div className="account-balance-list-name">{category.category_title} </div>
                                     <div className="account-balance-list-amount">
                                         <NumericFormat value={category.bankBalance} displayType={'text'} thousandSeparator={true} prefix={''} />

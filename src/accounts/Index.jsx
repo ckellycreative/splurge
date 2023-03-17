@@ -18,7 +18,7 @@ function Accounts() {
     const [categoriesAreLoaded, setCategoriesAreLoaded] = useState(false)
     const [cashTrackingAccountsWithTotals, setCashTrackingAccountsWithTotals] = useState([])
     const [cashTrackingAccountsWithTotalsAreLoaded, setCashTrackingAccountsWithTotalsAreLoaded] = useState(false)
-    const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState('')
+    const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState(0)
     const [activeCategory, setActiveCategory] = useState('')
     const [showAddAccountForm, setShowAddAccountForm] = useState(false)
     const [bankAccountIsDeleting, setBankAccountIsDeleting] = useState(false)
@@ -102,9 +102,8 @@ function Accounts() {
     useEffect(() => {
         function getTransactions() {
             setTransactionsAreLoaded(false)
-            const activeCashTrackingAccountId = (!activeCashTrackingAccount) ? 0 : activeCashTrackingAccount.id  //  0 activeCashTrackingAccount will return all categories from the API
-            const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCashTrackingAccount will return all categories from the API
-            transactionService.getAll(activeCashTrackingAccountId, activeCategoryId, transactionsLimit) 
+            const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCategory will return all categories from the API
+            transactionService.getAll(activeCashTrackingAccount, activeCategoryId, transactionsLimit) 
             .then((data) => {
                 setTransactionsAreLoaded(true);
                 setTransactions(data.transactions);
@@ -173,8 +172,8 @@ function Accounts() {
         setEditingTransaction(t)
      }
 
-     const handleClickAccountsNavItem = (cat) => {
-        setActiveCashTrackingAccount(cat)
+     const handleClickAccountsNavItem = (catid) => {
+        setActiveCashTrackingAccount(catid)
         setTransactionsLimit(defaultTransactionsLimit)
         setShowReconcileDialog(false)
      }
