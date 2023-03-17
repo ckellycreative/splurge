@@ -201,7 +201,7 @@ function TransactionForm(props) {
 
        //Add the child transactions to the data
         transaction.ChildTransactions = childTransactions;
-
+        props.setTransactionIsPosting(true)
         alertService.clear();
         if (props.editingTransaction) {
            transactionService.update(transaction)
@@ -229,12 +229,11 @@ function TransactionForm(props) {
                     setSplitIsVisible(false);  
                     setSplitTotal('');  
                     resetForm();  
-                    props.getTransactions();
+                    props.setTransactionIsPosting(false);
                     props.setEditingTransaction(null);
                     setShowDrawer();
         }
     }
-
 
 
 	return(

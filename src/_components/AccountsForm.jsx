@@ -45,10 +45,10 @@ function AccountsForm(props) {
             category_type: 'cash',
             openingBalance
         }
-
+        props.setBankAccountIsPosting(true) 
         categoryService.createBankAccountCategory(newCat)
             .then((res) => {
-                props.getTransactions() //getTransactions will also fetch the bankAccounts because of the useEffect dependency on getBankAccountCategoriesWithTotals
+                props.setBankAccountIsPosting(false) 
                 resetForm()
                 props.setShowAddAccountForm(false)
             })

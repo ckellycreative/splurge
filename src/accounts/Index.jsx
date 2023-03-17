@@ -21,8 +21,12 @@ function Accounts() {
     const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState('')
     const [activeCategory, setActiveCategory] = useState('')
     const [showAddAccountForm, setShowAddAccountForm] = useState(false)
+    const [bankAccountIsDeleting, setBankAccountIsDeleting] = useState(false)
+    const [bankAccountIsPosting, setBankAccountIsPosting] = useState(false)
     //Transactions
     const [transactions, setTransactions] = useState([])
+    const [transactionIsDeleting, setTransactionIsDeleting] = useState(false)
+    const [transactionIsPosting, setTransactionIsPosting] = useState(false)
     const [transactionsAreLoaded, setTransactionsAreLoaded] = useState(false)
     const [transactionsCount, setTransactionsCount] = useState('')
     const defaultTransactionsLimit = 100
@@ -32,7 +36,8 @@ function Accounts() {
     //Reconcile
     const [showReconcileDialog, setShowReconcileDialog] = useState(false)
     const [reconcilingTransaction, setReconcilingTransaction] = useState('')
-    const [reconcilingTransactionIsLoading, setReconcilingTransactionIsLoading] = useState(false)
+    const [reconcilingTransactionIsUpdating, setReconcilingTransactionIsUpdating] = useState(false)
+    const [completeReconcileAccountIsUpdating, setCompleteReconcileAccountIsUpdating] = useState(false)
     const [unclearedTransactionsTotal, setUnclearedTransactionsTotal] = useState(0)
     const [clearedTransactionsTotal, setClearedTransactionsTotal] = useState(0)
     const [beginningBalance, setBeginningBalance] = useState(0)
@@ -54,28 +59,29 @@ function Accounts() {
     -------------*/
 
 
-    const getCategories = () => {
-        setCategoriesAreLoaded(false);
-        categoryService.getAll()
-            .then((data) => {
-                setCategoriesAreLoaded(true);
-                setCategories(data)
-            })
-            .catch(error => {
-                //alertService.error(error)
-                console.log(error)
-            });
-    };
     useEffect(() => {
+        function getCategories() {
+            setCategoriesAreLoaded(false);
+            categoryService.getAll()
+                .then((data) => {
+                    setCategoriesAreLoaded(true);
+                    setCategories(data)
+                })
+                .catch(error => {
+                    //alertService.error(error)
+                    console.log(error)
+                });
+        };
         getCategories()
     }, [])  
 
 
 
 
-    const getCashTrackingAccountsWithTotals = () => {
-        setCashTrackingAccountsWithTotalsAreLoaded(false);
-        categoryService.getCashTrackingAccountsWithTotals('3000-01-01') // Use this future date to get all past and future transactions 
+    useEffect(() => {
+        function getCashTrackingAccountsWithTotals() {
+            setCashTrackingAccountsWithTotalsAreLoaded(false);
+            categoryService.getCashTrackingAccountsWithTotals('3000-01-01') // Use this future date to get all past and future transactions 
             .then((data) => {
                 setCashTrackingAccountsWithTotals(data)
                 setCashTrackingAccountsWithTotalsAreLoaded(true);
@@ -84,8 +90,7 @@ function Accounts() {
                 //alertService.error(error)
                 console.log(error)
             });
-    };
-    useEffect(() => {
+        }
         getCashTrackingAccountsWithTotals()
     }, [transactions])  
 
@@ -93,7 +98,9 @@ function Accounts() {
 
 
 
-    const getTransactions = () => {
+
+    useEffect(() => {
+        function getTransactions() {
             setTransactionsAreLoaded(false)
             const activeCashTrackingAccountId = (!activeCashTrackingAccount) ? 0 : activeCashTrackingAccount.id  //  0 activeCashTrackingAccount will return all categories from the API
             const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCashTrackingAccount will return all categories from the API
@@ -107,12 +114,22 @@ function Accounts() {
                 //alertService.error(error)
                 console.log('error', error)
             });
-    };
-
-    useEffect(() => {
+        }
         getTransactions()
-    }, [activeCashTrackingAccount, activeCategory, transactionsLimit])  
-    
+    }, [
+        activeCashTrackingAccount, 
+        activeCategory, 
+        transactionsLimit, 
+        !transactionIsDeleting, 
+        !transactionIsPosting, 
+        !reconcilingTransactionIsUpdating, 
+        !completeReconcileAccountIsUpdating,
+        !bankAccountIsDeleting,
+        !bankAccountIsPosting
+        ])  
+
+
+
 
 
 
@@ -121,6 +138,36 @@ function Accounts() {
     /* ----------
         Handlers  
     -------------*/
+
+
+    useEffect(() => {
+        function handleClearedTransactionsTotal() {
+            let activeCashTrackingAccountBankBalance = 0
+            let uct = 0
+            let ct = 0
+            transactions.map(transaction => {
+                if (transaction.reconcile == 0) { 
+                    uct += (transaction.credit - transaction.debit) 
+                }
+                if (transaction.reconcile == 1) { 
+                    ct += (transaction.credit - transaction.debit) 
+                }
+                cashTrackingAccountsWithTotals.map(acct => {
+                    if (acct.id == activeCashTrackingAccount.id){
+                        activeCashTrackingAccountBankBalance = acct.bankBalance
+                    }
+                })
+                setUnclearedTransactionsTotal(uct)
+                setClearedTransactionsTotal(ct)
+                setBeginningBalance( +activeCashTrackingAccountBankBalance - uct - ct) //activeCashTrackingAccount is set intially but doesnt update with new/deleted transactions
+
+            })
+        }
+        handleClearedTransactionsTotal()
+    }, [transactions, cashTrackingAccountsWithTotals])  
+
+
+
 
      const handleClickEditTransaction = (t) => {
         setEditingTransaction(t)
@@ -133,11 +180,12 @@ function Accounts() {
      }
         
     const handleClickDeleteTransaction = (id) => {
+        setTransactionIsDeleting(true)
         alertService.clear();
         transactionService.delete(id)
             .then((res) => {
                 alertService.success('Deleted');
-                getTransactions();
+                setTransactionIsDeleting(false)
             })
             .catch(error => {
                 alertService.error(error);
@@ -151,7 +199,7 @@ function Accounts() {
 
     const handleClickReconcileTransaction = (t) => {
         setReconcilingTransaction(t.id)
-        setReconcilingTransactionIsLoading(true)
+        setReconcilingTransactionIsUpdating(true)
         let params = {
             id: t.id,
             ChildTransactions: t.ChildTransactions,
@@ -159,9 +207,8 @@ function Accounts() {
         }
         transactionService.update(params)
             .then((res) => {
-                getTransactions();
                 setReconcilingTransaction('')
-                setReconcilingTransactionIsLoading(false)
+                setReconcilingTransactionIsUpdating(false)
             })
             .catch(error => {
                 alertService.error(error);
@@ -171,6 +218,7 @@ function Accounts() {
 
     const handleClickCompleteReconcileAccount = () => {
         alertService.clear();
+        setCompleteReconcileAccountIsUpdating(true)
         let updatedTransactions = [] 
         transactions.map((t) => {
             if (t.reconcile == 1 ) {
@@ -182,7 +230,7 @@ function Accounts() {
             .then((res) => {
                 alertService.success('Account Reconciled');
                 setShowReconcileDialog(false)
-                getTransactions();
+                setCompleteReconcileAccountIsUpdating(false)
             })
             .catch(error => {
                 alertService.error(error);
@@ -190,28 +238,7 @@ function Accounts() {
 
     }
 
-    const handleClearedTransactionsTotal = () => {
-        let uct = 0
-        let ct = 0
-        transactions.map(transaction => {
-            if (transaction.reconcile == 0) { 
-                uct += (transaction.credit - transaction.debit) 
-            }
-            if (transaction.reconcile == 1) { 
-                ct += (transaction.credit - transaction.debit) 
-            }
-
-            setUnclearedTransactionsTotal(uct)
-            setClearedTransactionsTotal(ct)
-            setBeginningBalance( +activeCashTrackingAccount.bankBalance - uct - ct)
-
-        })
-    }
-    useEffect(() => {
-        handleClearedTransactionsTotal()
-    }, [transactions])  
-
-
+ 
 
     const handleChangeCategoryFilter = (e) => {
         e.preventDefault()
@@ -221,13 +248,14 @@ function Accounts() {
 
     const handleDeleteAccount = () => {
         if (confirm("Deleting an account will delete all of its transactions. Are you sure?") == true) {
+            setBankAccountIsDeleting(true)
             alertService.clear();
             categoryService.delete(activeCashTrackingAccount.id)
                 .then((res) => {
                     alertService.success('Deleted');
-                    getTransactions(); //this will also fetch bank accounts due to getTransactions useEffect dependencies
                     setActiveCategory('')
                     setActiveCashTrackingAccount('')
+                    setBankAccountIsDeleting(false)
                 })
                 .catch(error => {
                     alertService.error(error);
@@ -258,7 +286,7 @@ function Accounts() {
                 <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
                 {
                     showAddAccountForm &&
-                    <AccountsForm getTransactions={getTransactions} setShowAddAccountForm={setShowAddAccountForm}/>
+                    <AccountsForm setBankAccountIsPosting={setBankAccountIsPosting} setShowAddAccountForm={setShowAddAccountForm}/>
                 }
 
                 {cashTrackingAccountsWithTotals &&
@@ -271,9 +299,8 @@ function Accounts() {
                <div className="row mb-4">
                    <div className="col">
                        <TransactionForm 
-                            getTransactions={() => getTransactions()} 
+                            setTransactionIsPosting={setTransactionIsPosting} 
                             categories={categories}
-                            getCategories={() => getCategories()} 
                             editingTransaction={editingTransaction}
                             setEditingTransaction={(arr) => setEditingTransaction(arr)}
                             setShowDrawer={() => setShowDrawer()}
@@ -318,7 +345,6 @@ function Accounts() {
                     transactionsAreLoaded={transactionsAreLoaded}
                     transactionsCount={transactionsCount}
                     transactionsLimit={transactionsLimit}
-                    getTransactions={getTransactions} 
                     categories={categories}
                     activeCashTrackingAccount={activeCashTrackingAccount}
                     activeCategory={activeCategory}
@@ -326,7 +352,7 @@ function Accounts() {
                     handleClickDeleteTransaction={handleClickDeleteTransaction} 
                     handleClickReconcileTransaction={handleClickReconcileTransaction} 
                     reconcilingTransaction={reconcilingTransaction}
-                    reconcilingTransactionIsLoading={reconcilingTransactionIsLoading}
+                    reconcilingTransactionIsUpdating={reconcilingTransactionIsUpdating}
                     handlClickShowMore={handlClickShowMore}
                     handleChangeCategoryFilter={handleChangeCategoryFilter}
                 />
