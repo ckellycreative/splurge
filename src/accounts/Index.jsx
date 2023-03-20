@@ -141,11 +141,6 @@ function Accounts() {
 
     useEffect(() => {
         function handleClearedTransactionsTotal() {
-
-            setUnclearedTransactionsTotal(0)
-            setClearedTransactionsTotal(0)
-            setBeginningBalance(0)
-
             let activeCashTrackingAccountBankBalance = 0
             let uct = 0
             let ct = 0
@@ -157,13 +152,18 @@ function Accounts() {
                     ct += (transaction.credit - transaction.debit) 
                 }
                 cashTrackingAccountsWithTotals.map(acct => {
-                    if (acct.id == activeCashTrackingAccount.id){
+                    if (acct.id == activeCashTrackingAccount){
                         activeCashTrackingAccountBankBalance = acct.bankBalance
                     }
                 })
                 setUnclearedTransactionsTotal(uct)
                 setClearedTransactionsTotal(ct)
                 setBeginningBalance( +activeCashTrackingAccountBankBalance - uct - ct) //activeCashTrackingAccount is set intially but doesnt update with new/deleted transactions
+                console.log('setUnclearedTransactionsTotal', uct)
+                console.log('setClearedTransactionsTotal', ct)
+                console.log('+activeCashTrackingAccountBankBalance', activeCashTrackingAccountBankBalance)
+                console.log('BeginningBalance = +activeCashTrackingAccountBankBalance - uct - ct')
+                console.log('setBeginningBalance', +activeCashTrackingAccountBankBalance - uct - ct)
 
             })
         }
