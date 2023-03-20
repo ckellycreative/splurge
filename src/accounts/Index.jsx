@@ -142,9 +142,9 @@ function Accounts() {
     useEffect(() => {
         function handleClearedTransactionsTotal() {
 
-            setUnclearedTransactionsTotal = 0
-            setClearedTransactionsTotal = 0
-            setBeginningBalance = 0
+            setUnclearedTransactionsTotal(0)
+            setClearedTransactionsTotal(0)
+            setBeginningBalance(0)
 
             let activeCashTrackingAccountBankBalance = 0
             let uct = 0
