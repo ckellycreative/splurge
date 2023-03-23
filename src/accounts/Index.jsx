@@ -159,11 +159,6 @@ function Accounts() {
                 setUnclearedTransactionsTotal(uct)
                 setClearedTransactionsTotal(ct)
                 setBeginningBalance( +activeCashTrackingAccountBankBalance - uct - ct) //activeCashTrackingAccount is set intially but doesnt update with new/deleted transactions
-                console.log('setUnclearedTransactionsTotal', uct)
-                console.log('setClearedTransactionsTotal', ct)
-                console.log('+activeCashTrackingAccountBankBalance', activeCashTrackingAccountBankBalance)
-                console.log('BeginningBalance = +activeCashTrackingAccountBankBalance - uct - ct')
-                console.log('setBeginningBalance', +activeCashTrackingAccountBankBalance - uct - ct)
 
             })
         }
@@ -245,8 +240,12 @@ function Accounts() {
  
 
     const handleChangeCategoryFilter = (e) => {
-        e.preventDefault()
-        setActiveCategory(e.target.value)
+        if (e == ''){
+            setActiveCategory('')
+        }else {
+            e.preventDefault()
+            setActiveCategory(e.target.value)
+        }
     }
 
 
@@ -285,20 +284,20 @@ function Accounts() {
                 </React.Fragment>
             }
 
-            <div className="col-md-3 sidebar">
+            <div className="col-md-3 py-3 px-0 nav-secondary bg-secondary">
                 
-                <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
+                {cashTrackingAccountsWithTotals &&
+                    <AccountsNav cashTrackingAccountsWithTotals={cashTrackingAccountsWithTotals} activeCashTrackingAccount={activeCashTrackingAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
+                }
+                <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link text-white"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
                 {
                     showAddAccountForm &&
                     <AccountsForm setBankAccountIsPosting={setBankAccountIsPosting} setShowAddAccountForm={setShowAddAccountForm}/>
                 }
 
-                {cashTrackingAccountsWithTotals &&
-                    <AccountsNav cashTrackingAccountsWithTotals={cashTrackingAccountsWithTotals} activeCashTrackingAccount={activeCashTrackingAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
-                }
 
             </div>
-            <div className="col-md-9 main">
+            <div className="col-md-9 py-3 main">
                
                <div className="row mb-4">
                    <div className="col">

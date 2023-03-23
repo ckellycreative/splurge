@@ -62,10 +62,12 @@ function AccountsForm(props) {
 	return(
          <Formik initialValues={(initialValues)} validationSchema={validationSchema} onSubmit={onSubmit} enableReinitialize >
             {({ values, errors, touched, isSubmitting, handleChange, handleBlur, resetForm}) => (
-                <Form>
-                    <Field name="category_title" placeholder='Account Name' type="text" className={'form-control'} />
-                    <ErrorMessage name="category_title" component="div" className="text-danger" />
-                   <div className='input-group'>
+                <Form className="px-3">
+                    <div className="mb-2">
+                        <Field name="category_title" placeholder='Account Name' type="text" className={'form-control'} />
+                        <ErrorMessage name="category_title" component="div" className="text-danger" />
+                    </div>
+                   <div className='input-group mb-2'>
                         <span className="input-group-text">Opening Balance $</span>
                         <Field name="openingBalance" type="number" step="0.01">
                             {({ field }) => (
@@ -91,7 +93,7 @@ function AccountsForm(props) {
                         Save it!
                     </button> 
                     &nbsp;
-                    <button type="reset" onClick={() => props.setShowAddAccountForm(false)} className="btn btn-outline-secondary">Cancel</button>
+                    <button type="reset" onClick={() => props.setShowAddAccountForm(false)} className="btn btn-outline-light">Cancel</button>
 
                 </Form>
             )}

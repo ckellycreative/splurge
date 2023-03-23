@@ -8,11 +8,17 @@ import { CategorySelectOptions } from './CategorySelectOptions'
 function TransactionList(props) {
 	return(
                 <div className="TransactionList">
-                    <div className='input-group'>
-                        <span className="input-group-text"><i className="bi-filter"></i></span>
-                        <select onChange={(e) => props.handleChangeCategoryFilter(e)} value={props.activeCategory} component="select" className={'form-control CategorySelect'}>
-                            <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Filter Categories" />
-                        </select>
+                    <div className="row">
+                        <div className="col-md-4">
+                            <div className='input-group'>
+                                <select onChange={(e) => props.handleChangeCategoryFilter(e)} value={props.activeCategory} component="select" className={'form-control CategorySelect'}>
+                                    <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Filter Categories" />
+                                </select>
+                                {props.activeCategory &&
+                                    <button onClick={() => props.handleChangeCategoryFilter('')} className="btn btn-secondary" type="button" id="button-addon2"><i className="bi-slash-circle"></i></button>
+                                }
+                            </div>
+                        </div>
                     </div>
 
                     {

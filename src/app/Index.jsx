@@ -32,7 +32,7 @@ function App() {
                     
                     <Nav />
                     
-                    <div className="col py-3">
+                    <div className="col">
                         <Alert />
                         <Switch>
                             <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />

@@ -1,0 +1,21 @@
+.AccountsNav {
+	&.nav-pills {
+		li.nav-item {
+			a.nav-link {
+				color: #FFFFFF;
+				border-radius: 0;
+
+				&.active {
+					background-color: $light;
+					color: $secondary;
+				}
+
+				&:hover {
+					background-color: $gray-200;
+					color: $secondary;
+				}
+			}
+		}
+	}
+
+}
