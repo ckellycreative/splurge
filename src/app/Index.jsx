@@ -27,12 +27,10 @@ function App() {
 
 
     return (
-            <div className='container-fluid bg-light'>
-                <div className="row flex-nowrap">
+            <div>
+                <Nav />                    
                     
-                    <Nav />
-                    
-                    <div className="col">
+                    <div className="container-fluid px-5 pt-3 pb-5">
                         <Alert />
                         <Switch>
                             <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
@@ -46,7 +44,6 @@ function App() {
                             <Redirect from="*" to="/" />
                         </Switch>
                     </div>
-                </div>
             </div>
     );
 }

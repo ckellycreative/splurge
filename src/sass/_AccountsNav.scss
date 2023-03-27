@@ -2,17 +2,30 @@
 	&.nav-pills {
 		li.nav-item {
 			a.nav-link {
-				color: #FFFFFF;
-				border-radius: 0;
-
+				@extend .fs-7;
+				color: $body-color;
+				position: relative;
+				display: flex;
+				overflow: hidden;
 				&.active {
-					background-color: $light;
-					color: $secondary;
+					background-color: $teal-100;
+					&::before {
+						content: " ";
+						border-left: 4px solid $teal-400;
+						height: 100%;
+						left: 0px;
+						position: absolute;
+						top: 0px;
+						border-radius: 3px;
+					}
 				}
 
 				&:hover {
-					background-color: $gray-200;
-					color: $secondary;
+				}
+
+				.account-balance-list-amount {
+					@extend .fs-9;
+					@extend .text-end;
 				}
 			}
 		}

@@ -24,7 +24,7 @@ function PlanSavingsList(props) {
                     return (    
                         <React.Fragment key={isGroupTotal ? cat.grpid : cat.ChildCategory.id}>
                         {isNewCategoryGroup  && !isGroupTotal &&
-                            <div className="row tabular-data">
+                            <div className="row tabular-data tabular-head">
                                 <div className="col-sm-6">
                                     <span className="h5">{cat.category_title}</span>
 

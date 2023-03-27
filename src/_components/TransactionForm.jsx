@@ -1,23 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik';
-import { animated, useTransition } from "react-spring"
 import moment from 'moment'
 import * as Yup from 'yup';
 import { alertService, transactionService } from '@/_services';
 import { fetchWrapper, history } from '@/_helpers';
 import MaskedInput from 'react-text-mask'
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
-import { CategorySelectOptions } from './CategorySelectOptions'
+import { CategorySelectOptions } from '../_components/CategorySelectOptions'
 
 function TransactionForm(props) {
     const [splitIsVisible, setSplitIsVisible] = useState(false)
     const [splitTotal, setSplitTotal] = useState('')
-    const [showDrawer, setShowDrawer] = useState();
-    const transitions = useTransition(showDrawer, {
-        from: { position: "fixed", right: '-320px', width: '320px', opacity: 0 },
-        enter: { right: '0', opacity: 1 },
-        leave: { right: '-320px', opacity: 0 }
-    });
 
 
     /* ----------
@@ -81,28 +74,12 @@ function TransactionForm(props) {
         Click Handlers  
     -------------*/
 
-    const handleClickCancel = () => {
-        setShowDrawer()
-        props.setEditingTransaction(null)
-
-    }
-
+ 
 
 
     /* ----------
         Handle Editing Transactions  
     -------------*/
-
-    useEffect(() => {
-        handleEditingTransaction()
-    }, [props.editingTransaction])  
-    
-
-
-    const handleEditingTransaction = () => {
-
-        (props.editingTransaction == null) ? setShowDrawer() : setShowDrawer((prevState) => !prevState)
-    }
 
     const editingTransactionValues = {
         id: props.editingTransaction && props.editingTransaction.id,
@@ -231,7 +208,7 @@ function TransactionForm(props) {
                     resetForm();  
                     props.setTransactionIsPosting(false);
                     props.setEditingTransaction(null);
-                    setShowDrawer();
+                    props.setShowDrawer();
         }
     }
 
@@ -239,37 +216,24 @@ function TransactionForm(props) {
 	return(
     <div>
 
-        <button className="btn btn-primary btn-lg" onClick={() => setShowDrawer((prevState) => !prevState)}>
-          New Transaction
-        </button>
-
-        <div className="drawer-container">
-            {transitions(({ position, right, opacity, width }, item) => (
-                <animated.div
-                  style={{ opacity: opacity}}
-                  className="drawer-overlay"
-                >
-                    <animated.div style={{ right: right, position: position, width: width }} className="drawer" >
-
-
                         <Formik initialValues={(props.editingTransaction ? editingTransactionValues : initialValues)} validationSchema={validationSchema} onSubmit={onSubmit} enableReinitialize >
                             {({ values, errors, touched, isSubmitting, handleChange, handleBlur }) => (
                             <Form>
 
                                 <Field name="transaction_date" type="date" className={'form-control'} />
-                                <Field name="transaction_description" type="text" placeholder='Description' className={'form-control'} />
+                                <Field name="transaction_description" type="text" placeholder='Description' className={'form-control mt-2'} />
                                 <ErrorMessage name="transaction_description" component="div" className="text-danger" />
-                                <div>
+                                <div className="mt-2">
 
                                         <Field name="bank_account_id" component="select" className={'form-control CategorySelect'}>
                                             <CategorySelectOptions categories={props.categories} categoryType="bankAccount" defaultOption="Select an Account" />
                                         </Field>
 
-                                 <ErrorMessage name="bank_account_id" component="div" className="text-danger" />
+                                        <ErrorMessage name="bank_account_id" component="div" className="text-danger" />
 
                                 </div>
 
-                                <div className='input-group'>
+                                <div className='input-group mt-2'>
                                     <span className="input-group-text">$</span>
                                     <Field name="amount" type="number" step="0.01" placeholder='Amount'>
                                         {({ field }) => (
@@ -294,7 +258,7 @@ function TransactionForm(props) {
 
 
                                <div>
-                                    <div className='input-group'>
+                                    <div className='input-group mt-2'>
 
                                         <Field name="categoryId" disabled={values.isSplit} component="select" className={'form-control CategorySelect'}>
                                             <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Select a Category" />
@@ -316,7 +280,7 @@ function TransactionForm(props) {
 
                                                     {values.splits.length > 0 &&
                                                     values.splits.map((split, index) => (
-                                                        <div className="row" key={index}>
+                                                        <div className="row  mt-2" key={index}>
                                                             <div className="col-sm-6">
                                                                 <Field name={`splits.${index}.catId`} component="select" className={'form-control CategorySelect'}>
                                                                     <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Select a Category" />
@@ -353,13 +317,13 @@ function TransactionForm(props) {
                                                         </div>
                                                     ))}
 
-                                                    <div>
+                                                    <div className="mt-2">
                                                         <button type="button" className="btn btn-secondary" onClick={() => push({ catId: "", splitAmount: "" })}>
                                                             Add Split
                                                         </button>
                                                     </div>
 
-                                                    <div className={`alert alert-${(values.amount - splitTotal) == 0 ? 'success' : 'warning'}`}>
+                                                    <div className={`alert alert-${(values.amount - splitTotal) == 0 ? 'success' : 'warning'}  mt-2`}>
                                                         Remaining: {(values.amount - values.splits.reduce((s, a) => s + +a.splitAmount, 0)).toFixed(2).replace('-0.00', '0.00')}
                                                     </div>
 
@@ -370,14 +334,14 @@ function TransactionForm(props) {
                                 }                                
 
                                                 
-                                <div className="row">
+                                <div className="row mt-2">
                                     <div className="form-group col">
                                         <button type="submit" disabled={isSubmitting} className="btn btn-primary">
                                             {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
                                             Save it!
                                         </button> 
                                         &nbsp;
-                                        <button type="button" className="btn btn-outline-secondary" onClick={() => handleClickCancel()}>Cancel</button>
+                                        <button type="button" className="btn btn-outline-secondary" onClick={() => props.handleClickCancelDrawer()}>Cancel</button>
                                     </div>
                                 </div>
 
@@ -385,14 +349,6 @@ function TransactionForm(props) {
                             </Form>
                         )}
                         </Formik>
-
-
-                    </animated.div>
-                    <div className="drawer-fill" onClick={() => handleClickCancel() /*Sets back to undefined */ } />
-                </animated.div>
-            ))}
-        </div>
-
 
 
     </div>

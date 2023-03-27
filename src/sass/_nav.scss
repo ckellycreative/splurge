@@ -1,6 +1,21 @@
-.admin-nav {
-    padding-top: 0;
-    padding-bottom: 0;
-    background-color: #e8e9ea;
-    border-bottom: 1px solid #ccc;
+
+.navbar {
+
+    .nav-link {
+        &.active {
+            background-color: $gray-800;
+        }
+
+    }
+
+    .admin-nav {
+        padding-top: 0;
+        padding-bottom: 0;
+        background-color: #e8e9ea;
+        border-bottom: 1px solid #ccc;
+    }
+
+
 }
+
+

@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import moment from 'moment'
+import { animated, useTransition } from "react-spring"
+
 import { transactionService, categoryService, alertService } from '@/_services'
 import { TransactionForm } from '../_components/TransactionForm'
 import { TransactionList } from '../_components/TransactionList'
 import { AccountsNav } from '../_components/AccountsNav'
 import { AccountsForm } from '../_components/AccountsForm'
+import { CategorySelectOptions } from '../_components/CategorySelectOptions'
 
 
 
@@ -18,7 +21,7 @@ function Accounts() {
     const [categoriesAreLoaded, setCategoriesAreLoaded] = useState(false)
     const [cashTrackingAccountsWithTotals, setCashTrackingAccountsWithTotals] = useState([])
     const [cashTrackingAccountsWithTotalsAreLoaded, setCashTrackingAccountsWithTotalsAreLoaded] = useState(false)
-    const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState(0)
+    const [activeCashTrackingAccount, setActiveCashTrackingAccount] = useState('')
     const [activeCategory, setActiveCategory] = useState('')
     const [showAddAccountForm, setShowAddAccountForm] = useState(false)
     const [bankAccountIsDeleting, setBankAccountIsDeleting] = useState(false)
@@ -34,13 +37,21 @@ function Accounts() {
     const [transactionsLimit, setTransactionsLimit] = useState(defaultTransactionsLimit)
     const [editingTransaction, setEditingTransaction] = useState(null)
     //Reconcile
-    const [showReconcileDialog, setShowReconcileDialog] = useState(false)
     const [reconcilingTransaction, setReconcilingTransaction] = useState('')
     const [reconcilingTransactionIsUpdating, setReconcilingTransactionIsUpdating] = useState(false)
     const [completeReconcileAccountIsUpdating, setCompleteReconcileAccountIsUpdating] = useState(false)
     const [unclearedTransactionsTotal, setUnclearedTransactionsTotal] = useState(0)
     const [clearedTransactionsTotal, setClearedTransactionsTotal] = useState(0)
     const [beginningBalance, setBeginningBalance] = useState(0)
+    //Drawer
+    const [showDrawer, setShowDrawer] = useState();
+    const transitions = useTransition(showDrawer, {
+        from: { position: "fixed", right: '-320px', width: '320px', opacity: 0 },
+        enter: { right: '0', opacity: 1 },
+        leave: { right: '-320px', opacity: 0 }
+    });
+
+
 
     const dataIsLoading = 
     (
@@ -102,8 +113,9 @@ function Accounts() {
     useEffect(() => {
         function getTransactions() {
             setTransactionsAreLoaded(false)
+            const activeCashTrackingAccountId = (!activeCashTrackingAccount) ? 0 : activeCashTrackingAccount.id  //  0 activeCashTrackingAccount will return all categories from the API
             const activeCategoryId = (!activeCategory) ? 0 : activeCategory  //  0 activeCategory will return all categories from the API
-            transactionService.getAll(activeCashTrackingAccount, activeCategoryId, transactionsLimit) 
+            transactionService.getAll(activeCashTrackingAccountId, activeCategoryId, transactionsLimit) 
             .then((data) => {
                 setTransactionsAreLoaded(true);
                 setTransactions(data.transactions);
@@ -152,7 +164,7 @@ function Accounts() {
                     ct += (transaction.credit - transaction.debit) 
                 }
                 cashTrackingAccountsWithTotals.map(acct => {
-                    if (acct.id == activeCashTrackingAccount){
+                    if (acct.id == activeCashTrackingAccount.id){
                         activeCashTrackingAccountBankBalance = acct.bankBalance
                     }
                 })
@@ -172,10 +184,33 @@ function Accounts() {
         setEditingTransaction(t)
      }
 
-     const handleClickAccountsNavItem = (catid) => {
-        setActiveCashTrackingAccount(catid)
+
+   const handleClickCancelDrawer = () => {
+        setShowDrawer()
+        setEditingTransaction(null)
+
+    }
+
+
+
+
+    const handleEditingTransaction = () => {
+        (editingTransaction == null) ? setShowDrawer() : setShowDrawer((prevState) => !prevState)
+    }
+    useEffect(() => {
+        handleEditingTransaction()
+    }, [editingTransaction])  
+    
+
+
+
+
+
+
+
+     const handleClickAccountsNavItem = (cat) => {
+        setActiveCashTrackingAccount(cat)
         setTransactionsLimit(defaultTransactionsLimit)
-        setShowReconcileDialog(false)
      }
         
     const handleClickDeleteTransaction = (id) => {
@@ -228,7 +263,6 @@ function Accounts() {
         transactionService.bulkCreate(updatedTransactions)
             .then((res) => {
                 alertService.success('Account Reconciled');
-                setShowReconcileDialog(false)
                 setCompleteReconcileAccountIsUpdating(false)
             })
             .catch(error => {
@@ -270,102 +304,143 @@ function Accounts() {
 
 
 
+
+
+
     return (
+        <React.Fragment>
+            
+           <div className="row">
+                <div className="col">
+                    <h1>{(activeCashTrackingAccount) ? activeCashTrackingAccount.category_title : 'All Accounts'}</h1>
+                </div>
+                <div className="col text-end">
+                    { activeCashTrackingAccount  &&
+                        <div>
 
+                            <div className="dropdown d-inline-block">
+                              <button className="btn btn-outline-secondary btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Actions
+                              </button>
+                              <ul className="dropdown-menu">
+                                <li><a className="dropdown-item" onClick={handleDeleteAccount}>Delete Account</a></li>
+                              </ul>
+                            </div>
 
-        <div className="row Accounts">
+                            &nbsp;
 
-            { dataIsLoading &&
-                <React.Fragment>
-                        <div  className="spinner-border spinner-page text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                        </div>
-                        <div  className="spinner-overlay" role="status"></div>
-                </React.Fragment>
-            }
-
-            <div className="col-md-3 py-3 px-0 nav-secondary bg-secondary">
-                
-                {cashTrackingAccountsWithTotals &&
-                    <AccountsNav cashTrackingAccountsWithTotals={cashTrackingAccountsWithTotals} activeCashTrackingAccount={activeCashTrackingAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
-                }
-                <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link text-white"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
-                {
-                    showAddAccountForm &&
-                    <AccountsForm setBankAccountIsPosting={setBankAccountIsPosting} setShowAddAccountForm={setShowAddAccountForm}/>
-                }
-
-
-            </div>
-            <div className="col-md-9 py-3 main">
-               
-               <div className="row mb-4">
-                   <div className="col">
-                       <TransactionForm 
-                            setTransactionIsPosting={setTransactionIsPosting} 
-                            categories={categories}
-                            editingTransaction={editingTransaction}
-                            setEditingTransaction={(arr) => setEditingTransaction(arr)}
-                            setShowDrawer={() => setShowDrawer()}
-                        />
-                    </div>
-
-                   <div className="col">
-                        { activeCashTrackingAccount != 0 &&
-                            <div>
-                                <div className="dropdown">
-                                  <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Actions
-                                  </button>
-                                  <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" onClick={() => setShowReconcileDialog(true)}>Reconcile</a></li>
-                                    <li><a className="dropdown-item" onClick={handleDeleteAccount}>Delete Account</a></li>
-                                  </ul>
+                            <div className="dropdown d-inline-block">
+                              <button className="btn btn-outline-secondary btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Reconcile
+                              </button>
+                              <div className="dropdown-menu p-1">
+                                <div className="m-b-1">Does your bank balance match?: {(beginningBalance + clearedTransactionsTotal  ).toFixed(2)}</div>
+                                <div className="text-center">
+                                    <button onClick={() => handleClickCompleteReconcileAccount()} type="button" className="btn btn-success btn-sm">Yes</button>
+                                    &nbsp;
+                                    <button  type="button" className="btn btn-secondary btn-sm">No</button>
                                 </div>
 
-                                {
-                                        showReconcileDialog && 
-                                        <div>
-                                            <span> 
-                                                Does your bank balance match?: 
-                                                {
-                                                    
-                                                    (beginningBalance + clearedTransactionsTotal  ).toFixed(2)
-                                                }
-                                            </span>
-                                            <button onClick={() => handleClickCompleteReconcileAccount()} type="button" className="btn btn-success btn-sm">Yes</button>
-                                            <button onClick={() => setShowReconcileDialog(false)} type="button" className="btn btn-secondary btn-sm">No</button>
-                                        </div>
-                                    }
+                              </div>
                             </div>
-                        }
-                    </div>
+                        </div>
+                    }                    
                 </div>
-
-
-                <TransactionList 
-                    transactions={transactions}
-                    transactionsAreLoaded={transactionsAreLoaded}
-                    transactionsCount={transactionsCount}
-                    transactionsLimit={transactionsLimit}
-                    categories={categories}
-                    activeCashTrackingAccount={activeCashTrackingAccount}
-                    activeCategory={activeCategory}
-                    handleClickEditTransaction={handleClickEditTransaction} 
-                    handleClickDeleteTransaction={handleClickDeleteTransaction} 
-                    handleClickReconcileTransaction={handleClickReconcileTransaction} 
-                    reconcilingTransaction={reconcilingTransaction}
-                    reconcilingTransactionIsUpdating={reconcilingTransactionIsUpdating}
-                    handlClickShowMore={handlClickShowMore}
-                    handleChangeCategoryFilter={handleChangeCategoryFilter}
-                />
-
             </div>
 
 
-        </div>
+            <div className="row Accounts mt-3">
 
+                { dataIsLoading &&
+                    <React.Fragment>
+                            <div  className="spinner-border spinner-page text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                            <div  className="spinner-overlay" role="status"></div>
+                    </React.Fragment>
+                }
+
+                <div style={{width:'320px'}} className="">
+                    
+                    {cashTrackingAccountsWithTotals &&
+                        <AccountsNav cashTrackingAccountsWithTotals={cashTrackingAccountsWithTotals} activeCashTrackingAccount={activeCashTrackingAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
+                    }
+                    <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link fs-8"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
+                    {
+                        showAddAccountForm &&
+                        <AccountsForm setBankAccountIsPosting={setBankAccountIsPosting} setShowAddAccountForm={setShowAddAccountForm}/>
+                    }
+
+
+                </div>
+                <div className="col main">
+                   
+                  
+                    <div className="mb-4">
+                        <button className="btn btn-primary me-2" onClick={() => setShowDrawer((prevState) => !prevState)}>
+                          New Transaction
+                        </button>
+
+                        <div className='d-inline-block'>
+                            <div className='input-group input-group-sm'>
+                                <select onChange={(e) => handleChangeCategoryFilter(e)} value={activeCategory} component="select" className={'form-control CategorySelect'}>
+                                    <CategorySelectOptions categories={categories} categoryType="all" defaultOption="Filter Transactions" />
+                                </select>
+                                {activeCategory &&
+                                    <button onClick={() => handleChangeCategoryFilter('')} className="btn btn-secondary" type="button" id="button-addon2"><i className="bi-slash-circle"></i></button>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <TransactionList 
+                        transactions={transactions}
+                        transactionsAreLoaded={transactionsAreLoaded}
+                        transactionsCount={transactionsCount}
+                        transactionsLimit={transactionsLimit}
+                        categories={categories}
+                        activeCashTrackingAccount={activeCashTrackingAccount}
+                        activeCategory={activeCategory}
+                        handleClickEditTransaction={handleClickEditTransaction} 
+                        handleClickDeleteTransaction={handleClickDeleteTransaction} 
+                        handleClickReconcileTransaction={handleClickReconcileTransaction} 
+                        reconcilingTransaction={reconcilingTransaction}
+                        reconcilingTransactionIsUpdating={reconcilingTransactionIsUpdating}
+                        handlClickShowMore={handlClickShowMore}
+                        handleChangeCategoryFilter={handleChangeCategoryFilter}
+                    />
+
+
+                    <div className="drawer-container">
+                        {transitions(({ position, right, opacity, width }, item) => (
+                            <animated.div
+                              style={{ opacity: opacity}}
+                              className="drawer-overlay"
+                            >
+                                <animated.div style={{ right: right, position: position, width: width }} className="drawer" >
+
+                                   <TransactionForm 
+                                        setTransactionIsPosting={setTransactionIsPosting} 
+                                        categories={categories}
+                                        editingTransaction={editingTransaction}
+                                        setEditingTransaction={(arr) => setEditingTransaction(arr)}
+                                        setShowDrawer={() => setShowDrawer()}
+                                        handleClickCancelDrawer={handleClickCancelDrawer}
+                                    />
+
+                                </animated.div>
+                                <div className="drawer-fill" onClick={() => handleClickCancelDrawer() /*Sets back to undefined */ } />
+                            </animated.div>
+                        ))}
+                    </div>
+
+                </div>
+            </div>
+        </React.Fragment>
     );
 }
 
 export { Accounts };
+

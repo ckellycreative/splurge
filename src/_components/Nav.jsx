@@ -17,34 +17,39 @@ function Nav() {
     if (!user) return null;
 
     return (
-            <div className="col-auto col-md-2 col-xl-1 px-sm-2 px-0 bg-dark text-light min-vh-100">
-                <ul className="nav flex-column mb-auto">
-                    <li className="nav-item">
-                        <NavLink exact to="/" className="nav-link">Splurge</NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <NavLink to="/accounts" className="nav-link">Accounts</NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <NavLink to="/plan" className="nav-link">Plan</NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <NavLink to="/reports" className="nav-link">Reports</NavLink>
-                    </li>
-                    {user.role === Role.Admin &&
-                    <li className="nav-item">
-                        <NavLink to="/admin" className="nav-link">Admin</NavLink>
-                        <Route path="/admin" component={AdminNav} />
-                    </li>
-                    }
-                    <li className="nav-item">
-                        <NavLink to="/profile" className="nav-link">Profile</NavLink>
-                    </li>
-                    <li className="nav-item">
-                        <a onClick={accountService.logout} className="nav-link">Logout</a>
-                    </li>
-                </ul>
+        <nav className="navbar navbar-expand navbar-dark bg-dark">
+            <div className="container-fluid">
+                <NavLink exact to="/" className="nav-link navbar-brand text-white me-3">Splurge</NavLink>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul className="navbar-nav">
+                        <li className="nav-item">
+                            <NavLink to="/accounts" className="nav-link">Accounts</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/plan" className="nav-link">Plan</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink to="/reports" className="nav-link">Reports</NavLink>
+                        </li>
+                        {user.role === Role.Admin &&
+                        <li className="nav-item">
+                            <NavLink to="/admin" className="nav-link">Admin</NavLink>
+                            <Route path="/admin" component={AdminNav} />
+                        </li>
+                        }
+                        <li className="nav-item">
+                            <NavLink to="/profile" className="nav-link">Profile</NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <a onClick={accountService.logout} className="nav-link">Logout</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        </nav>
 
     );
 }

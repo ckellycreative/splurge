@@ -182,6 +182,8 @@ function Reports() {
 
 
     return (
+ <React.Fragment>
+            <h1>Reports</h1>
 
             <div className="row Reports">
 
@@ -196,7 +198,6 @@ function Reports() {
                 }
 
                 <div className="col-md-9">
-                    <h1>Reports</h1>
                     <div className="row mb-5">
                         <div className=" col input-group">
                             <span className="input-group-text">From</span>
@@ -229,6 +230,9 @@ function Reports() {
                 </div>
 
                 <div className="col-md-3">
+                    <div className="row tabular-data tabular-head">
+                        <div className="col-md-9">Report Totals</div>
+                    </div>
                     <div className="row tabular-data">
                         <div className="col-md-9">Total Income</div>
                         <div className='col-sm-3 text-end'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
@@ -243,7 +247,7 @@ function Reports() {
                     </div>
                 </div>
             </div>
-
+ </React.Fragment>
 
      );
 }

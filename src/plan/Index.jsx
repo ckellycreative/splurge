@@ -587,7 +587,7 @@ const getCategories = () => {
 
                     <div className="col-md-4 sidebar">
                         <h2>Overview</h2>
-                        <div className="row tabular-data">
+                        <div className="row tabular-data tabular-head">
                             <div className="col-sm-6 fw-bold">
                                 Total Cash At Start of Month
                             </div>
@@ -595,29 +595,29 @@ const getCategories = () => {
                                 <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
                             </div>           
                         </div>
-                        <div className="row tabular-data tabular-head">
+                        <div className="row tabular-data tabular-head mt-4">
                             <div className="col-sm-4 offset-sm-4 text-end">Plan</div>
                             <div className="col-sm-4 text-end">Actual</div>
                         </div>
 
-                        <div className="tabular-data row">
+                        <div className="tabular-data row bg-light">
                             <div className="col-sm-4 fw-bold">
                                 Income
                             </div>
                             <div className="col-sm-4 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             <div className="col-sm-4 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                         </div>
-                        <div className="tabular-data row">
+                        <div className="tabular-data row bg-light">
                             <div className="col-sm-4 fw-bold">Expense</div>
                             <div className="col-sm-4 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             <div className="col-sm-4 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                         </div>
-                        <div className="tabular-data row">
+                        <div className="tabular-data row bg-light">
                             <div className="col-sm-4 fw-bold">Net</div>
                             <div className="col-sm-4 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
                             <div className="col-sm-4 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
                         </div>
-                        <div className="tabular-data row">
+                        <div className="tabular-data row bg-light">
                             <div className="col-sm-4 fw-bold">Investments</div>
                             <div className="col-sm-4 text-end"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             <div className="col-sm-4 text-end"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
@@ -651,7 +651,7 @@ const getCategories = () => {
                             <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                         </div>
 
-                        <div className="tabular-data row mt-4">
+                        <div className="tabular-data tabular-head row mt-4">
                             <div className="col-sm-4 fw-bold">Unallocated</div>
                             <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (planIncomeTotal - planExpenseTotal) - planInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
                             <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (actualIncomeTotal + actualExpenseTotal) + actualInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
