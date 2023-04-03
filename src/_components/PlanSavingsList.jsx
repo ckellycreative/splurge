@@ -24,24 +24,35 @@ function PlanSavingsList(props) {
                     return (    
                         <React.Fragment key={isGroupTotal ? cat.grpid : cat.ChildCategory.id}>
                         {isNewCategoryGroup  && !isGroupTotal &&
-                            <div className="row tabular-data tabular-head">
-                                <div className="col-sm-6">
-                                    <span className="h5">{cat.category_title}</span>
 
-                                    <div className="btn-group dropdown">
-                                      <i className="bi-folder-plus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                        <div className="dropdown-menu px-2" style={ {minWidth: '500px'} }>
-                                            <CategoryForm parentId={cat.id} category_type='savings' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
-                                        </div>
-                                    </div>
 
-                                </div>
+                            <React.Fragment>
+                                        <tr>
+                                            <td colSpan="2" className="">
+                                                <h4>{cat.category_title}</h4>
+                                            </td>
+                                            <td className="text-end">
+                                                <div className="btn-group dropdown">
+                                                    <i className="bi-folder-plus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                    <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
+                                                        <CategoryForm parentId={cat.id} category_type='savings' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
+                                                    </div>
+                                                </div>
+                                            </td>
 
-                            </div>
+                                        </tr>
+
+                                        <tr className="fs-9">
+                                            <th className="">&nbsp;</th>
+                                            <th className="text-end">Plan</th>
+                                            <th className="text-end">Actual</th>
+                                        </tr>
+                            </React.Fragment>
+
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
-                        <div className="row tabular-data">
-                            <div className="col-sm-4">
+                        <tr>
+                            <td>
                                 {
                                     props.editCategory == cat.ChildCategory.id &&
                                     <input onKeyPress={props.handleUpdateCategory} onBlur={props.handleUpdateCategory} onChange={props.handleChangeNewCategoryTitle} value={props.newCategoryTitle} autoFocus name="category_title" type="text" placeholder='Category Title' className={'form-control'} />
@@ -61,8 +72,8 @@ function PlanSavingsList(props) {
                                     </span>
                                 }
 
-                            </div>
-                            <div className="col-sm-4 text-end">
+                            </td>
+                            <td className="table-column-currency">
                                 {
                                     props.editPlan == cat.CategoryPlan.id &&
 
@@ -82,11 +93,11 @@ function PlanSavingsList(props) {
                                     <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
                                 }
 
-                            </div>
-                            <div className="col-sm-4 text-end text-muted">
+                            </td>
+                            <td className="table-column-currency text-muted">
                                 <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                         }
 
 

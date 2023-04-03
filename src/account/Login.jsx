@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { Spinner } from '../_components/Spinner'
 
 import { accountService, alertService } from '@/_services';
 
@@ -47,15 +48,14 @@ function Login({ history, location }) {
                             <Field name="password" type="password" className={'form-control' + (errors.password && touched.password ? ' is-invalid' : '')} />
                             <ErrorMessage name="password" component="div" className="invalid-feedback" />
                         </div>
-                        <div className="form-row">
+                        <div className="form-row mt-3">
                             <div className="form-group col">
                                 <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-                                    {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
-                                    Login
+                                    Login {isSubmitting && <Spinner spinnerIcon='border' size='sm' overlay={false} textColor="white" />}
                                 </button>
                                 <Link to="register" className="btn btn-link">Register</Link>
                             </div>
-                            <div className="form-group col text-right">
+                            <div className="form-group mt-3 col text-right">
                                 <Link to="forgot-password" className="btn btn-link pr-0">Forgot Password?</Link>
                             </div>
                         </div>

@@ -8,6 +8,7 @@ import { TransactionList } from '../_components/TransactionList'
 import { AccountsNav } from '../_components/AccountsNav'
 import { AccountsForm } from '../_components/AccountsForm'
 import { CategorySelectOptions } from '../_components/CategorySelectOptions'
+import { Spinner } from '../_components/Spinner'
 
 
 
@@ -352,13 +353,8 @@ function Accounts() {
             <div className="row Accounts mt-3">
 
                 { dataIsLoading &&
-                    <React.Fragment>
-                            <div  className="spinner-border spinner-page text-primary" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                            <div  className="spinner-overlay" role="status"></div>
-                    </React.Fragment>
-                }
+                    <Spinner spinnerIcon='border' overlay={true} textColor="primary" />
+               }
 
                 <div style={{width:'320px'}} className="">
                     

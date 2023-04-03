@@ -7,6 +7,7 @@ import { CategorySelectOptions } from '../_components/CategorySelectOptions'
 import { PlanSavingsList } from '../_components/PlanSavingsList'
 import  { PlanIncomeExpenseList }  from '../_components/PlanIncomeExpenseList'
 import { Modal } from '../_components/Modal'
+import { Spinner } from '../_components/Spinner'
 
 
 
@@ -490,12 +491,7 @@ const getCategories = () => {
 
 
                 { dataIsLoading && 
-                    <React.Fragment>
-                            <div  className="spinner-border spinner-page text-primary" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                            <div  className="spinner-overlay" role="status"></div>
-                    </React.Fragment>
+                    <Spinner spinnerIcon='border' overlay={true} textColor="primary" />
                 }
 
                     <div className="col-md-8 main">
@@ -515,149 +511,198 @@ const getCategories = () => {
                                 <i className="bi-arrow-repeat"></i> Copy over all plan amounts from last month 
                           </button>                            
                         </div>
-                        <div className="row tabular-data tabular-head">
-                            <div className="col-sm-2 offset-sm-6 text-end">Plan</div>
-                            <div className="col-sm-2 text-end">Actual</div>
-                            <div className="col-sm-2 text-end">Difference</div>
-                        </div>
-                        <PlanIncomeExpenseList 
-                            categoryArray={incomeArr}
-                            handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                            handleClickEditCategory = {handleClickEditCategory}
-                            handleClickEditPlan = {handleClickEditPlan}
-                            handleShowModalDelete = {handleShowModalDelete}
-                            handleClickHideCategory={handleClickHideCategory}
-                            handleUpdateCategory={handleUpdateCategory}
-                            newCategoryTitle = {newCategoryTitle}
-                            getAllWithTotalByDate = {getAllWithTotalByDate}
-                            editCategory = {editCategory}
-                            editPlan={editPlan}
-                            activeMonthYear={activeMonthYear}
-                            handleChangePlanAmount={handleChangePlanAmount}
-                            newPlanAmount={newPlanAmount}
-                            handleUpdatePlan={handleUpdatePlan}
-                        />
-                        <PlanIncomeExpenseList 
-                            categoryArray={expenseArr}
-                            handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                            handleClickEditCategory = {handleClickEditCategory}
-                            handleClickEditPlan = {handleClickEditPlan}
-                            handleShowModalDelete = {handleShowModalDelete}
-                            handleClickHideCategory={handleClickHideCategory}
-                            handleUpdateCategory={handleUpdateCategory}
-                            newCategoryTitle = {newCategoryTitle}
-                            getAllWithTotalByDate = {getAllWithTotalByDate}
-                            editCategory = {editCategory}
-                            editPlan={editPlan}
-                            activeMonthYear={activeMonthYear}
-                            handleChangePlanAmount={handleChangePlanAmount}
-                            newPlanAmount={newPlanAmount}
-                            handleUpdatePlan={handleUpdatePlan}
-                        />
-
-                        <div className="row tabular-data">
-                            <div className="col-sm-6 fw-bold">Total Expenses</div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-2 text-end"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                        </div>           
 
 
-                        <PlanIncomeExpenseList 
-                            categoryArray={investmentsArr}
-                            handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                            handleClickEditCategory = {handleClickEditCategory}
-                            handleClickEditPlan = {handleClickEditPlan}
-                            handleShowModalDelete = {handleShowModalDelete}
-                            handleClickHideCategory={handleClickHideCategory}
-                            handleUpdateCategory={handleUpdateCategory}
-                            newCategoryTitle = {newCategoryTitle}
-                            getAllWithTotalByDate = {getAllWithTotalByDate}
-                            editCategory = {editCategory}
-                            editPlan={editPlan}
-                            activeMonthYear={activeMonthYear}
-                            handleChangePlanAmount={handleChangePlanAmount}
-                            newPlanAmount={newPlanAmount}
-                            handleUpdatePlan={handleUpdatePlan}
-                        />
+
+                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                            <tbody>
+                                <PlanIncomeExpenseList 
+                                    categoryArray={incomeArr}
+                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                                    handleClickEditCategory = {handleClickEditCategory}
+                                    handleClickEditPlan = {handleClickEditPlan}
+                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleClickHideCategory={handleClickHideCategory}
+                                    handleUpdateCategory={handleUpdateCategory}
+                                    newCategoryTitle = {newCategoryTitle}
+                                    getAllWithTotalByDate = {getAllWithTotalByDate}
+                                    editCategory = {editCategory}
+                                    editPlan={editPlan}
+                                    activeMonthYear={activeMonthYear}
+                                    handleChangePlanAmount={handleChangePlanAmount}
+                                    newPlanAmount={newPlanAmount}
+                                    handleUpdatePlan={handleUpdatePlan}
+                                />
+                            </tbody>
+                        </table>
+
+
+                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                            <tbody>
+                                <PlanIncomeExpenseList 
+                                    categoryArray={expenseArr}
+                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                                    handleClickEditCategory = {handleClickEditCategory}
+                                    handleClickEditPlan = {handleClickEditPlan}
+                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleClickHideCategory={handleClickHideCategory}
+                                    handleUpdateCategory={handleUpdateCategory}
+                                    newCategoryTitle = {newCategoryTitle}
+                                    getAllWithTotalByDate = {getAllWithTotalByDate}
+                                    editCategory = {editCategory}
+                                    editPlan={editPlan}
+                                    activeMonthYear={activeMonthYear}
+                                    handleChangePlanAmount={handleChangePlanAmount}
+                                    newPlanAmount={newPlanAmount}
+                                    handleUpdatePlan={handleUpdatePlan}
+                                />
+                           </tbody>
+                        </table>
+
+                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                            <thead>
+                                <tr className="table-subhead table-light">
+                                    <th className="fw-bold pb-3">Total Expenses</th>
+                                    <th className="table-column-currency pb-3"><NumericFormat value={planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency pb-3"><NumericFormat value={actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency pb-3"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                        
+                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                            <tbody>
+                                <PlanIncomeExpenseList 
+                                    categoryArray={investmentsArr}
+                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                                    handleClickEditCategory = {handleClickEditCategory}
+                                    handleClickEditPlan = {handleClickEditPlan}
+                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleClickHideCategory={handleClickHideCategory}
+                                    handleUpdateCategory={handleUpdateCategory}
+                                    newCategoryTitle = {newCategoryTitle}
+                                    getAllWithTotalByDate = {getAllWithTotalByDate}
+                                    editCategory = {editCategory}
+                                    editPlan={editPlan}
+                                    activeMonthYear={activeMonthYear}
+                                    handleChangePlanAmount={handleChangePlanAmount}
+                                    newPlanAmount={newPlanAmount}
+                                    handleUpdatePlan={handleUpdatePlan}
+                                />
+                           </tbody>
+                        </table>
+
 
                     </div>
 
 
 
                     <div className="col-md-4 sidebar">
-                        <h2>Overview</h2>
-                        <div className="row tabular-data tabular-head">
-                            <div className="col-sm-6 fw-bold">
-                                Total Cash At Start of Month
-                            </div>
-                            <div className="col-sm-6 text-end">
-                                <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
-                            </div>           
-                        </div>
-                        <div className="row tabular-data tabular-head mt-4">
-                            <div className="col-sm-4 offset-sm-4 text-end">Plan</div>
-                            <div className="col-sm-4 text-end">Actual</div>
-                        </div>
+                        <div className="position-sticky top-0">
+                            <h2>Overview</h2>
 
-                        <div className="tabular-data row bg-light">
-                            <div className="col-sm-4 fw-bold">
-                                Income
-                            </div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            <div className="col-sm-4 text-end"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                        </div>
-                        <div className="tabular-data row bg-light">
-                            <div className="col-sm-4 fw-bold">Expense</div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            <div className="col-sm-4 text-end"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                        </div>
-                        <div className="tabular-data row bg-light">
-                            <div className="col-sm-4 fw-bold">Net</div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                        </div>
-                        <div className="tabular-data row bg-light">
-                            <div className="col-sm-4 fw-bold">Investments</div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            <div className="col-sm-4 text-end"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                        </div>
-
-                        <div className="mt-4">
-                            <PlanSavingsList 
-                                categoryArray={savingsArr}
-                                handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                handleClickEditCategory = {handleClickEditCategory}
-                                handleClickEditPlan = {handleClickEditPlan}
-                                handleShowModalDelete = {handleShowModalDelete}
-                                handleUpdateCategory={handleUpdateCategory}
-                                newCategoryTitle = {newCategoryTitle}
-                                getAllWithTotalByDate = {getAllWithTotalByDate}
-                                editCategory = {editCategory}
-                                editPlan={editPlan}
-                                handleChangePlanAmount={handleChangePlanAmount}
-                                newPlanAmount={newPlanAmount}
-                                handleUpdatePlan={handleUpdatePlan}
-                            />
-                        </div>
+                            <table className="table table-sm outside-borders fs-8 plan-overview table">
+                                <thead>
+                                    <tr className="">
+                                        <th className="fw-bold">
+                                            Total Cash At Start of Month
+                                        </th>
+                                        <th className="table-column-currency">
+                                            <NumericFormat value={cashAccountsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} />     
+                                        </th>           
+                                    </tr>
+                                </thead>
+                            </table>
 
 
 
-                        <div className="tabular-data row">
-                            <div className="col-sm-4 fw-bold">
-                                Total Reserves
-                            </div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            <div className="col-sm-4 text-end"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
+                            <table className="table table-sm outside-borders fs-8 plan-overview table">
+                                <thead>
+                                    <tr className="fs-9">
+                                        <th>&nbsp;</th>
+                                        <th className="text-end">Plan</th>
+                                        <th className="text-end">Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr className="bg-light">
+                                        <td className="fw-bold">Income</td>
+                                        <td className="table-column-currency"><NumericFormat value={planIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                        <td className="table-column-currency"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                    </tr>
+                                    <tr className="bg-light">
+                                        <td className="fw-bold">Expense</td>
+                                        <td className="table-column-currency"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                        <td className="table-column-currency"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                    </tr>
+                                    <tr className="bg-light">
+                                        <td className="fw-bold">Net</td>
+                                        <td className="table-column-currency"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
+                                        <td className="table-column-currency"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
+                                    </tr>
+                                    <tr className="bg-light">
+                                        <td className="fw-bold">Investments</td>
+                                        <td className="table-column-currency"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                        <td className="table-column-currency"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+
+
+
+                            <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                                <tbody>
+
+                                    <PlanSavingsList 
+                                        categoryArray={savingsArr}
+                                        handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
+                                        handleClickEditCategory = {handleClickEditCategory}
+                                        handleClickEditPlan = {handleClickEditPlan}
+                                        handleShowModalDelete = {handleShowModalDelete}
+                                        handleUpdateCategory={handleUpdateCategory}
+                                        newCategoryTitle = {newCategoryTitle}
+                                        getAllWithTotalByDate = {getAllWithTotalByDate}
+                                        editCategory = {editCategory}
+                                        editPlan={editPlan}
+                                        handleChangePlanAmount={handleChangePlanAmount}
+                                        newPlanAmount={newPlanAmount}
+                                        handleUpdatePlan={handleUpdatePlan}
+                                    />
+                                </tbody>
+                            </table>
+
+
+
+                           <table className="table table-sm outside-borders fs-8 plan-overview table">
+                                <thead>
+                                    <tr className="fs-9">
+                                        <th>&nbsp;</th>
+                                        <th className="text-end">Plan</th>
+                                        <th className="text-end">Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td className="fw-bold">Total Reserves</td>
+                                        <td className="table-column-currency"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                        <td className="table-column-currency"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                    </tr>
+
+                                    <tr>
+                                        <td className="fw-bold">Unallocated</td>
+                                        <td className="table-column-currency"><NumericFormat value={(cashAccountsTotal + (planIncomeTotal - planExpenseTotal) - planInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                        <td className="table-column-currency"><NumericFormat value={(cashAccountsTotal + (actualIncomeTotal + actualExpenseTotal) + actualInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                    </tr>
+                               </tbody>
+                            </table>
+
+
+
                         </div>
-
-                        <div className="tabular-data tabular-head row mt-4">
-                            <div className="col-sm-4 fw-bold">Unallocated</div>
-                            <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (planIncomeTotal - planExpenseTotal) - planInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                            <div className="col-sm-4 text-end"><NumericFormat value={(cashAccountsTotal + (actualIncomeTotal + actualExpenseTotal) + actualInvestmentsTotal - planSavingsTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></div>           
-                        </div>
-
-
                     </div>
                 </div>
 

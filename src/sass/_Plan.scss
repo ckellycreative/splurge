@@ -1,8 +1,21 @@
 .Plan {
     
-    h4 {
-        padding: 0;
-        margin: 1rem 0 0 0;
+
+    .plan-diff-danger, .plan-diff-success {
+        span {
+            display: inline-block;
+            width: 96px;
+            color: #FFFFFF;
+            border-radius: 3px;
+            padding: 0 6px;
+        }
+
+    }
+    .plan-diff-danger span{
+        @extend .bg-danger;
+    }
+    .plan-diff-success span {
+        @extend .bg-success;
     }
 
 }

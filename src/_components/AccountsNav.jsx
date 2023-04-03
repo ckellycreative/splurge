@@ -30,7 +30,7 @@ function AccountsNav(props) {
                     <a onClick={(cat) => props.handleClickAccountsNavItem('')} className={`row fw-bold nav-link ${!props.activeCashTrackingAccount  && 'active'}`}>
                         <div className="col col-sm-9 account-balance-list-name">All Accounts</div>
                         <div className="col col-sm-3 account-balance-list-amount">
-                            <NumericFormat value={totalCash} displayType={'text'} thousandSeparator={true} prefix={''} />
+                            <NumericFormat value={totalCash.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
                         </div>
                         
                     </a>

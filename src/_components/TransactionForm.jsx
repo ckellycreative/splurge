@@ -7,6 +7,7 @@ import { fetchWrapper, history } from '@/_helpers';
 import MaskedInput from 'react-text-mask'
 import createNumberMask from 'text-mask-addons/dist/createNumberMask'
 import { CategorySelectOptions } from '../_components/CategorySelectOptions'
+import { Spinner } from '../_components/Spinner'
 
 function TransactionForm(props) {
     const [splitIsVisible, setSplitIsVisible] = useState(false)
@@ -337,8 +338,8 @@ function TransactionForm(props) {
                                 <div className="row mt-2">
                                     <div className="form-group col">
                                         <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-                                            {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span>}
-                                            Save it!
+                                            Save it! &nbsp;
+                                            {isSubmitting && <Spinner className='mr-1' spinnerIcon='border' overlay={false} size='sm' textColor="white" />}
                                         </button> 
                                         &nbsp;
                                         <button type="button" className="btn btn-outline-secondary" onClick={() => props.handleClickCancelDrawer()}>Cancel</button>

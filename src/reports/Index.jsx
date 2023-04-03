@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment'
 import { NumericFormat } from 'react-number-format';
 import { accountService, categoryService } from '@/_services'
+import { Spinner } from '../_components/Spinner'
 
 
 function Reports() {
@@ -110,27 +111,31 @@ function Reports() {
                 if (isNewCategoryGroup) {
                     return (    
                         <React.Fragment key={cat.id}>
-                        <h4>{cat.category_title}</h4>
-                        <div className="row tabular-data">
-                            <div className="col-sm-9">
-                                {cat.ChildCategory.category_title}
-                            </div>
-                            <div className='col-sm-3 text-end'>
-                                <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
-                            </div>
-                        </div>
+                            <tr className="table-subhead">
+                                <td colSpan="3" >
+                                    <h4>{cat.category_title}</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {cat.ChildCategory.category_title}
+                                </td>
+                                <td className='table-column-currency'>
+                                    <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                </td>
+                            </tr>
                         </React.Fragment>
                     )
                 }else {
                     return (    
-                        <div className="row tabular-data" key={cat.ChildCategory.id}>
-                            <div className="col-sm-9">
+                        <tr key={cat.ChildCategory.id}>
+                            <td>
                                 {cat.ChildCategory.category_title}
-                            </div>
-                            <div className='col-sm-3 text-end'>
+                            </td>
+                            <td className='table-column-currency'>
                                 <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     )
 
                 }
@@ -148,27 +153,34 @@ function Reports() {
             if (isNewCategoryGroup) {
                 return (    
                     <React.Fragment key={cat.id}>
-                    <h4>{cat.category_title}</h4>
-                    <div className="row tabular-data">
-                        <div className="col-sm-9">
-                            {cat.ChildCategory.category_title}
-                        </div>
-                        <div className='col-sm-3 text-end'>
-                            <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
-                        </div>
-                    </div>
+
+                            <tr className="table-subhead">
+                                <td colSpan="3" >
+                                    <h4>{cat.category_title}</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {cat.ChildCategory.category_title}
+                                </td>
+                                <td className='table-column-currency'>
+                                    <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                </td>
+                            </tr>
+
                     </React.Fragment>
                 )
             }else {
                 return (    
-                    <div className="row tabular-data" key={cat.ChildCategory.id}>
-                        <div className="col-sm-9">
-                            {cat.ChildCategory.category_title}
-                        </div>
-                        <div className='col-sm-3 text-end'>
-                            <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
-                        </div>
-                    </div>
+                        <tr key={cat.ChildCategory.id}>
+                            <td>
+                                {cat.ChildCategory.category_title}
+                            </td>
+                            <td className='table-column-currency'>
+                                <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
+                            </td>
+                        </tr>
+
                 )
 
             }
@@ -189,12 +201,7 @@ function Reports() {
 
 
                { !categoriesTransactionsByDateAreLoaded && 
-                    <React.Fragment>
-                            <div  className="spinner-border spinner-page text-primary" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                            <div  className="spinner-overlay" role="status"></div>
-                    </React.Fragment>
+                    <Spinner spinnerIcon='border' overlay={true} textColor="primary" />
                 }
 
                 <div className="col-md-9">
@@ -212,38 +219,65 @@ function Reports() {
                        </div>
                    </div>
                     <h2>Income</h2>
-                        {
-                            incomeCategories
-                        }
-                        <div className="row tabular-data">
-                            <div className="col-sm-9">Total Income</div>
-                            <div className='col-sm-3 text-end'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                        </div>
+                    <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <tbody>
+ 
+                            {incomeCategories}
+
+                        <tr className="table-light">
+                            <td>Total Income</td>
+                            <td className='table-column-currency'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
+                        </tr>
+
+                       </tbody>
+                    </table>                        
+
                     <h2>Expenses</h2>
-                            {
-                                expenseCategories                       
-                            }
-                            <div className="row tabular-data">
-                                <div className="col-sm-9">Total Expense</div>
-                                <div className='col-sm-3 text-end'><NumericFormat value={totalExpense.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${totalExpense > 0 ? '+' : '-'}`} /></div>
-                            </div>
+                    <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <tbody>
+ 
+                            {expenseCategories}
+
+                       </tbody>
+                    </table>                        
+
+                    <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <tbody>
+
+                            <tr className="table-subhead bg-light">
+                                <td className="pb-3"><h4>Total Expense</h4></td>
+                                <td className='table-column-currency'><NumericFormat value={totalExpense.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${totalExpense > 0 ? '+' : '-'}`} /></td>
+                            </tr>
+
+
+                       </tbody>
+                    </table>                        
                 </div>
 
                 <div className="col-md-3">
-                    <div className="row tabular-data tabular-head">
-                        <div className="col-md-9">Report Totals</div>
-                    </div>
-                    <div className="row tabular-data">
-                        <div className="col-md-9">Total Income</div>
-                        <div className='col-sm-3 text-end'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></div>
-                    </div>
-                    <div className="row tabular-data">
-                        <div className="col-md-9">Total Expense</div>
-                        <div className='col-sm-3 text-end'><NumericFormat value={totalExpense.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${totalExpense > 0 ? '+' : '-'}`} /></div>
-                    </div>
-                    <div className="row tabular-data">
-                        <div className="col-md-9">Total Net</div>
-                        <div className='col-sm-3 text-end'><NumericFormat value={(totalIncome + totalExpense).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${(totalIncome - totalExpense) > 0 ? '' : '-'}`} /></div>
+
+                    <div className="position-sticky top-0 pt-3">
+                        <table className="table table-sm border fs-8  PlanIncomeExpenseListTable">
+                            <thead>
+                                <tr>
+                                    <th colSpan="2">Report Totals</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total Income</td>
+                                    <td className='table-column-currency'><NumericFormat value={totalIncome.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Expense</td>
+                                    <td className='table-column-currency'><NumericFormat value={totalExpense.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${totalExpense > 0 ? '+' : '-'}`} /></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Net</td>
+                                    <td className='table-column-currency'><NumericFormat value={(totalIncome + totalExpense).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${(totalIncome - totalExpense) > 0 ? '' : '-'}`} /></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

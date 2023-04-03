@@ -1,0 +1,31 @@
+.table {
+
+    &.outside-borders {
+        tr > td:first-child {
+            border-left: $table-border-width solid $table-border-color;
+        }
+        tr > td:last-child {
+            border-right: $table-border-width solid $table-border-color;
+        }
+
+        .table-subhead {
+            td, th{
+                    @extend .pt-3;
+                    border-right-width: 0 !important;
+                    border-left-width: 0 !important;
+                    h4 {
+                        @extend .fs-6;
+                        margin-bottom: 0;
+                    }
+                }
+            }
+
+
+    }
+
+    .table-column-currency {
+        width: 120px;
+        text-align: right;
+    }
+
+}

@@ -53,7 +53,7 @@ function TransactionList(props) {
                                                 <td>
                                                     { props.activeCashTrackingAccount != 0 && props.reconcilingTransaction != transaction.id &&
                                                         <i 
-                                                            className={`bi-${(transaction.reconcile == 1) ? 'check-square' : ''}${(transaction.reconcile == 0)  ? 'dash-square' : ''} `}
+                                                            className={`bi-${(transaction.reconcile == 1) ? 'check-square-fill text-success' : ''}${(transaction.reconcile == 0)  ? 'dash-square' : ''} `}
                                                             onClick={(t) => props.handleClickReconcileTransaction(transaction)}
                                                         >
                                                         </i>
