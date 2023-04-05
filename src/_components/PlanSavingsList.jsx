@@ -27,25 +27,18 @@ function PlanSavingsList(props) {
 
 
                             <React.Fragment>
-                                        <tr>
-                                            <td colSpan="2" className="">
-                                                <h4>{cat.category_title}</h4>
-                                            </td>
-                                            <td className="text-end">
+                                        <tr className="table-subhead">
+                                            <th className="">
+                                                <h4 className="d-inline-block">{cat.category_title}</h4>
                                                 <div className="btn-group dropdown">
                                                     <i className="bi-folder-plus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                     <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
                                                         <CategoryForm parentId={cat.id} category_type='savings' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
                                                     </div>
                                                 </div>
-                                            </td>
-
-                                        </tr>
-
-                                        <tr className="fs-9">
-                                            <th className="">&nbsp;</th>
-                                            <th className="text-end">Plan</th>
-                                            <th className="text-end">Actual</th>
+                                            </th>
+                                            <th className="text-end fs-9">Plan</th>
+                                            <th className="text-end fs-9">Actual</th>
                                         </tr>
                             </React.Fragment>
 

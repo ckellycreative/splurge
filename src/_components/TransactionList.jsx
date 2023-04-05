@@ -83,10 +83,10 @@ function TransactionList(props) {
 
 
                                                             <div className="btn-group dropdown">
-                                                                <i className="bi-three-dots dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Options"></i>
+                                                                <i className="bi-three-dots" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Options"></i>
                                                               <ul className="dropdown-menu">
-                                                                <li><a onClick={(id) => props.handleClickEditTransaction(isTransferChild ? transaction.ParentTransaction : transaction)}>Edit</a></li>
-                                                                <li><a onClick={(id) => props.handleClickDeleteTransaction(isTransferChild ? transaction.ParentTransaction.id : transaction.id)}>Delete</a></li>
+                                                                <li><a className="dropdown-item" onClick={(id) => props.handleClickEditTransaction(isTransferChild ? transaction.ParentTransaction : transaction)}>Edit</a></li>
+                                                                <li><a className="dropdown-item" onClick={(id) => props.handleClickDeleteTransaction(isTransferChild ? transaction.ParentTransaction.id : transaction.id)}>Delete</a></li>
                                                               </ul>
                                                             </div>
                                                         </div>

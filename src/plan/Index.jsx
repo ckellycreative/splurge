@@ -514,7 +514,7 @@ const getCategories = () => {
 
 
 
-                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                             <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={incomeArr}
@@ -537,7 +537,7 @@ const getCategories = () => {
                         </table>
 
 
-                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                             <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={expenseArr}
@@ -571,7 +571,7 @@ const getCategories = () => {
                         </table>
 
                         
-                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                             <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={investmentsArr}
@@ -654,7 +654,7 @@ const getCategories = () => {
 
 
 
-                            <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                            <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                                 <tbody>
 
                                     <PlanSavingsList 

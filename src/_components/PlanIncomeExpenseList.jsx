@@ -58,7 +58,7 @@ function PlanIncomeExpenseList(props) {
                                         <th>
                                             <h4 className="d-inline-block">{cat.category_title}</h4>
                                             <div className="btn-group dropdown d-inline-block">
-                                                <i className="bi-folder-plus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                                <i className="bi-folder-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                                 <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
                                                     <CategoryForm parentId={cat.id} category_type='expense' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
                                                 </div>
@@ -84,7 +84,7 @@ function PlanIncomeExpenseList(props) {
 
 
                                     <div className="btn-group dropend">
-                                        <i className="bi-pencil dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                                        <i className="bi-pencil" data-bs-toggle="dropdown" aria-expanded="false"></i>
                                         <PlanCategoryActions 
                                             cat={cat}
                                             actions={{editTitle: true,  editPlan: (props.activeMonthYear >= moment().format('YYYY-MM')) ? true : false, delete: true, hide:true}}
@@ -134,7 +134,7 @@ function PlanIncomeExpenseList(props) {
 
                             isGroupTotal && 
                             <React.Fragment>
-                                <tr className="bg-light">
+                                <tr className="bg-light table-total">
                                     <td className="fw-bold">Total {cat.groupCategoryTitle}</td>
                                     <td className="text-end"><NumericFormat value={cat.groupTotalPlan.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                     <td className="text-end"><NumericFormat value={cat.groupTotalActual.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>

@@ -19,9 +19,29 @@
                     }
                 }
             }
-
-
-    }
+        &.table-hover {
+            > tbody {
+                > tr {
+                    cursor: pointer;
+                    &.table-subhead:hover {
+                        th, td {
+                            --bs-table-accent-bg: #FFF !important;
+                             cursor: auto;
+                        }
+                    }
+                    &.table-total:hover{
+                         th, td {
+                             cursor: auto;
+                            --bs-table-accent-bg: @extend .bg-light !important;
+                        }
+                   
+                    }
+    
+                }
+               
+            }        
+        }
+    }        
 
     .table-column-currency {
         width: 120px;

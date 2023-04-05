@@ -334,9 +334,9 @@ function Accounts() {
                               <button className="btn btn-outline-secondary btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Reconcile
                               </button>
-                              <div className="dropdown-menu p-1">
-                                <div className="m-b-1">Does your bank balance match?: {(beginningBalance + clearedTransactionsTotal  ).toFixed(2)}</div>
-                                <div className="text-center">
+                              <div className="dropdown-menu">
+                                <div className="dropdown-item-text fs-8">Does your bank balance match?: <br /><span className="fw-bold">{(beginningBalance + clearedTransactionsTotal  ).toFixed(2)}</span></div>
+                                <div className="dropdown-item-text">
                                     <button onClick={() => handleClickCompleteReconcileAccount()} type="button" className="btn btn-success btn-sm">Yes</button>
                                     &nbsp;
                                     <button  type="button" className="btn btn-secondary btn-sm">No</button>
