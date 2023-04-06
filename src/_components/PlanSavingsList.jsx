@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { NumericFormat } from 'react-number-format';
 import { CategoryForm } from '../_components/CategoryForm'
-import { PlanCategoryActions } from '../_components/PlanCategoryActions'
-import MaskedInput from 'react-text-mask'
-import createNumberMask from 'text-mask-addons/dist/createNumberMask'
+import { CategoryPlanForm } from '../_components/CategoryPlanForm'
 
 function PlanSavingsList(props) {
-    const currencyMask = createNumberMask({
-      prefix: '',
-      suffix: '',
-      requireDecimal: true,
-      includeThousandsSeparator: false,
-    })
-
     
     let parentTitle = '' //For iterating the cash reserves row subheadings
     const categories =  props.categoryArray.map((cat, index, array) => {
@@ -27,7 +18,7 @@ function PlanSavingsList(props) {
 
 
                             <React.Fragment>
-                                        <tr className="table-subhead">
+                                        <tr className="table-subhead no-hover">
                                             <th className="">
                                                 <h4 className="d-inline-block">{cat.category_title}</h4>
                                                 <div className="btn-group dropdown">
@@ -44,53 +35,34 @@ function PlanSavingsList(props) {
 
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
-                        <tr>
-                            <td>
-                                {
-                                    props.editCategory == cat.ChildCategory.id &&
-                                    <input onKeyPress={props.handleUpdateCategory} onBlur={props.handleUpdateCategory} onChange={props.handleChangeNewCategoryTitle} value={props.newCategoryTitle} autoFocus name="category_title" type="text" placeholder='Category Title' className={'form-control'} />
-                                    ||
-                                    <span>
-                                    {cat.ChildCategory.category_title}
-                                    <div className="btn-group dropend">
-                                        <i className="bi-pencil dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                        <PlanCategoryActions 
-                                            cat={cat}
-                                            actions={{editTitle: true,  editPlan: true, delete: true}}
-                                            handleClickEditPlan={props.handleClickEditPlan} 
-                                            handleClickEditCategory={props.handleClickEditCategory}
-                                            handleShowModalDelete={props.handleShowModalDelete}
-                                        />
-                                    </div>
-                                    </span>
-                                }
 
-                            </td>
-                            <td className="table-column-currency">
-                                {
-                                    props.editPlan == cat.CategoryPlan.id &&
+                            <React.Fragment>
+                                    {props.editCategoryPlan && props.editCategoryPlan.ChildCategory.id == cat.ChildCategory.id && 
+                                        <tr className="no-hover">
+                                            <td colSpan="4" className="">
+                                                <CategoryPlanForm 
+                                                    cat={cat} 
+                                                    handleClickCancelEditCategory={props.handleClickCancelEditCategory}
+                                                    onSubmitCategoryPlanForm={props.onSubmitCategoryPlanForm}
+                                                />
+                                            </td>
+                                        </tr>
+                                        ||
+                                        <tr onClick={() => props.handleClickCategoryPlanItem(cat)}>
+                                            <td>
+                                                {cat.ChildCategory.category_title}
+                                             </td>
 
-                                        <MaskedInput
-                                              mask={currencyMask}
-                                              id={`plan${cat.CategoryPlan.id}`}
-                                              type="text"
-                                              value={props.newPlanAmount}
-                                              onChange={props.handleChangePlanAmount}
-                                              onBlur={props.handleUpdatePlan}
-                                              onKeyPress={props.handleUpdatePlan}
-                                              className="form-control"
-                                              autoFocus
-                                        />
-                                    ||
+                                            <td className="table-column-currency">
+                                                <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                            </td>
+                                            <td className="table-column-currency">
+                                                <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                            </td>
+                                        </tr>
+                                    }
+                            </React.Fragment>
 
-                                    <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
-                                }
-
-                            </td>
-                            <td className="table-column-currency text-muted">
-                                <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
-                            </td>
-                        </tr>
                         }
 
 

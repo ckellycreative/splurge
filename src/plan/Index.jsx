@@ -39,7 +39,7 @@ function Plan() {
     const [radioValue, setRadioValue] = useState(''); 
     const [transferToCategory, setTransferToCategory] = useState('') //id
     const [editCategory, setEditCategory] = useState('')
-    const [newCategoryTitle, setNewCategoryTitle] = useState('')
+    const [editCategoryPlan, setEditCategoryPlan] = useState('')
     const [editPlan, setEditPlan] = useState('')
     const [newPlanAmount, setNewPlanAmount] = useState('')
 
@@ -248,6 +248,102 @@ const getCategories = () => {
     }
 
 
+
+
+/*****************
+    
+    Edit CategoryPlan
+    
+****************** */
+
+    const handleClickCategoryPlanItem = (cat) => {
+        setEditCategoryPlan(cat)
+    }
+
+
+    const onSubmitCategoryPlanForm = ({ category_title, planAmount }, { setSubmitting, resetForm }) => {
+        
+
+            let CategoryPlan = {
+                category: {
+                    id: editCategoryPlan.ChildCategory.id,
+                    category_title: category_title,
+                    CategoryPlan: {
+                        id: editCategoryPlan.CategoryPlan.id,
+                        categoryId: editCategoryPlan.ChildCategory.id,
+                        planAmount: planAmount,
+                        created: activeMonthYear + "-01"
+                    }
+                }
+                
+            }
+
+            planService.create(CategoryPlan)
+                .then((data) => {
+                    getAllWithTotalByDate()
+                    setEditCategoryPlan('')
+                })
+                .catch(error => {
+                    //alertService.error(error)
+                    console.log(error)
+            });
+
+
+
+
+    }
+
+
+
+
+    const handleClickEditPlan = (planId, amt, childCatId) => {
+        if (planId == null) {
+            let newPlan = {
+                categoryId: childCatId,
+                created: activeMonthYear + "-01"
+            }
+            
+            planService.create(newPlan)
+                .then((data) => {
+                    getAllWithTotalByDate()
+                    setEditPlan(data.id)
+                })
+                .catch(error => {
+                    //alertService.error(error)
+                    console.log(error)
+            });
+        }else {
+            setNewPlanAmount(amt)
+            setEditPlan(planId)
+        }
+    }
+
+
+    const handleUpdatePlan = (e) => {
+
+        if (e.key && e.key !== 'Enter') {
+            return
+        }
+
+        let newPlan = {
+            id: editPlan,
+            planAmount: newPlanAmount
+        }
+
+        planService.update(newPlan)
+            .then((data) => {
+                getAllWithTotalByDate()
+                setNewPlanAmount('')
+                setEditPlan('')
+            })
+            .catch(error => {
+                //alertService.error(error)
+                console.log(error)
+        });
+    }
+
+
+
 /*****************
     
     Update Category Title
@@ -258,11 +354,6 @@ const getCategories = () => {
     const handleClickEditCategory = (id, title) => {
         setNewCategoryTitle(title)
         setEditCategory(id)
-    }
-
-
-    const handleChangeNewCategoryTitle = (e) => {
-        setNewCategoryTitle(e.target.value)
     }
 
 
@@ -375,61 +466,10 @@ const getCategories = () => {
 
 
 
-/*****************
-    
-    Edit Plan
-    
-****************** */
 
 
-    const handleClickEditPlan = (planId, amt, childCatId) => {
-        if (planId == null) {
-            let newPlan = {
-                categoryId: childCatId,
-                created: activeMonthYear + "-01"
-            }
-            
-            planService.create(newPlan)
-                .then((data) => {
-                    getAllWithTotalByDate()
-                    setEditPlan(data.id)
-                })
-                .catch(error => {
-                    //alertService.error(error)
-                    console.log(error)
-            });
-        }else {
-            setNewPlanAmount(amt)
-            setEditPlan(planId)
-        }
-    }
 
-    const handleChangePlanAmount = (e) => {
-        setNewPlanAmount(e.target.value)
-    }
 
-    const handleUpdatePlan = (e) => {
-
-        if (e.key && e.key !== 'Enter') {
-            return
-        }
-
-        let newPlan = {
-            id: editPlan,
-            planAmount: newPlanAmount
-        }
-
-        planService.update(newPlan)
-            .then((data) => {
-                getAllWithTotalByDate()
-                setNewPlanAmount('')
-                setEditPlan('')
-            })
-            .catch(error => {
-                //alertService.error(error)
-                console.log(error)
-        });
-    }
 
 
 
@@ -505,7 +545,7 @@ const getCategories = () => {
                             <i className="bi-plus"></i> Add Category Group
                           </button>
                             <div className="dropdown-menu px-2" style={ {minWidth: '500px'} }>
-                                <CategoryForm parentId={null} category_type='expense' isGroupForm={true} getAllWithTotalByDate={getAllWithTotalByDate} />
+                                <CategoryForm parentId={null} category_type='expense' isGroupForm={true}  />
                             </div>
                             <button onClick={handleCopyPlans} type="button" className="btn btn-link btn-sm">
                                 <i className="bi-arrow-repeat"></i> Copy over all plan amounts from last month 
@@ -518,20 +558,13 @@ const getCategories = () => {
                             <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={incomeArr}
-                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                    handleClickEditCategory = {handleClickEditCategory}
-                                    handleClickEditPlan = {handleClickEditPlan}
-                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleClickCategoryPlanItem={handleClickCategoryPlanItem}
+                                    editCategoryPlan={editCategoryPlan}
+                                    onSubmitCategoryPlanForm={onSubmitCategoryPlanForm}    
+                                    handleClickCancelEditCategory={() => setEditCategoryPlan('')}
                                     handleClickHideCategory={handleClickHideCategory}
-                                    handleUpdateCategory={handleUpdateCategory}
-                                    newCategoryTitle = {newCategoryTitle}
+                                    handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
-                                    editCategory = {editCategory}
-                                    editPlan={editPlan}
-                                    activeMonthYear={activeMonthYear}
-                                    handleChangePlanAmount={handleChangePlanAmount}
-                                    newPlanAmount={newPlanAmount}
-                                    handleUpdatePlan={handleUpdatePlan}
                                 />
                             </tbody>
                         </table>
@@ -541,20 +574,13 @@ const getCategories = () => {
                             <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={expenseArr}
-                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                    handleClickEditCategory = {handleClickEditCategory}
-                                    handleClickEditPlan = {handleClickEditPlan}
-                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleClickCategoryPlanItem={handleClickCategoryPlanItem}
+                                    editCategoryPlan={editCategoryPlan}
+                                    onSubmitCategoryPlanForm={onSubmitCategoryPlanForm}    
+                                    handleClickCancelEditCategory={() => setEditCategoryPlan('')}
                                     handleClickHideCategory={handleClickHideCategory}
-                                    handleUpdateCategory={handleUpdateCategory}
-                                    newCategoryTitle = {newCategoryTitle}
+                                    handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
-                                    editCategory = {editCategory}
-                                    editPlan={editPlan}
-                                    activeMonthYear={activeMonthYear}
-                                    handleChangePlanAmount={handleChangePlanAmount}
-                                    newPlanAmount={newPlanAmount}
-                                    handleUpdatePlan={handleUpdatePlan}
                                 />
                            </tbody>
                         </table>
@@ -575,20 +601,13 @@ const getCategories = () => {
                             <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={investmentsArr}
-                                    handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                    handleClickEditCategory = {handleClickEditCategory}
-                                    handleClickEditPlan = {handleClickEditPlan}
-                                    handleShowModalDelete = {handleShowModalDelete}
+                                    handleClickCategoryPlanItem={handleClickCategoryPlanItem}
+                                    editCategoryPlan={editCategoryPlan}
+                                    onSubmitCategoryPlanForm={onSubmitCategoryPlanForm}    
+                                    handleClickCancelEditCategory={() => setEditCategoryPlan('')}
                                     handleClickHideCategory={handleClickHideCategory}
-                                    handleUpdateCategory={handleUpdateCategory}
-                                    newCategoryTitle = {newCategoryTitle}
+                                    handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
-                                    editCategory = {editCategory}
-                                    editPlan={editPlan}
-                                    activeMonthYear={activeMonthYear}
-                                    handleChangePlanAmount={handleChangePlanAmount}
-                                    newPlanAmount={newPlanAmount}
-                                    handleUpdatePlan={handleUpdatePlan}
                                 />
                            </tbody>
                         </table>
@@ -659,18 +678,13 @@ const getCategories = () => {
 
                                     <PlanSavingsList 
                                         categoryArray={savingsArr}
-                                        handleChangeNewCategoryTitle = {handleChangeNewCategoryTitle}
-                                        handleClickEditCategory = {handleClickEditCategory}
-                                        handleClickEditPlan = {handleClickEditPlan}
+                                        handleClickCategoryPlanItem={handleClickCategoryPlanItem}
+                                        editCategoryPlan={editCategoryPlan}
+                                        onSubmitCategoryPlanForm={onSubmitCategoryPlanForm}    
+                                        handleClickCancelEditCategory={() => setEditCategoryPlan('')}
+                                        handleClickHideCategory={handleClickHideCategory}
                                         handleShowModalDelete = {handleShowModalDelete}
-                                        handleUpdateCategory={handleUpdateCategory}
-                                        newCategoryTitle = {newCategoryTitle}
                                         getAllWithTotalByDate = {getAllWithTotalByDate}
-                                        editCategory = {editCategory}
-                                        editPlan={editPlan}
-                                        handleChangePlanAmount={handleChangePlanAmount}
-                                        newPlanAmount={newPlanAmount}
-                                        handleUpdatePlan={handleUpdatePlan}
                                     />
                                 </tbody>
                             </table>

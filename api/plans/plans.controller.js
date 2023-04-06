@@ -7,6 +7,7 @@ const authorize = require('_middleware/authorize')
 const Role = require('_helpers/role');
 const planService = require('./plan.service');
 const transactionService = require('../transactions/transaction.service');
+const categoryService = require('../categories/category.service');
 
 // routes
 router.get('/', authorize(), getAll);
@@ -41,11 +42,50 @@ function getById(req, res, next) {
 
 
 function create(req, res, next) {
-    // add userId to the new plan
-    req.body.accountId = req.user.id;
-    planService.create(req.body)
-        .then(plan => res.json(plan))
-        .catch(next);
+    /* This function handles updates of existing plans as well as creating
+        It also handles the updates of category_titles
+    */
+
+    let category = req.body.category
+    let plan = category.CategoryPlan
+    plan.accountId = req.user.id
+    if (req.body.category.CategoryPlan.id == null) {
+        // If no plan exists, create one and also update the category_title
+
+            return sequelize.transaction(t => {
+              return Promise.all([
+                    planService.create(plan, {transaction: t} ),
+                    categoryService.update(category.id, category , {transaction: t} )
+               ])
+
+            }).then(transaction => {
+                        res.json(plan);
+              // Transaction has been committed
+            }).catch(err => {
+                  console.log('catch err', err)
+                // Transaction has been rolled back
+            });
+
+
+    }else {
+        // If a plan does exists, update it and the category_title
+
+            return sequelize.transaction(t => {
+              return Promise.all([
+                    planService.update(plan.id, plan, {transaction: t} ),
+                    categoryService.update(category.id, category , {transaction: t} )
+               ])
+
+            }).then(transaction => {
+                        res.json(plan);
+              // Transaction has been committed
+            }).catch(err => {
+                  console.log('catch err', err)
+                // Transaction has been rolled back
+            });
+
+    }
+
 }
 
 

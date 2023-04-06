@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { NumericFormat } from 'react-number-format';
 import { CategoryForm } from '../_components/CategoryForm'
-import { PlanCategoryActions } from '../_components/PlanCategoryActions'
-import MaskedInput from 'react-text-mask'
-import createNumberMask from 'text-mask-addons/dist/createNumberMask'
+import { CategoryPlanForm } from '../_components/CategoryPlanForm'
 import moment from 'moment'
 
 
 function PlanIncomeExpenseList(props) {
-    const currencyMask = createNumberMask({
-      prefix: '',
-      suffix: '',
-      requireDecimal: true,
-      includeThousandsSeparator: false,
-    })
 
     let parentTitle = '' //For iterating the expense row subheadings
     const categories =  props.categoryArray.map((cat, index, array) => {
@@ -54,7 +46,7 @@ function PlanIncomeExpenseList(props) {
                         <React.Fragment key={keyId}>
                         {isNewCategoryGroup  && !isGroupTotal &&
                         <React.Fragment>
-                                    <tr className="table-subhead">
+                                    <tr className="table-subhead no-hover">
                                         <th>
                                             <h4 className="d-inline-block">{cat.category_title}</h4>
                                             <div className="btn-group dropdown d-inline-block">
@@ -73,68 +65,44 @@ function PlanIncomeExpenseList(props) {
 
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
-                        <tr>
-                             <td className="">
-                                {
-                                    props.editCategory == cat.ChildCategory.id &&
-                                    <input onKeyPress={props.handleUpdateCategory} onBlur={props.handleUpdateCategory} onChange={props.handleChangeNewCategoryTitle} value={props.newCategoryTitle} autoFocus name="category_title" type="text" placeholder='Category Title' className={'form-control'} />
+                        <React.Fragment>
+                                {props.editCategoryPlan && props.editCategoryPlan.ChildCategory.id == cat.ChildCategory.id && 
+                                    <tr className="no-hover">
+                                        <td colSpan="4" className="">
+                                            <CategoryPlanForm 
+                                                cat={cat} 
+                                                handleClickCancelEditCategory={props.handleClickCancelEditCategory}
+                                                onSubmitCategoryPlanForm={props.onSubmitCategoryPlanForm}
+                                                handleClickHideCategory={props.handleClickHideCategory}
+                                                handleShowModalDelete={props.handleShowModalDelete}
+                                            />
+                                        </td>
+                                    </tr>
                                     ||
-                                    <span>
-                                    {cat.ChildCategory.category_title}
+                                    <tr onClick={() => props.handleClickCategoryPlanItem(cat)}>
+                                        <td>
+                                            {cat.ChildCategory.category_title}
+                                         </td>
 
-
-                                    <div className="btn-group dropend">
-                                        <i className="bi-pencil" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                        <PlanCategoryActions 
-                                            cat={cat}
-                                            actions={{editTitle: true,  editPlan: (props.activeMonthYear >= moment().format('YYYY-MM')) ? true : false, delete: true, hide:true}}
-                                            hasAmts={hasReportAmounts}
-                                            handleClickHideCategory={props.handleClickHideCategory} 
-                                            handleClickEditPlan={props.handleClickEditPlan} 
-                                            handleClickEditCategory={props.handleClickEditCategory}
-                                            handleShowModalDelete={props.handleShowModalDelete}
-                                        />
-                                    </div>
-
-
-
-                                    </span>
+                                        <td className="table-column-currency">
+                                            <NumericFormat value={planAmount != 0 ? planAmount.toFixed(2) : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                        </td>
+                                        <td className="table-column-currency">
+                                            <NumericFormat value={totalReportAmount != 0 ? totalReportAmount.toFixed(2) : '-'} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                        </td>
+                                        <td className={`col-sm-2 table-column-currency ${difference < 0 ? 'plan-diff-danger' : (difference >= 0 && hasReportAmounts) ? 'plan-diff-success' : (difference == 0) ? 'text-muted' : ''}` }>
+                                            <NumericFormat value={difference} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                        </td>
+                                    </tr>
                                 }
+                        </React.Fragment>
 
-                            </td>
-                            <td className="table-column-currency">
-                                {
-                                    props.editPlan == cat.CategoryPlan.id &&
-
-                                        <MaskedInput
-                                              mask={currencyMask}
-                                              id={`plan${cat.CategoryPlan.id}`}
-                                              type="text"
-                                              value={props.newPlanAmount}
-                                              onChange={props.handleChangePlanAmount}
-                                              onBlur={props.handleUpdatePlan}
-                                              onKeyPress={props.handleUpdatePlan}
-                                              className="form-control"
-                                              autoFocus
-                                        />
-                                    ||
-
-                                    <NumericFormat value={planAmount != 0 ? planAmount.toFixed(2) : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
-                                }
-                            </td>
-                            <td className="table-column-currency">
-                                <NumericFormat value={totalReportAmount != 0 ? totalReportAmount.toFixed(2) : '-'} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
-                            </td>
-                            <td className={`col-sm-2 table-column-currency ${difference < 0 ? 'plan-diff-danger' : (difference >= 0 && hasReportAmounts) ? 'plan-diff-success' : (difference == 0) ? 'text-muted' : ''}` }>
-                                <NumericFormat value={difference} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
-                            </td>
-                        </tr>
                         }
                         {
 
                             isGroupTotal && 
                             <React.Fragment>
-                                <tr className="bg-light table-total">
+                                <tr className="no-hover table-total">
                                     <td className="fw-bold">Total {cat.groupCategoryTitle}</td>
                                     <td className="text-end"><NumericFormat value={cat.groupTotalPlan.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                     <td className="text-end"><NumericFormat value={cat.groupTotalActual.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>

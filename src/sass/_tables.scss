@@ -23,20 +23,12 @@
             > tbody {
                 > tr {
                     cursor: pointer;
-                    &.table-subhead:hover {
+                    &.no-hover:hover {
+                        cursor: auto;
                         th, td {
                             --bs-table-accent-bg: #FFF !important;
-                             cursor: auto;
                         }
-                    }
-                    &.table-total:hover{
-                         th, td {
-                             cursor: auto;
-                            --bs-table-accent-bg: @extend .bg-light !important;
-                        }
-                   
-                    }
-    
+                    }    
                 }
                
             }        
