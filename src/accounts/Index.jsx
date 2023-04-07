@@ -216,18 +216,20 @@ function Accounts() {
         
 
     const handleClickDeleteTransaction = () => {
-        let isTransferChild = (editingTransaction.ParentTransaction) ? true : false
-        let tId = (isTransferChild) ? editingTransaction.ParentTransaction.id : editingTransaction.id
-        setTransactionIsDeleting(true)
-        transactionService.delete(tId)
-            .then((res) => {
-                setTransactionIsDeleting(false)
-                setEditingTransaction(null)
-                setShowDrawer()
-            })
-            .catch(error => {
-                alertService.error(error);
-            });        
+        if (confirm("Are you sure you want to delete this transaction?") == true) {
+            let isTransferChild = (editingTransaction.ParentTransaction) ? true : false
+            let tId = (isTransferChild) ? editingTransaction.ParentTransaction.id : editingTransaction.id
+            setTransactionIsDeleting(true)
+            transactionService.delete(tId)
+                .then((res) => {
+                    setTransactionIsDeleting(false)
+                    setEditingTransaction(null)
+                    setShowDrawer()
+                })
+                .catch(error => {
+                    alertService.error(error);
+                });        
+        }
     }
 
     const handlClickShowMore = () => {
