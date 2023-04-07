@@ -214,13 +214,16 @@ function Accounts() {
         setTransactionsLimit(defaultTransactionsLimit)
      }
         
-    const handleClickDeleteTransaction = (id) => {
+
+    const handleClickDeleteTransaction = () => {
+        let isTransferChild = (editingTransaction.ParentTransaction) ? true : false
+        let tId = (isTransferChild) ? editingTransaction.ParentTransaction.id : editingTransaction.id
         setTransactionIsDeleting(true)
-        alertService.clear();
-        transactionService.delete(id)
+        transactionService.delete(tId)
             .then((res) => {
-                alertService.success('Deleted');
                 setTransactionIsDeleting(false)
+                setEditingTransaction(null)
+                setShowDrawer()
             })
             .catch(error => {
                 alertService.error(error);
@@ -400,7 +403,6 @@ function Accounts() {
                         activeCashTrackingAccount={activeCashTrackingAccount}
                         activeCategory={activeCategory}
                         handleClickEditTransaction={handleClickEditTransaction} 
-                        handleClickDeleteTransaction={handleClickDeleteTransaction} 
                         handleClickReconcileTransaction={handleClickReconcileTransaction} 
                         reconcilingTransaction={reconcilingTransaction}
                         reconcilingTransactionIsUpdating={reconcilingTransactionIsUpdating}
@@ -416,7 +418,7 @@ function Accounts() {
                               className="drawer-overlay"
                             >
                                 <animated.div style={{ right: right, position: position, width: width }} className="drawer" >
-
+                                <button onClick={() => handleClickCancelDrawer()} type="button" class="btn-close position-absolute top-0 end-0 m-4" aria-label="Cancel"></button>
                                    <TransactionForm 
                                         setTransactionIsPosting={setTransactionIsPosting} 
                                         categories={categories}
@@ -424,6 +426,7 @@ function Accounts() {
                                         setEditingTransaction={(arr) => setEditingTransaction(arr)}
                                         setShowDrawer={() => setShowDrawer()}
                                         handleClickCancelDrawer={handleClickCancelDrawer}
+                                        handleClickDeleteTransaction={handleClickDeleteTransaction} 
                                     />
 
                                 </animated.div>

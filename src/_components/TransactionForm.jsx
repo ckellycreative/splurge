@@ -184,7 +184,7 @@ function TransactionForm(props) {
         if (props.editingTransaction) {
            transactionService.update(transaction)
                 .then((res) => {
-                    finalizeSubmission('Updated');
+                    finalizeSubmission();
                 })
                 .catch(error => {
                     setSubmitting(false);
@@ -193,7 +193,7 @@ function TransactionForm(props) {
         } else {
            transactionService.create(transaction)
                 .then((res) => {
-                    finalizeSubmission('Saved');
+                    finalizeSubmission();
                 })
                 .catch(error => {
                     setSubmitting(false);
@@ -201,8 +201,7 @@ function TransactionForm(props) {
                 });
         }
 
-        function finalizeSubmission(msg){
-                    alertService.success(msg);
+        function finalizeSubmission(){
                     setSubmitting(false);  
                     setSplitIsVisible(false);  
                     setSplitTotal('');  
@@ -215,16 +214,16 @@ function TransactionForm(props) {
 
 
 	return(
-    <div>
+    <div className="mt-3">
 
                         <Formik initialValues={(props.editingTransaction ? editingTransactionValues : initialValues)} validationSchema={validationSchema} onSubmit={onSubmit} enableReinitialize >
                             {({ values, errors, touched, isSubmitting, handleChange, handleBlur }) => (
                             <Form>
 
                                 <Field name="transaction_date" type="date" className={'form-control'} />
-                                <Field name="transaction_description" type="text" placeholder='Description' className={'form-control mt-2'} />
+                                <Field name="transaction_description" type="text" placeholder='Description' className={'form-control mt-3'} />
                                 <ErrorMessage name="transaction_description" component="div" className="text-danger" />
-                                <div className="mt-2">
+                                <div className="mt-3">
 
                                         <Field name="bank_account_id" component="select" className={'form-control CategorySelect'}>
                                             <CategorySelectOptions categories={props.categories} categoryType="bankAccount" defaultOption="Select an Account" />
@@ -234,7 +233,7 @@ function TransactionForm(props) {
 
                                 </div>
 
-                                <div className='input-group mt-2'>
+                                <div className='input-group mt-3'>
                                     <span className="input-group-text">$</span>
                                     <Field name="amount" type="number" step="0.01" placeholder='Amount'>
                                         {({ field }) => (
@@ -259,7 +258,7 @@ function TransactionForm(props) {
 
 
                                <div>
-                                    <div className='input-group mt-2'>
+                                    <div className='input-group mt-3'>
 
                                         <Field name="categoryId" disabled={values.isSplit} component="select" className={'form-control CategorySelect'}>
                                             <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Select a Category" />
@@ -281,7 +280,7 @@ function TransactionForm(props) {
 
                                                     {values.splits.length > 0 &&
                                                     values.splits.map((split, index) => (
-                                                        <div className="row  mt-2" key={index}>
+                                                        <div className="row  mt-3" key={index}>
                                                             <div className="col-sm-6">
                                                                 <Field name={`splits.${index}.catId`} component="select" className={'form-control CategorySelect'}>
                                                                     <CategorySelectOptions categories={props.categories} categoryType="all" defaultOption="Select a Category" />
@@ -318,13 +317,13 @@ function TransactionForm(props) {
                                                         </div>
                                                     ))}
 
-                                                    <div className="mt-2">
+                                                    <div className="mt-3">
                                                         <button type="button" className="btn btn-secondary" onClick={() => push({ catId: "", splitAmount: "" })}>
                                                             Add Split
                                                         </button>
                                                     </div>
 
-                                                    <div className={`alert alert-${(values.amount - splitTotal) == 0 ? 'success' : 'warning'}  mt-2`}>
+                                                    <div className={`alert alert-${(values.amount - splitTotal) == 0 ? 'success' : 'warning'}  mt-3`}>
                                                         Remaining: {(values.amount - values.splits.reduce((s, a) => s + +a.splitAmount, 0)).toFixed(2).replace('-0.00', '0.00')}
                                                     </div>
 
@@ -335,14 +334,14 @@ function TransactionForm(props) {
                                 }                                
 
                                                 
-                                <div className="row mt-2">
+                                <div className="row mt-3">
                                     <div className="form-group col">
                                         <button type="submit" disabled={isSubmitting} className="btn btn-primary">
                                             Save it! &nbsp;
                                             {isSubmitting && <Spinner className='mr-1' spinnerIcon='border' overlay={false} size='sm' textColor="white" />}
                                         </button> 
                                         &nbsp;
-                                        <button type="button" className="btn btn-outline-secondary" onClick={() => props.handleClickCancelDrawer()}>Cancel</button>
+                                        <a className="btn btn-text" onClick={() => props.handleClickDeleteTransaction()}>Delete</a>
                                     </div>
                                 </div>
 

@@ -22,9 +22,7 @@
         &.table-hover {
             > tbody {
                 > tr {
-                    cursor: pointer;
                     &.no-hover:hover {
-                        cursor: auto;
                         th, td {
                             --bs-table-accent-bg: #FFF !important;
                         }
@@ -38,6 +36,9 @@
     .table-column-currency {
         width: 120px;
         text-align: right;
+    }
+    .table-column-date {
+        width: 80px;
     }
 
 }

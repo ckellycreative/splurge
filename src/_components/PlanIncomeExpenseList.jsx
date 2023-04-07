@@ -79,9 +79,11 @@ function PlanIncomeExpenseList(props) {
                                         </td>
                                     </tr>
                                     ||
-                                    <tr onClick={() => props.handleClickCategoryPlanItem(cat)}>
+                                    <tr>
                                         <td>
-                                            {cat.ChildCategory.category_title}
+                                            <a className="d-block fw-semibold" onClick={() => props.handleClickCategoryPlanItem(cat)}>
+                                                {cat.ChildCategory.category_title}
+                                            </a>
                                          </td>
 
                                         <td className="table-column-currency">

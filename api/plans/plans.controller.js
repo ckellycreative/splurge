@@ -42,7 +42,7 @@ function getById(req, res, next) {
 
 
 function create(req, res, next) {
-    /* This function handles updates of existing plans as well as creating
+    /* This function handles updates of existing plans as well as creating new ones
         It also handles the updates of category_titles
     */
 

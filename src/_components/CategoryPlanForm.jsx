@@ -15,7 +15,7 @@ function CategoryPlanForm(props) {
 
 
 	return(
-        <div className="p-3 bg-info">
+        <div className="p-3 bg-light">
 
 
             <Formik initialValues={{category_title: props.cat.ChildCategory.category_title, planAmount: props.cat.CategoryPlan.planAmount}} onSubmit={props.onSubmitCategoryPlanForm} >

@@ -17,16 +17,16 @@ function TransactionList(props) {
                     'No transactions were found.'
                     ||
               
-                    <table className="table table-sm border fs-8 TransactionList">
+                    <table className="table table-sm table-hover outside-borders  fs-8 TransactionList">
                         <thead>
-                            <tr className="table-light">
+                            <tr className="table-subhead no-hover">
                                 <th className="">Date</th>
+                                <th className="">&nbsp;</th>
                                 <th className="">Description</th>
                                 <th className="text-end">Amount</th>
-                                <th className="">{ props.activeCashTrackingAccount && 'Reconcile' }</th>
+                                <th className="text-center">{ props.activeCashTrackingAccount && 'Reconcile' }</th>
                                 <th className="">Account</th>
                                 <th className="">Category</th>
-                                <th className="">&nbsp;</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -38,9 +38,28 @@ function TransactionList(props) {
                                         let isTransferParent = (transaction.category.category_type == 'cash' && transaction.ChildTransactions.length > 0 && transaction.ChildTransactions[0].category.category_type == 'cash') ? true : false
                                         let isTransferParentBeingFiltered = (transaction.category.id == props.activeCategory)
                                         return (    
-                                            <tr key={transaction.id}>
-                                                <td>{moment.utc(transaction.transaction_date).format('M/D/YY')}</td>
-                                                <td>{transaction.transaction_description}</td>
+                                            <tr key={transaction.id} className={transaction.reconcile == 2 ? 'no-hover' : ''} >
+                                                <td className="table-column-date">{moment.utc(transaction.transaction_date).format('M/D/YY')}</td>
+
+                                                <td className="text-center">
+                                                    { transaction.reconcile == 2 &&
+                                                        <i className='bi-lock text-muted'></i>
+                                                    }
+                                                </td>
+
+                                                <td>
+                                                    {
+                                                        transaction.reconcile != 2 &&
+
+                                                            <a className="d-block fw-semibold" onClick={transaction.reconcile != 2 ? (id) => props.handleClickEditTransaction(isTransferChild ? transaction.ParentTransaction : transaction) : undefined}>
+                                                                {transaction.transaction_description}
+                                                            </a>
+                                                        ||
+                                                            <span>
+                                                                {transaction.transaction_description}
+                                                            </span>
+                                                    }
+                                                </td>
                                                 <td className="text-end">
                                                     <NumericFormat 
                                                         value={`${transaction.debit == 0  ? transaction.credit : transaction.debit}` } 
@@ -50,10 +69,10 @@ function TransactionList(props) {
                                                     />
                                                 </td>
 
-                                                <td>
+                                                <td className="text-center">
                                                     { props.activeCashTrackingAccount != 0 && props.reconcilingTransaction != transaction.id &&
                                                         <i 
-                                                            className={`bi-${(transaction.reconcile == 1) ? 'check-square-fill text-success' : ''}${(transaction.reconcile == 0)  ? 'dash-square' : ''} `}
+                                                            className={`bi-${(transaction.reconcile == 1) ? 'check-square-fill text-info' : ''}${(transaction.reconcile == 0)  ? 'dash-square' : ''} `}
                                                             onClick={(t) => props.handleClickReconcileTransaction(transaction)}
                                                         >
                                                         </i>
@@ -76,23 +95,6 @@ function TransactionList(props) {
                                                     {(isTransferChild && !isTransferParentBeingFiltered) && <span>Transfer from: {parentCategoryTitle}</span>}
                                                     {isTransferParentBeingFiltered  && <span>Transfer from: {transaction.category.category_title}</span>}
 
-                                                </td>
-                                                <td>
-                                                    { transaction.reconcile != 2 &&
-                                                        <div>
-
-
-                                                            <div className="btn-group dropdown">
-                                                                <i className="bi-three-dots" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Options"></i>
-                                                              <ul className="dropdown-menu">
-                                                                <li><a className="dropdown-item" onClick={(id) => props.handleClickEditTransaction(isTransferChild ? transaction.ParentTransaction : transaction)}>Edit</a></li>
-                                                                <li><a className="dropdown-item" onClick={(id) => props.handleClickDeleteTransaction(isTransferChild ? transaction.ParentTransaction.id : transaction.id)}>Delete</a></li>
-                                                              </ul>
-                                                            </div>
-                                                        </div>
-                                                        ||
-                                                        <i className='bi-lock'></i>
-                                                    }
                                                 </td>
                                             </tr>
                                        )
