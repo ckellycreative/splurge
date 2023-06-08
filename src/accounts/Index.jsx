@@ -420,7 +420,7 @@ function Accounts() {
                               className="drawer-overlay"
                             >
                                 <animated.div style={{ right: right, position: position, width: width }} className="drawer" >
-                                <button onClick={() => handleClickCancelDrawer()} type="button" class="btn-close position-absolute top-0 end-0 m-4" aria-label="Cancel"></button>
+                                <button onClick={() => handleClickCancelDrawer()} type="button" className="btn-close position-absolute top-0 end-0 m-4" aria-label="Cancel"></button>
                                    <TransactionForm 
                                         setTransactionIsPosting={setTransactionIsPosting} 
                                         categories={categories}
