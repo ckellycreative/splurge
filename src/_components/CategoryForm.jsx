@@ -46,13 +46,13 @@ function CategoryForm(props) {
 
 
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit} >
-            {({ values, errors, touched, isSubmitting, handleChange, handleBlur }) => (
+            {({ values, errors, touched, isSubmitting, isValid, handleChange, handleBlur }) => (
                 <Form>
                     <div className="input-group">
                             <Field name="category_title" type="text" placeholder={props.isGroupForm ? 'New Group Title' : 'New Category Title'} className={'form-control'} />
-                            <button className="btn btn-outline-secondary" type="submit" id="button-addon2">Save</button>
-                            <ErrorMessage name="category_title" component="div" className="text-danger" />
+                            <button className="btn btn-outline-secondary" type="submit" disabled={!isValid} id="button-addon2">Save</button>
                     </div>
+                    <ErrorMessage name="category_title" component="div" className="text-danger" />
 
                 </Form>
             )}

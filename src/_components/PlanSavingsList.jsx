@@ -13,7 +13,7 @@ function PlanSavingsList(props) {
                 let planAmount = (!isGroupTotal && cat.CategoryPlan.planAmount) ? cat.CategoryPlan.planAmount  : 0
                 parentTitle = cat.category_title
                     return (    
-                        <React.Fragment key={isGroupTotal ? cat.grpid : cat.ChildCategory.id}>
+                        <React.Fragment key={isGroupTotal ? cat.grpCatId : cat.ChildCategory.id}>
                         {isNewCategoryGroup  && !isGroupTotal &&
 
 
@@ -21,12 +21,6 @@ function PlanSavingsList(props) {
                                         <tr className="table-subhead no-hover">
                                             <th className="">
                                                 <h4 className="d-inline-block">{cat.category_title}</h4>
-                                                <div className="btn-group dropdown">
-                                                    <i className="bi-folder-plus dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                                    <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
-                                                        <CategoryForm parentId={cat.id} category_type='savings' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
-                                                    </div>
-                                                </div>
                                             </th>
                                             <th className="text-end fs-9">Plan</th>
                                             <th className="text-end fs-9">Actual</th>
@@ -66,7 +60,22 @@ function PlanSavingsList(props) {
                             </React.Fragment>
 
                         }
+                        {
+                            isGroupTotal && 
+                                <tr className="no-hover">
+                                    <td colSpan="4" className="border border-0">
+                                         <div className="btn-group dropdown">
+                                            <button type="button" className="btn btn-link btn-sm text-secondary p-0 fs-8" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i className="bi-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>Add Category
+                                            </button>
+                                            <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
+                                                <CategoryForm parentId={cat.grpCatId} category_type='expense' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
 
+                        }
 
 
                         </React.Fragment>

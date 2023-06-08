@@ -49,13 +49,6 @@ function PlanIncomeExpenseList(props) {
                                     <tr className="table-subhead no-hover">
                                         <th>
                                             <h4 className="d-inline-block">{cat.category_title}</h4>
-                                            <div className="btn-group dropdown d-inline-block">
-                                                <i className="bi-folder-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>
-                                                <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
-                                                    <CategoryForm parentId={cat.id} category_type='expense' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
-                                                </div>
-                                            </div>
-
                                         </th>
                                         <th className="fs-9 text-end">Plan</th>
                                         <th className="fs-9 text-end">Actual</th>
@@ -110,6 +103,19 @@ function PlanIncomeExpenseList(props) {
                                     <td className="text-end"><NumericFormat value={cat.groupTotalActual.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                     <td className="text-end"><NumericFormat value={(cat.groupCategoryType == 'expense') ? (cat.groupTotalPlan + cat.groupTotalActual).toFixed(2) : (cat.groupTotalActual - cat.groupTotalPlan).toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                 </tr>            
+                                <tr className="no-hover">
+                                    <td colSpan="4" className="border border-0">
+                                         <div className="btn-group dropdown">
+                                            <button type="button" className="btn btn-link btn-sm text-secondary p-0 fs-8" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i className="bi-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>Add Category
+                                            </button>
+                                            <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
+                                                <CategoryForm parentId={cat.grpCatId} category_type='expense' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
                             </React.Fragment>
                         }
 

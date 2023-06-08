@@ -1,6 +1,7 @@
 .table {
 
     &.outside-borders {
+        margin-bottom: 0;
         tr > td:first-child {
             border-left: $table-border-width solid $table-border-color;
         }
@@ -10,7 +11,7 @@
 
         .table-subhead {
             td, th{
-                    @extend .pt-3;
+                    @extend .pt-5;
                     border-right-width: 0 !important;
                     border-left-width: 0 !important;
                     h4 {

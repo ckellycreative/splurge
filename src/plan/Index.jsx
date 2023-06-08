@@ -114,7 +114,7 @@ function Plan() {
                         }
                         if (nextIsNewCategoryGroup) {
                             //Is there a better way to get this grpId? This gets used for a key
-                            let groupTotalObj = {grpid:cat.id + cat.ChildCategory.id + cat.category_title , groupCategoryTitle: cat.category_title, groupCategoryType: cat.category_type, groupTotalPlan, groupTotalActual }
+                            let groupTotalObj = {grpCatId: cat.id, grpid:cat.id + cat.ChildCategory.id + cat.category_title , groupCategoryTitle: cat.category_title, groupCategoryType: cat.category_type, groupTotalPlan, groupTotalActual }
                             if (isIncome) {
                                 tmpIncomeArr.push(groupTotalObj)
                             }else if (isInvestment) {
@@ -135,7 +135,7 @@ function Plan() {
                         calcPlanSavingsTotal += +cat.CategoryPlan.planAmount
                         calcActualSavingsTotal = 0 //Not using the actual totals yet (not sure if/how)
                         if (nextIsNewCategoryGroup) {
-                            let groupTotalObj = {grpid:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
+                            let groupTotalObj = {grpCatId:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
                             tmpSavingsArr.push(groupTotalObj)
                             groupTotalPlan = 0
                             groupTotalActual = 0
@@ -585,13 +585,13 @@ const getCategories = () => {
                            </tbody>
                         </table>
 
-                        <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
+                        <table className="table table-sm border-top fs-8 mt-3 bg-light PlanIncomeExpenseListTable">
                             <thead>
-                                <tr className="table-subhead table-light">
-                                    <th className="fw-bold pb-3">Total Expenses</th>
-                                    <th className="table-column-currency pb-3"><NumericFormat value={planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
-                                    <th className="table-column-currency pb-3"><NumericFormat value={actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
-                                    <th className="table-column-currency pb-3"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                <tr className="">
+                                    <th className="fw-bold py-3">Total Expenses</th>
+                                    <th className="table-column-currency py-3"><NumericFormat value={planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency py-3"><NumericFormat value={actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency py-3"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
                                 </tr>
                             </thead>
                         </table>
@@ -611,6 +611,33 @@ const getCategories = () => {
                                 />
                            </tbody>
                         </table>
+
+
+                         <div className="btn-group dropup">
+                            <button type="button" className="btn btn-link btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i className="bi-eye-slash" data-bs-toggle="dropdown" aria-expanded="false"></i> Hidden Categories
+                            </button>
+                            <div className="dropdown-menu px-2">
+                                <ul>
+                                    {
+                                        categories.map( cat => {
+                                            let children = cat.ChildCategory
+                                           return children.map(child => {
+                                                console.log('child', child)
+                                                if (child.hidden) {
+                                                    return <li>{child.category_title}</li>
+                                                }                                                
+                                            })
+                                        })
+                                    }
+                                </ul>
+
+                            </div>
+                        </div>
+
+
+
+
 
 
                     </div>
