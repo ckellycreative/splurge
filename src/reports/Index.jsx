@@ -17,6 +17,7 @@ function Reports() {
 
     var totalIncome = 0
     var totalExpense = 0
+    var totalInvestment = 0
     let i = +moment().format('YYYY')   //current year as the iterator
     let u = +userYearCreated           // year the user was created 
     let yearArray = [i]                 // create array of years for the year <select>
@@ -191,6 +192,53 @@ function Reports() {
 
 
 
+    const investmentCategories =  categoriesTransactionsByDate.map(cat => {
+        if (cat.category_type == 'investment') {
+            let isNewCategoryGroup = (parentTitle != cat.category_title) ? true : false
+            let totalReportAmount = (cat.totalReportAmountDebit != null && cat.totalReportAmountCredit != null) ? cat.totalReportAmountDebit - cat.totalReportAmountCredit : 0
+            totalInvestment += totalReportAmount
+            parentTitle = cat.category_title
+            if (isNewCategoryGroup) {
+                return (    
+                    <React.Fragment key={cat.id}>
+
+                            <tr className="table-subhead">
+                                <td colSpan="3" >
+                                    <h4>{cat.category_title}</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {cat.ChildCategory.category_title}
+                                </td>
+                                <td className='table-column-currency'>
+                                    <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
+                                </td>
+                            </tr>
+
+                    </React.Fragment>
+                )
+            }else {
+                return (    
+                        <tr key={cat.ChildCategory.id}>
+                            <td>
+                                {cat.ChildCategory.category_title}
+                            </td>
+                            <td className='table-column-currency'>
+                                <NumericFormat value={totalReportAmount.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={''} />
+                            </td>
+                        </tr>
+
+                )
+
+            }
+            
+
+            }
+    })
+
+
+
 
 
     return (
@@ -241,18 +289,15 @@ function Reports() {
                        </tbody>
                     </table>                        
 
+                    <h2>Investments</h2>
                     <table className="table table-sm outside-borders fs-8 PlanIncomeExpenseListTable">
                         <tbody>
-
-                            <tr className="table-subhead bg-light">
-                                <td className="pb-3"><h4>Total Expense</h4></td>
-                                <td className='table-column-currency'><NumericFormat value={totalExpense.toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${totalExpense > 0 ? '+' : '-'}`} /></td>
-                            </tr>
-
+ 
+                            {investmentCategories}
 
                        </tbody>
                     </table>                        
-                </div>
+            </div>
 
                 <div className="col-md-3">
 
@@ -275,6 +320,10 @@ function Reports() {
                                 <tr>
                                     <td>Total Net</td>
                                     <td className='table-column-currency'><NumericFormat value={(totalIncome + totalExpense).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix={`${(totalIncome - totalExpense) > 0 ? '' : '-'}`} /></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Investments</td>
+                                    <td className='table-column-currency'><NumericFormat value={(-totalInvestment).toFixed(2)} displayType={'text'} thousandSeparator={true} prefix="" /></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -1,45 +1,12 @@
 .table {
 
-    &.outside-borders {
-        margin-bottom: 0;
-        tr > td:first-child {
-            border-left: $table-border-width solid $table-border-color;
-        }
-        tr > td:last-child {
-            border-right: $table-border-width solid $table-border-color;
-        }
-
-        .table-subhead {
-            td, th{
-                    @extend .pt-5;
-                    border-right-width: 0 !important;
-                    border-left-width: 0 !important;
-                    h4 {
-                        @extend .fs-6;
-                        margin-bottom: 0;
-                    }
-                }
-            }
-        &.table-hover {
-            > tbody {
-                > tr {
-                    &.no-hover:hover {
-                        th, td {
-                            --bs-table-accent-bg: #FFF !important;
-                        }
-                    }    
-                }
-               
-            }        
-        }
-    }        
-
     .table-column-currency {
-        width: 120px;
+        min-width: 120px;
         text-align: right;
     }
     .table-column-date {
-        width: 80px;
+        min-width: 80px;
     }
+
 
 }

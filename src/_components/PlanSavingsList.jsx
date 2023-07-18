@@ -18,20 +18,23 @@ function PlanSavingsList(props) {
 
 
                             <React.Fragment>
+                                    <thead>
                                         <tr className="table-subhead no-hover">
                                             <th className="">
-                                                <h4 className="d-inline-block">{cat.category_title}</h4>
+                                                <h4 className="d-inline-block mb-0">{cat.category_title}</h4>
                                             </th>
                                             <th className="text-end fs-9">Plan</th>
                                             <th className="text-end fs-9">Actual</th>
                                         </tr>
-                            </React.Fragment>
+                                    </thead>
+                           </React.Fragment>
 
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
 
                             <React.Fragment>
                                     {props.editCategoryPlan && props.editCategoryPlan.ChildCategory.id == cat.ChildCategory.id && 
+                                        <tbody>
                                         <tr className="no-hover">
                                             <td colSpan="4" className="">
                                                 <CategoryPlanForm 
@@ -56,12 +59,14 @@ function PlanSavingsList(props) {
                                                 <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
                                             </td>
                                         </tr>
+                                        </tbody>
                                     }
                             </React.Fragment>
 
                         }
                         {
                             isGroupTotal && 
+                                <tbody>
                                 <tr className="no-hover">
                                     <td colSpan="4" className="border border-0">
                                          <div className="btn-group dropdown">
@@ -74,6 +79,7 @@ function PlanSavingsList(props) {
                                         </div>
                                     </td>
                                 </tr>
+                                </tbody>
 
                         }
 

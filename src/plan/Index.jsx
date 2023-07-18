@@ -555,7 +555,6 @@ const getCategories = () => {
 
 
                         <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
-                            <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={incomeArr}
                                     handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -566,12 +565,10 @@ const getCategories = () => {
                                     handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
                                 />
-                            </tbody>
                         </table>
 
 
                         <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
-                            <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={expenseArr}
                                     handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -582,7 +579,6 @@ const getCategories = () => {
                                     handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
                                 />
-                           </tbody>
                         </table>
 
                         <table className="table table-sm border-top fs-8 mt-3 bg-light PlanIncomeExpenseListTable">
@@ -598,7 +594,6 @@ const getCategories = () => {
 
                         
                         <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
-                            <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={investmentsArr}
                                     handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -609,7 +604,6 @@ const getCategories = () => {
                                     handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
                                 />
-                           </tbody>
                         </table>
 
 
@@ -701,8 +695,6 @@ const getCategories = () => {
 
 
                             <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
-                                <tbody>
-
                                     <PlanSavingsList 
                                         categoryArray={savingsArr}
                                         handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -713,7 +705,6 @@ const getCategories = () => {
                                         handleShowModalDelete = {handleShowModalDelete}
                                         getAllWithTotalByDate = {getAllWithTotalByDate}
                                     />
-                                </tbody>
                             </table>
 
 
