@@ -1,4 +1,4 @@
 export * from './Alert';
-export * from './Nav';
+export * from './Navigation';
 export * from './PrivateRoute';
 

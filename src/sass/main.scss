@@ -1,12 +1,12 @@
-@import '../../node_modules/bootstrap/scss/functions';
+@import '~bootstrap/scss/functions';
 @import "variables";
-@import "../../node_modules/bootstrap/scss/mixins";
-@import "../../node_modules/bootstrap/scss/bootstrap";
+@import "~bootstrap/scss/mixins";
+@import '~bootstrap/scss/bootstrap';
 @import "AccountsNav";
 @import "Alert";
 @import "drawer";
 @import "fonts";
-@import "nav";
+@import "navigation";
 @import "Plan";
 @import "scaffolding";
 @import "spinners";

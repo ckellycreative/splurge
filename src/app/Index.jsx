@@ -3,7 +3,7 @@ import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import moment from 'moment'
 import { Role } from '@/_helpers';
 import { accountService, transactionService, categoryService, alertService } from '@/_services'
-import { Nav, PrivateRoute, Alert } from '@/_components';
+import { Navigation, PrivateRoute, Alert } from '@/_components';
 import { Accounts } from '@/accounts';
 import { Plan } from '@/plan';
 import { Reports } from '@/reports';
@@ -28,9 +28,9 @@ function App() {
 
     return (
             <div>
-                <Nav />                    
+                <Navigation />                    
                     
-                    <div className="container-fluid px-5 pt-3 pb-5">
+                    <div className="container-fluid px-sm-5 pt-3 pb-5">
                         <Alert />
                         <Switch>
                             <Redirect from="/:url*(/+)" to={pathname.slice(0, -1)} />
