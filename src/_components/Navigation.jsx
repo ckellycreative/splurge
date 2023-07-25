@@ -61,7 +61,7 @@ function Navigation() {
                               </Dropdown.Item>
                             }
                             <Dropdown.Item as={Link} to="/profile" onClick={() => setNavExpanded(false)}>Profile</Dropdown.Item>
-                            <Dropdown.Item onClick={accountService.logout} onClick={() => setNavExpanded(false)}>Logout</Dropdown.Item>                            
+                            <Dropdown.Item onClick={accountService.logout}>Logout</Dropdown.Item>                            
               </Dropdown.Menu>
             </Dropdown>{' '}
 
