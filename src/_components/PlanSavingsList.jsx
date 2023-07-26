@@ -32,9 +32,8 @@ function PlanSavingsList(props) {
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
 
-                            <React.Fragment>
+                                <tbody>
                                     {props.editCategoryPlan && props.editCategoryPlan.ChildCategory.id == cat.ChildCategory.id && 
-                                        <tbody>
                                         <tr className="no-hover">
                                             <td colSpan="4" className="">
                                                 <CategoryPlanForm 
@@ -59,9 +58,8 @@ function PlanSavingsList(props) {
                                                 <NumericFormat value={planAmount != 0 ? planAmount : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
                                             </td>
                                         </tr>
-                                        </tbody>
                                     }
-                            </React.Fragment>
+                                </tbody>
 
                         }
                         {

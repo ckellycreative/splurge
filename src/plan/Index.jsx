@@ -619,7 +619,7 @@ const getCategories = () => {
                                            return children.map(child => {
                                                 console.log('child', child)
                                                 if (child.hidden) {
-                                                    return <li>{child.category_title}</li>
+                                                    return <li key={child.id}>{child.category_title}</li>
                                                 }                                                
                                             })
                                         })
