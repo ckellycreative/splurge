@@ -555,6 +555,7 @@ const getCategories = () => {
 
 
                         <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
+                            <tbody>
                                 <PlanIncomeExpenseList 
                                     categoryArray={incomeArr}
                                     handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -565,11 +566,8 @@ const getCategories = () => {
                                     handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
                                 />
-                        </table>
 
-
-                        <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
-                                <PlanIncomeExpenseList 
+                               <PlanIncomeExpenseList 
                                     categoryArray={expenseArr}
                                     handleClickCategoryPlanItem={handleClickCategoryPlanItem}
                                     editCategoryPlan={editCategoryPlan}
@@ -579,22 +577,15 @@ const getCategories = () => {
                                     handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
                                 />
-                        </table>
 
-                        <table className="table table-sm border-top fs-8 mt-3 bg-light PlanIncomeExpenseListTable">
-                            <thead>
-                                <tr className="">
+                                <tr className="table-total">
                                     <th className="fw-bold py-3">Total Expenses</th>
-                                    <th className="table-column-currency py-3"><NumericFormat value={planExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
-                                    <th className="table-column-currency py-3"><NumericFormat value={actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
-                                    <th className="table-column-currency py-3"><NumericFormat value={planExpenseTotal + actualExpenseTotal} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency text-end py-3"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency text-end py-3"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
+                                    <th className="table-column-currency text-end py-3"><NumericFormat value={(planExpenseTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
                                 </tr>
-                            </thead>
-                        </table>
 
-                        
-                        <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
-                                <PlanIncomeExpenseList 
+                               <PlanIncomeExpenseList 
                                     categoryArray={investmentsArr}
                                     handleClickCategoryPlanItem={handleClickCategoryPlanItem}
                                     editCategoryPlan={editCategoryPlan}
@@ -604,7 +595,8 @@ const getCategories = () => {
                                     handleShowModalDelete = {handleShowModalDelete}
                                     getAllWithTotalByDate = {getAllWithTotalByDate}
                                 />
-                        </table>
+                             </tbody>
+                       </table>
 
 
                          <div className="btn-group dropup">

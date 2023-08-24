@@ -12,17 +12,22 @@
 
         .table-subhead {
             td, th{
-                    border-right-width: 0 !important;
-                    border-left-width: 0 !important;
-               }
+                border-right-width: 0 !important;
+                border-left-width: 0 !important;
+                @extend .pt-2;
+                vertical-align: bottom;
             }
+        }
+        .table-total {
+            @extend .bg-light;
+        }
         &.table-hover {
             > tbody {
                 > tr {
                     &.no-hover:hover {
-                        th, td {
-                            --bs-table-accent-bg: #FFF !important;
-                        }
+                           * {
+                            --bs-table-bg-state: transparent !important;
+                           }
                     }    
                 }
                

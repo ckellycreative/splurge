@@ -46,7 +46,6 @@ function PlanIncomeExpenseList(props) {
                         <React.Fragment key={keyId}>
                         {isNewCategoryGroup  && !isGroupTotal &&
                         <React.Fragment>
-                            <thead>
                                     <tr className="table-subhead no-hover">
                                         <th>
                                             <h4 className="d-inline-block">{cat.category_title}</h4>
@@ -55,13 +54,11 @@ function PlanIncomeExpenseList(props) {
                                         <th className="fs-9 text-end">Actual</th>
                                         <th className="fs-9 text-end">Difference</th>
                                     </tr>
-                            </thead>
                         </React.Fragment>
 
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
                         <React.Fragment>
-                        <tbody>
                                 {props.editCategoryPlan && props.editCategoryPlan.ChildCategory.id == cat.ChildCategory.id && 
                                     <tr className="no-hover">
                                         <td colSpan="4" className="">
@@ -93,7 +90,6 @@ function PlanIncomeExpenseList(props) {
                                         </td>
                                     </tr>
                                 }
-                        </tbody>
                         </React.Fragment>
 
                         }
@@ -101,7 +97,6 @@ function PlanIncomeExpenseList(props) {
 
                             isGroupTotal && 
                             <React.Fragment>
-                            <tbody>
                                 <tr className="no-hover">
                                     <td colSpan="4" className="">
                                          <div className="btn-group dropdown">
@@ -120,7 +115,6 @@ function PlanIncomeExpenseList(props) {
                                     <td className="text-end"><NumericFormat value={cat.groupTotalActual.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                     <td className="text-end"><NumericFormat value={(cat.groupCategoryType == 'expense') ? (cat.groupTotalPlan + cat.groupTotalActual).toFixed(2) : (cat.groupTotalActual - cat.groupTotalPlan).toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                 </tr>            
-                            </tbody>
 
                             </React.Fragment>
                         }
