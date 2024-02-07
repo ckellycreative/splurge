@@ -1,35 +1,40 @@
-.AccountsNav {
-	&.nav-pills {
-		li.nav-item {
-			a.nav-link {
-				@extend .fs-7;
-				color: $body-color;
-				position: relative;
-				display: flex;
-				overflow: hidden;
-				&.active {
-					background-color: $teal-100;
-					&::before {
-						content: " ";
-						border-left: 4px solid $teal-400;
-						height: 100%;
-						left: 0px;
-						position: absolute;
-						top: 0px;
-						border-radius: 3px;
+.AccountsNav-wrap {
+	.AccountsNav {
+		&.nav {
+			flex-wrap: nowrap;
+		}
+		&.nav-pills {
+			li.nav-item {
+				a.nav-link {
+					@extend .fs-7;
+					color: $body-color;
+					position: relative;
+					display: flex;
+					overflow: hidden;
+					&.active {
+						background-color: $teal-100;
+						&::before {
+							content: " ";
+							border-left: 4px solid $teal-400;
+							height: 100%;
+							left: 0px;
+							position: absolute;
+							top: 0px;
+							border-radius: 3px;
+						}
 					}
-				}
 
-				&:hover {
-					background-color: $teal-100;
-				}
+					&:hover {
+						background-color: $teal-100;
+					}
 
-				.account-balance-list-amount {
-					@extend .fs-9;
-					@extend .text-end;
+					.account-balance-list-amount {
+						@extend .fs-9;
+						@extend .text-end;
+					}
 				}
 			}
 		}
-	}
 
+	}
 }
