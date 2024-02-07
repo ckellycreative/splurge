@@ -317,10 +317,10 @@ function Accounts() {
         <React.Fragment>
             
            <div className="row">
-                <div className="col">
+                <div className="col-md-6">
                     <h1>{(activeCashTrackingAccount) ? activeCashTrackingAccount.category_title : 'All Accounts'}</h1>
                 </div>
-                <div className="col text-end">
+                <div className="col-md-6 text-end">
                     { activeCashTrackingAccount  &&
                         <div>
 
@@ -361,12 +361,12 @@ function Accounts() {
                     <Spinner spinnerIcon='border' overlay={true} textColor="primary" />
                }
 
-                <div style={{width:'320px'}} className="">
+                <div className=" col-md-3 AccountsNav-wrap">
                     
                     {cashTrackingAccountsWithTotals &&
                         <AccountsNav cashTrackingAccountsWithTotals={cashTrackingAccountsWithTotals} activeCashTrackingAccount={activeCashTrackingAccount} handleClickAccountsNavItem={handleClickAccountsNavItem} />
                     }
-                    <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link fs-8"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
+                    <button onClick={() => setShowAddAccountForm((prevState) => !prevState)} type="button" className="btn btn-link mb-3 fs-8"><i className="bi-plus" role="button" aria-label="Add Account"></i>Add Account</button>
                     {
                         showAddAccountForm &&
                         <AccountsForm setBankAccountIsPosting={setBankAccountIsPosting} setShowAddAccountForm={setShowAddAccountForm}/>
@@ -374,15 +374,15 @@ function Accounts() {
 
 
                 </div>
-                <div className="col main">
+                <div className="col-md-9 main">
                    
                   
-                    <div className="mb-4">
-                        <button className="btn btn-primary me-2" onClick={() => setShowDrawer((prevState) => !prevState)}>
+                    <div>
+                        <button className="btn btn-primary mb-3 me-2" onClick={() => setShowDrawer((prevState) => !prevState)}>
                           New Transaction
                         </button>
 
-                        <div className='d-inline-block'>
+                        <div className='d-inline-block mb-3'>
                             <div className='input-group input-group-sm'>
                                 <select onChange={(e) => handleChangeCategoryFilter(e)} value={activeCategory} component="select" className={'form-control CategorySelect'}>
                                     <CategorySelectOptions categories={categories} categoryType="all" defaultOption="Filter Transactions" />
