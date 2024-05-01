@@ -16,11 +16,13 @@ function AccountsForm(props) {
     const initialValues = {
         id: null,
         category_title: '',
+        category_type: '',
         openingBalance: ''
     };
 
    const validationSchema = Yup.object().shape({
         category_title: Yup.string().required('Title is required'),
+        category_type: Yup.string().required('Account Type is required'),
         openingBalance: Yup.number().test(
             'is-decimal',
             'Must be a decimal number',
@@ -38,11 +40,11 @@ function AccountsForm(props) {
 
 
 
-    function onSubmit({ id, category_title, openingBalance}, { setSubmitting, resetForm }) {
+    function onSubmit({ id, category_type, category_title, openingBalance}, { setSubmitting, resetForm }) {
         const newCat = {
             id: null,
             category_title,
-            category_type: 'cash',
+            category_type,
             openingBalance
         }
         props.setBankAccountIsPosting(true) 
@@ -67,6 +69,16 @@ function AccountsForm(props) {
                         <Field name="category_title" placeholder='Account Name' type="text" className={'form-control'} />
                         <ErrorMessage name="category_title" component="div" className="text-danger" />
                     </div>
+
+                    <div className="mb-2">
+                       <Field as="select" name="category_type" className="form-select">
+                         <option value="">Select Account Type</option>
+                         <option value="cash">Cash</option>
+                         <option value="checking">Checking</option>
+                         <option value="savings">Savings</option>
+                       </Field>
+                    </div>
+
                    <div className='input-group mb-2'>
                         <span className="input-group-text">Opening Balance $</span>
                         <Field name="openingBalance" type="number" step="0.01">

@@ -22,10 +22,12 @@ function Plan() {
     const [investmentsArr, setInvestmentsArr] = useState([])
     const [planIncomeTotal, setPlanIncomeTotal] = useState(0)
     const [planExpenseTotal, setPlanExpenseTotal] = useState(0)
+    const [planExpenseOptionalTotal, setPlanExpenseOptionalTotal] = useState(0)
     const [planSavingsTotal, setPlanSavingsTotal] = useState(0)
     const [planInvestmentsTotal, setPlanInvestmentsTotal] = useState(0)
     const [actualIncomeTotal, setActualIncomeTotal] = useState(0)
     const [actualExpenseTotal, setActualExpenseTotal] = useState(0)
+    const [actualExpenseOptionalTotal, setActualExpenseOptionalTotal] = useState(0)
     const [actualInvestmentsTotal, setActualInvestmentsTotal] = useState(0)
     const [categories, setCategories] = useState([])
     const [categoriesAreLoaded, setCategoriesAreLoaded] = useState(false)
@@ -73,7 +75,9 @@ function Plan() {
                 let groupTotalPlan = 0
                 let groupTotalActual = 0
                 let calcPlanExpenseTotal = 0
+                let calcPlanExpenseOptionalTotal = 0
                 let calcActualExpenseTotal = 0
+                let calcActualExpenseOptionalTotal = 0
                 let calcPlanIncomeTotal = 0
                 let calcActualIncomeTotal = 0
                 let calcPlanSavingsTotal = 0
@@ -88,6 +92,7 @@ function Plan() {
                 data.map( (cat, index, array) => {
                     if (cat.category_type == 'expense' || cat.category_type == 'income' || cat.category_type == 'investment' ) {
                         let isIncome = (cat.category_type == 'income') ? true : false
+                        let isOptionalCategory = (cat.ChildCategory.optional) ? true : false
                         let isInvestment = (cat.category_type == 'investment') ? true : false
                         let nextIsNewCategoryGroup = (array[index+1] && array[index+1].category_title != cat.category_title) ? true : false    
 
@@ -108,6 +113,9 @@ function Plan() {
                         }else if (isInvestment) {
                             calcPlanInvestmentsTotal += +cat.CategoryPlan.planAmount 
                             calcActualInvestmentsTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
+                        }else if (isOptionalCategory) {
+                            calcPlanExpenseOptionalTotal += +cat.CategoryPlan.planAmount 
+                            calcActualExpenseOptionalTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
                         }else {
                             calcPlanExpenseTotal += +cat.CategoryPlan.planAmount 
                             calcActualExpenseTotal += cat.totalReportAmountDebit - cat.totalReportAmountCredit  
@@ -150,11 +158,15 @@ function Plan() {
                 setInvestmentsArr(tmpInvestmentsArr)
                 setPlanIncomeTotal(calcPlanIncomeTotal)
                 setPlanExpenseTotal(calcPlanExpenseTotal)
+                setPlanExpenseOptionalTotal(calcPlanExpenseOptionalTotal)
                 setPlanSavingsTotal(calcPlanSavingsTotal)
                 setPlanInvestmentsTotal(calcPlanInvestmentsTotal)
                 setActualIncomeTotal(calcActualIncomeTotal)
                 setActualExpenseTotal(calcActualExpenseTotal)        
+                setActualExpenseOptionalTotal(calcActualExpenseOptionalTotal)        
                 setActualInvestmentsTotal(calcActualInvestmentsTotal)        
+
+                console.log('not: ', calcActualExpenseTotal, 'opt: ', calcActualExpenseOptionalTotal)
 
             })
             .catch(error => {
@@ -664,14 +676,19 @@ const getCategories = () => {
                                             <td className="table-column-currency"><NumericFormat value={actualIncomeTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
                                         </tr>
                                         <tr className="bg-light">
-                                            <td className="fw-bold">Expense</td>
+                                            <td className="fw-bold">Living Expenses</td>
                                             <td className="table-column-currency"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
                                             <td className="table-column-currency"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
                                         </tr>
                                         <tr className="bg-light">
+                                            <td className="fw-bold">Optional Expenses</td>
+                                            <td className="table-column-currency"><NumericFormat value={planExpenseOptionalTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                            <td className="table-column-currency"><NumericFormat value={actualExpenseOptionalTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
+                                        </tr>
+                                        <tr className="bg-light">
                                             <td className="fw-bold">Net</td>
-                                            <td className="table-column-currency"><NumericFormat value={(planIncomeTotal - planExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
-                                            <td className="table-column-currency"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
+                                            <td className="table-column-currency"><NumericFormat value={(planIncomeTotal - planExpenseTotal - planExpenseOptionalTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
+                                            <td className="table-column-currency"><NumericFormat value={(actualIncomeTotal + actualExpenseTotal + actualExpenseOptionalTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                         </tr>
                                         <tr className="bg-light">
                                             <td className="fw-bold">Investments</td>

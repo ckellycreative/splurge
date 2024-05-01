@@ -78,7 +78,7 @@ module.exports = {
     externals: {
         // global app config object
         config: JSON.stringify({
-            apiUrl: '/api'
+            apiUrl: 'https://www.app.splurgeplan.com/api'
         })
     }
 }
