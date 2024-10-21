@@ -2,7 +2,7 @@ import React  from 'react';
 
 function CategorySelectOptions(props) {
     let bankAccounts = props.categories.map(category => {
-                        if (category.category_type == 'tracking' || category.category_type == 'cash') {
+                        if ((category.category_type == 'tracking' || category.category_type == 'cash')  && category.hidden == false) {
                             return (    
                                 <option key={category.id} value={category.id}>{category.category_title}</option>
                             )
@@ -11,13 +11,15 @@ function CategorySelectOptions(props) {
 
     let incomeCats = props.categories.map(category => {
 
-                        if (category.category_type == 'income' ) {
-                            if (category.ChildCategory.length > 0) {
+                        if (category.category_type == 'income') {
+                            if (category.ChildCategory.length > 0 ) {
                                 return ([    
                                     <optgroup key={category.id} label={category.category_title} ></optgroup>,
 
                                     category.ChildCategory.map((child) => {
-                                       return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                       if(child.hidden == false){
+                                            return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                        }
                                     })
                                 ])
                             }
@@ -28,12 +30,14 @@ function CategorySelectOptions(props) {
 
     let expenseCats = props.categories.map(category => {
                         if (category.category_type == 'expense' ) {
-                            if (category.ChildCategory.length > 0) {
+                            if (category.ChildCategory.length > 0 ) {
                                 return ([    
                                     <optgroup key={category.id} label={category.category_title} ></optgroup>,
 
                                     category.ChildCategory.map((child) => {
-                                       return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                       if(child.hidden == false){
+                                            return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                        }
                                     })
                                 ])
                             }
@@ -43,12 +47,14 @@ function CategorySelectOptions(props) {
 
     let investmentCats = props.categories.map(category => {
                         if (category.category_type == 'investment' ) {
-                            if (category.ChildCategory.length > 0) {
+                            if (category.ChildCategory.length > 0 ) {
                                 return ([    
                                     <optgroup key={category.id} label={category.category_title} ></optgroup>,
 
                                     category.ChildCategory.map((child) => {
-                                       return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                       if(child.hidden == false){
+                                            return  <option key={child.id} value={child.id}>{child.category_title}</option>
+                                        }
                                     })
                                 ])
                             }

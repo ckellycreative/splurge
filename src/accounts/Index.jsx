@@ -78,6 +78,7 @@ function Accounts() {
                 .then((data) => {
                     setCategoriesAreLoaded(true);
                     setCategories(data)
+                    console.log('data', data)
                 })
                 .catch(error => {
                     //alertService.error(error)

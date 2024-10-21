@@ -6,7 +6,7 @@ function AccountsNav(props) {
 
 
     const accounts = props.cashTrackingAccountsWithTotals.map(category => {
-        if (category.category_type == 'cash') {
+        if (category.category_type == 'cash' && category.hidden == false ) {
             totalCash += +category.bankBalance 
             return (    
                 <li key={category.id} className="nav-item">

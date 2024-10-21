@@ -645,7 +645,7 @@ const getCategories = () => {
                         <div className="position-sticky top-0">
                             <h2>Overview</h2>
                             <div className="table-responsive">
-                                <table className="table table-sm outside-borders fs-8 plan-overview table">
+                                <table className="table table-sm outside-borders fs-8 plan-overview ">
                                     <thead>
                                         <tr className="">
                                             <th className="fw-bold">
@@ -660,7 +660,7 @@ const getCategories = () => {
                             </div>
 
                             <div className="table-responsive">
-                                <table className="table table-sm outside-borders fs-8 plan-overview table">
+                                <table className="table table-sm outside-borders fs-8 plan-overview PlanIncomeExpenseListTable">
                                     <thead>
                                         <tr className="fs-9">
                                             <th>&nbsp;</th>
@@ -695,15 +695,10 @@ const getCategories = () => {
                                             <td className="table-column-currency"><NumericFormat value={planInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
                                             <td className="table-column-currency"><NumericFormat value={actualInvestmentsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           
                                         </tr>
-                                    </tbody>
-                                </table>
-                            </div>
 
 
 
 
-                            <div className="table-responsive">
-                                <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                                         <PlanSavingsList 
                                             categoryArray={savingsArr}
                                             handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -714,20 +709,14 @@ const getCategories = () => {
                                             handleShowModalDelete = {handleShowModalDelete}
                                             getAllWithTotalByDate = {getAllWithTotalByDate}
                                         />
-                                </table>
-                            </div>
 
 
-                            <div className="table-responsive">
-                                <table className="table table-sm outside-borders fs-8 plan-overview table">
-                                    <thead>
                                         <tr className="fs-9">
                                             <th>&nbsp;</th>
                                             <th className="text-end">Plan</th>
                                             <th className="text-end">Actual</th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
+
                                         <tr>
                                             <td className="fw-bold">Total Reserves</td>
                                             <td className="table-column-currency"><NumericFormat value={planSavingsTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></td>           

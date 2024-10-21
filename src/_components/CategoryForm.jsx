@@ -8,7 +8,8 @@ import { fetchWrapper, history } from '@/_helpers';
 function CategoryForm(props) {
 
     const initialValues = {
-        category_title: ''
+        category_title: '',
+        optional: false
     };
 
 
@@ -18,12 +19,13 @@ function CategoryForm(props) {
     });
 
 
-	function onSubmit({ category_title }, { setSubmitting, resetForm }) {
+    function onSubmit({ category_title, optional }, { setSubmitting, resetForm }) {
         alertService.clear();
         let newCat = {
             category_title, 
             category_type: props.isGroupForm ? 'expense' : props.category_type, //Only Expense Cats have groups
-            parentId: props.parentId
+            parentId: props.parentId,
+            optional
         }
 
         categoryService.create(newCat)
@@ -37,27 +39,28 @@ function CategoryForm(props) {
                 setSubmitting(false);
                 alertService.error(error);
             });
-	}
+    }
 
 
 
 
-	return(
+    return(
 
 
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit} >
             {({ values, errors, touched, isSubmitting, isValid, handleChange, handleBlur }) => (
                 <Form>
-                    <div className="input-group">
-                            <Field name="category_title" type="text" placeholder={props.isGroupForm ? 'New Group Title' : 'New Category Title'} className={'form-control'} />
+                            <Field name="category_title" type="text" placeholder={props.isGroupForm ? 'New Group Title' : 'New Category Title'} className={'form-control mb-1'} />
+                            <div className="mb-1">
+                                <Field name="optional" type="checkbox" />&nbsp;<span className='small'>Optional</span>
+                            </div>
                             <button className="btn btn-outline-secondary" type="submit" disabled={!isValid} id="button-addon2">Save</button>
-                    </div>
                     <ErrorMessage name="category_title" component="div" className="text-danger" />
 
                 </Form>
             )}
         </Formik>
-	);
+    );
 }
 
 

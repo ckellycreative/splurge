@@ -18,7 +18,6 @@ function PlanSavingsList(props) {
 
 
                             <React.Fragment>
-                                    <thead>
                                         <tr className="table-subhead no-hover">
                                             <th className="">
                                                 <h4 className="d-inline-block mb-0">{cat.category_title}</h4>
@@ -26,13 +25,11 @@ function PlanSavingsList(props) {
                                             <th className="text-end fs-9">Plan</th>
                                             <th className="text-end fs-9">Actual</th>
                                         </tr>
-                                    </thead>
                            </React.Fragment>
 
                         }
                         { !isGroupTotal && cat.ChildCategory.id != null &&  //checks if there are no children
-
-                                <tbody>
+                            <React.Fragment>
                                     {props.editCategoryPlan && props.editCategoryPlan.ChildCategory.id == cat.ChildCategory.id && 
                                         <tr className="no-hover">
                                             <td colSpan="4" className="">
@@ -59,12 +56,10 @@ function PlanSavingsList(props) {
                                             </td>
                                         </tr>
                                     }
-                                </tbody>
-
+                            </React.Fragment>
                         }
                         {
                             isGroupTotal && 
-                                <tbody>
                                 <tr className="no-hover">
                                     <td colSpan="4" className="border border-0">
                                          <div className="btn-group dropdown">
@@ -77,7 +72,6 @@ function PlanSavingsList(props) {
                                         </div>
                                     </td>
                                 </tr>
-                                </tbody>
 
                         }
 

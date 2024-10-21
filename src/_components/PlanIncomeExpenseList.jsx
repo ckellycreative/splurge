@@ -103,7 +103,7 @@ function PlanIncomeExpenseList(props) {
                                             <button type="button" className="btn btn-link btn-sm text-secondary p-0 fs-8" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i className="bi-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>Add Category
                                             </button>
-                                            <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
+                                            <div className="dropdown-menu px-2" style={ {minWidth: '600px'} }>
                                                 <CategoryForm parentId={cat.grpCatId} category_type='expense' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
                                             </div>
                                         </div>
@@ -138,4 +138,3 @@ function PlanIncomeExpenseList(props) {
 }
 
 export { PlanIncomeExpenseList };
-
