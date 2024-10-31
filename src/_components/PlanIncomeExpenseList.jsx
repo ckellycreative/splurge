@@ -48,7 +48,9 @@ function PlanIncomeExpenseList(props) {
                         <React.Fragment>
                                     <tr className="table-subhead no-hover">
                                         <th>
-                                            <h4 className="d-inline-block">{cat.category_title}</h4>
+                                            {cat.category_type !== 'income' &&
+                                                <h4 className="d-inline-block">{cat.category_title}</h4>
+                                            }
                                         </th>
                                         <th className="fs-9 text-end">Plan</th>
                                         <th className="fs-9 text-end">Actual</th>
