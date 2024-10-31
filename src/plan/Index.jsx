@@ -166,7 +166,6 @@ function Plan() {
                 setActualExpenseOptionalTotal(calcActualExpenseOptionalTotal)        
                 setActualInvestmentsTotal(calcActualInvestmentsTotal)        
 
-                console.log('not: ', calcActualExpenseTotal, 'opt: ', calcActualExpenseOptionalTotal)
 
             })
             .catch(error => {
@@ -273,13 +272,14 @@ const getCategories = () => {
     }
 
 
-    const onSubmitCategoryPlanForm = ({ category_title, planAmount }, { setSubmitting, resetForm }) => {
+    const onSubmitCategoryPlanForm = ({ category_title, optional, planAmount }, { setSubmitting, resetForm }) => {
         
-
+        
             let CategoryPlan = {
                 category: {
                     id: editCategoryPlan.ChildCategory.id,
                     category_title: category_title,
+                    optional: optional,
                     CategoryPlan: {
                         id: editCategoryPlan.CategoryPlan.id,
                         categoryId: editCategoryPlan.ChildCategory.id,
@@ -289,7 +289,6 @@ const getCategories = () => {
                 }
                 
             }
-
             planService.create(CategoryPlan)
                 .then((data) => {
                     getAllWithTotalByDate()
@@ -568,6 +567,11 @@ const getCategories = () => {
                         <div className="table-responsive">
                             <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                                 <tbody>
+                                    <tr className="no-hover">
+                                        <td colspan="4" className="border-0 mt-2">
+                                            <h2>Income</h2>
+                                        </td>
+                                    </tr>
                                     <PlanIncomeExpenseList 
                                         categoryArray={incomeArr}
                                         handleClickCategoryPlanItem={handleClickCategoryPlanItem}
@@ -578,7 +582,11 @@ const getCategories = () => {
                                         handleShowModalDelete = {handleShowModalDelete}
                                         getAllWithTotalByDate = {getAllWithTotalByDate}
                                     />
-
+                                    <tr className="no-hover">
+                                        <td colspan="4" className="border-0 mt-2">
+                                            <h2>Expenses</h2>
+                                        </td>
+                                    </tr>
                                    <PlanIncomeExpenseList 
                                         categoryArray={expenseArr}
                                         handleClickCategoryPlanItem={handleClickCategoryPlanItem}

@@ -13,18 +13,30 @@ function CategoryPlanForm(props) {
       includeThousandsSeparator: false,
     })
 
-
 	return(
         <div className="p-3 bg-light">
 
-
-            <Formik initialValues={{category_title: props.cat.ChildCategory.category_title, planAmount: props.cat.CategoryPlan.planAmount}} onSubmit={props.onSubmitCategoryPlanForm} >
-                {({ values, errors, touched, isSubmitting, handleChange, handleBlur }) => (
+        <Formik initialValues={{category_title: props.cat.ChildCategory.category_title, optional: props.cat.ChildCategory.optional, planAmount: props.cat.CategoryPlan.planAmount ? props.cat.CategoryPlan.planAmount : '0.00'}} onSubmit={props.onSubmitCategoryPlanForm} >
+                {({ values, errors, touched, isSubmitting, handleChange, handleBlur, setFieldValue }) => (
                     <Form>
                         <div>
                             <label htmlFor="category_title" className="form-label">Category Title</label>
                             <Field name="category_title" type="text" className={'form-control'} />
                         </div>
+                        {props.cat.ChildCategory.category_type == 'expense' &&
+
+                            <div className="mt-2">
+                                <label htmlFor="optional" >
+                                    <Field 
+                                        id="optional" 
+                                        type="checkbox" 
+                                        name="optional" 
+                                        checked={values.optional}
+                                        onChange={e => setFieldValue('optional', e.target.checked)} 
+                                    /> Optional Expense
+                                </label>
+                            </div>
+                        }
                         <div className="mt-2">
                             <label htmlFor="planAmount" className="form-label">Plan Amount</label>
                             <Field name="planAmount" type="number" step="0.01" placeholder='Amount'>
