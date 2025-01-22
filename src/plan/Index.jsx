@@ -134,19 +134,23 @@ function Plan() {
                             groupTotalActual = 0
                         }
                     }
-
                     if (cat.category_type == 'savings') {
-                        let nextIsNewCategoryGroup = (array[index+1] && array[index+1].category_title != cat.category_title) ? true : false    
-                        tmpSavingsArr.push(cat)
-                        groupTotalPlan += +cat.CategoryPlan.planAmount
-                        groupTotalActual = 0  //Not using the actual totals yet (not sure if/how)
-                        calcPlanSavingsTotal += +cat.CategoryPlan.planAmount
-                        calcActualSavingsTotal = 0 //Not using the actual totals yet (not sure if/how)
-                        if (nextIsNewCategoryGroup) {
-                            let groupTotalObj = {grpCatId:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
-                            tmpSavingsArr.push(groupTotalObj)
-                            groupTotalPlan = 0
-                            groupTotalActual = 0
+                        console.log('catXXXXXXX', cat)
+                        if (cat.ChildCategory.hidden && (!cat.CategoryPlan.planAmount || cat.CategoryPlan.planAmount == "0.00") ) {
+                            return
+                        }else {
+                            let nextIsNewCategoryGroup = (array[index+1] && array[index+1].category_title != cat.category_title) ? true : false    
+                            tmpSavingsArr.push(cat)
+                            groupTotalPlan += +cat.CategoryPlan.planAmount
+                            groupTotalActual = 0  //Not using the actual totals yet (not sure if/how)
+                            calcPlanSavingsTotal += +cat.CategoryPlan.planAmount
+                            calcActualSavingsTotal = 0 //Not using the actual totals yet (not sure if/how)
+                            if (nextIsNewCategoryGroup) {
+                                let groupTotalObj = {grpCatId:cat.id , groupCategoryTitle: cat.category_title, groupTotalPlan, groupTotalActual }
+                                tmpSavingsArr.push(groupTotalObj)
+                                groupTotalPlan = 0
+                                groupTotalActual = 0
+                            }
                         }
                     }
 
@@ -568,7 +572,7 @@ const getCategories = () => {
                             <table className="table table-sm table-hover outside-borders fs-8 PlanIncomeExpenseListTable">
                                 <tbody>
                                     <tr className="no-hover">
-                                        <td colspan="4" className="border-0 mt-2">
+                                        <td colspan="5" className="border-0 mt-2">
                                             <h2>Income</h2>
                                         </td>
                                     </tr>
@@ -583,7 +587,7 @@ const getCategories = () => {
                                         getAllWithTotalByDate = {getAllWithTotalByDate}
                                     />
                                     <tr className="no-hover">
-                                        <td colspan="4" className="border-0 mt-2">
+                                        <td colspan="5" className="border-0 mt-2">
                                             <h2>Expenses</h2>
                                         </td>
                                     </tr>
@@ -600,6 +604,7 @@ const getCategories = () => {
 
                                     <tr className="table-total">
                                         <th className="fw-bold py-3">Total Expenses</th>
+                                        <th >&nbsp;</th>
                                         <th className="table-column-currency text-end py-3"><NumericFormat value={planExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
                                         <th className="table-column-currency text-end py-3"><NumericFormat value={actualExpenseTotal.toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>
                                         <th className="table-column-currency text-end py-3"><NumericFormat value={(planExpenseTotal + actualExpenseTotal).toFixed(2)} decimalScale={2} displayType={'text'} thousandSeparator={true} prefix={''} /></th>

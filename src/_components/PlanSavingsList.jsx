@@ -36,6 +36,7 @@ function PlanSavingsList(props) {
                                                 <CategoryPlanForm 
                                                     cat={cat} 
                                                     handleClickCancelEditCategory={props.handleClickCancelEditCategory}
+                                                    handleClickHideCategory={props.handleClickHideCategory}
                                                     onSubmitCategoryPlanForm={props.onSubmitCategoryPlanForm}
                                                 />
                                             </td>
@@ -67,7 +68,7 @@ function PlanSavingsList(props) {
                                                 <i className="bi-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>Add Category
                                             </button>
                                             <div className="dropdown-menu px-2" style={ {minWidth: '320px'} }>
-                                                <CategoryForm parentId={cat.grpCatId} category_type='expense' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
+                                                <CategoryForm parentId={cat.grpCatId} category_type='savings' isGroupForm={false} getAllWithTotalByDate={props.getAllWithTotalByDate} />
                                             </div>
                                         </div>
                                     </td>

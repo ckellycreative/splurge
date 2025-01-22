@@ -52,6 +52,7 @@ function PlanIncomeExpenseList(props) {
                                                 <h4 className="d-inline-block">{cat.category_title}</h4>
                                             }
                                         </th>
+                                        <th >&nbsp;</th>
                                         <th className="fs-9 text-end">Plan</th>
                                         <th className="fs-9 text-end">Actual</th>
                                         <th className="fs-9 text-end">Difference</th>
@@ -80,6 +81,11 @@ function PlanIncomeExpenseList(props) {
                                                 {cat.ChildCategory.category_title}
                                             </a>
                                          </td>
+                                        <td className="fs-9 text-center">
+                                               <span className="badge rounded-pill bg-secondary fw-lighter">
+                                                     {!cat.ChildCategory.optional && cat.category_type == 'expense' && "Fixed" }
+                                                </span>
+                                         </td>
 
                                         <td className="table-column-currency">
                                             <NumericFormat value={planAmount != 0 ? planAmount.toFixed(2) : '-' } valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} />
@@ -100,7 +106,7 @@ function PlanIncomeExpenseList(props) {
                             isGroupTotal && 
                             <React.Fragment>
                                 <tr className="no-hover">
-                                    <td colSpan="4" className="">
+                                    <td colSpan="5" className="">
                                          <div className="btn-group dropdown">
                                             <button type="button" className="btn btn-link btn-sm text-secondary p-0 fs-8" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i className="bi-plus" data-bs-toggle="dropdown" aria-expanded="false"></i>Add Category
@@ -113,6 +119,7 @@ function PlanIncomeExpenseList(props) {
                                 </tr>
                                 <tr className="no-hover table-total">
                                     <td className="fw-bold">Total {cat.groupCategoryTitle}</td>
+                                    <td >&nbsp;</td>
                                     <td className="text-end"><NumericFormat value={cat.groupTotalPlan.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                     <td className="text-end"><NumericFormat value={cat.groupTotalActual.toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
                                     <td className="text-end"><NumericFormat value={(cat.groupCategoryType == 'expense') ? (cat.groupTotalPlan + cat.groupTotalActual).toFixed(2) : (cat.groupTotalActual - cat.groupTotalPlan).toFixed(2)} valueIsNumericString={true} displayType={'text'} thousandSeparator={true} prefix={''} /></td>
